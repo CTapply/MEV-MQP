@@ -1,0 +1,24 @@
+{
+  "name": "MEV-MQP",
+  "version": "1.0.0",
+  "description": "look at each folders respective README",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm start --prefix ./back-end\" \"npm start --prefix ./front-end\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CTapply/MEV-MQP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CTapply/MEV-MQP/issues"
+  },
+  "homepage": "https://github.com/CTapply/MEV-MQP#readme",
+  "dependencies": {
+    "concurrently": "^3.5.0"
+  }
+}

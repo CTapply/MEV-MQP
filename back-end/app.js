@@ -35,8 +35,12 @@ app.get('/', (req, res) => {
 
 app.post('/getdata', (req, res) => {
   console.log('got a request with body:\n ', req.body)
-  client.query('SELECT sex, age, age_cod, occr_country, REPT_DT, occp_cod FROM demo limit 500', (err, data) => {
-    // console.log(data.rows)
+  let query = 
+  "SELECT sex, age, age_cod, occr_country, REPT_DT, occp_cod "
++ "FROM demo "
++ "WHERE REPT_DT BETWEEN " + req.body.startDate + " AND " + req.body.endDate;
+  console.log(query);
+  client.query(query, (err, data) => {
     res.status(200).send(data);
   })
 });
@@ -44,17 +48,16 @@ app.post('/getdata', (req, res) => {
 app.post('/gettimelinedata', (req, res) => {
   console.log('got a request for timeline data')
   let query = 
-  "select a.init_fda_dt, count(case when a.outc_cod is not null then 1 end)::INTEGER as serious, count(case when a.outc_cod is null then 1 end)::INTEGER as not_serious "
-+ "from (select d.init_fda_dt, o.outc_cod " 
-+       "from (select primaryid, init_fda_dt "
-+             "from demo) d "
-+       "full outer join (select primaryid, outc_cod "
-+             "from outc) o "
-+       "on d.primaryid = o.primaryid) a "
-+ "group by a.init_fda_dt "
-+ "order by a.init_fda_dt"
+  "SELECT a.init_fda_dt, count(CASE WHEN a.outc_cod is not null then 1 end)::INTEGER as serious, count(CASE WHEN a.outc_cod is null then 1 end)::INTEGER as not_serious "
++ "FROM (SELECT d.init_fda_dt, o.outc_cod " 
++       "FROM (SELECT primaryid, init_fda_dt "
++             "FROM demo) d "
++       "FULL OUTER JOIN (SELECT primaryid, outc_cod "
++             "FROM outc) o "
++       "ON d.primaryid = o.primaryid) a "
++ "GROUP BY a.init_fda_dt "
++ "ORDER BY a.init_fda_dt"
   client.query(query, (err, data) => {
-    // console.log(data.rows)
     res.status(200).send(data.rows);
   })
 });

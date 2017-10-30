@@ -2,8 +2,6 @@ import { getData } from './visualizationActions';
 
 export const setSelectedTime = selectedDates => (dispatch) => {
   const postBody = {
-    table: 'demo',
-    query: 'sex',
     ...selectedDates,
   };
 

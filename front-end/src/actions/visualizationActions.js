@@ -108,8 +108,7 @@ export const getData = queryParams => (dispatch) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      table: 'demo',
-      query: 'sex',
+      ...queryParams,
     }),
   };
 

@@ -44,6 +44,7 @@ class Timeline extends Component {
       this.setState({ previewStartX: this.state.mouseMovePosition });
 
       document.getElementById('start_date').value = this.state.selectedStartX;
+      document.getElementById('end_date').value = this.state.selectedStartX;
       // Clear  the Other end to start a new selection TODO
       this.setState({ selectedEndX: 0 });
       this.setState({ previewEndX: 0 });
@@ -53,13 +54,25 @@ class Timeline extends Component {
       this.setState({ currentlySelecting: false });
       this.setState({ selectedEndX: this.state.mouseMovePosition });
       this.setState({ previewEndX: this.state.mouseMovePosition });
-      document.getElementById('end_date').value = this.state.selectedEndX;
+      if (this.state.selectedEndX > this.state.selectedStartX) {
+        document.getElementById('end_date').value = this.state.selectedEndX;
+      } else {
+        document.getElementById('start_date').value = this.state.selectedEndX;
+      }
     }, false);
 
     document.getElementById('timeline-chart').addEventListener('mousemove', () => {
       if (this.state.currentlySelecting) {
         if (this.state.previewEndX !== this.state.mouseMovePosition) {
           this.setState({ previewEndX: this.state.mouseMovePosition });
+        }
+        if (this.state.previewEndX > this.state.selectedStartX) {
+          document.getElementById('end_date').value = this.state.previewEndX;
+        } else if (this.state.previewEndX === this.state.selectedStartX) {
+          document.getElementById('end_date').value = this.state.previewEndX;
+          document.getElementById('start_date').value = this.state.previewEndX;
+        } else {
+          document.getElementById('start_date').value = this.state.previewEndX;
         }
       }
     }, true);
