@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const client = new Client({
   user: 'MEVUser',
-  host: 'mevdb.ccrdelq8psso.us-east-1.rds.amazonaws.com',
+  host: 'test-mevdb.ccrdelq8psso.us-east-1.rds.amazonaws.com',
   database: 'faers',
   password: '2UdS1KQo',
   port: '5432'

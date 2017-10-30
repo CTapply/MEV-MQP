@@ -15,8 +15,6 @@ class StackedBarVisualization extends Component {
   render = () => (
     <div id="main-visualization" >
       this is a visualization
-      <br />
-      {this.props.things}
     </div>
   )
 }
