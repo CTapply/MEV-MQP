@@ -55,12 +55,86 @@ app.get('/', (req, res) => {
   res.status(200).send({});
 })
 
+
+// {
+//   "REPT_DT": {
+//     "start": "20170305",
+//     "end": "20170315"
+//   },
+//   "sex": [],
+//   "occr_country": [],
+//   "age": {
+//     "start": 123,
+//     "end": 123
+//   }
+// }
+
+function sexBuilder(sex) {
+  let sexString = ` AND `;
+  
+  if (sex.length === 0) {
+    return '';
+  }
+
+  if (sex.length === 1) {
+    console.log(sex)
+    if (sex[0] === 'UNK') {
+        return sexString + `(sex = '${sex}' OR sex IS NULL)`;
+      } else {
+        return sexString + `sex = '${sex}'`;
+      }
+  }
+  
+  if (sex.length > 1) {
+    const sexMap = sex.map(filter => {
+      if (filter === 'UNK') {
+        return `sex = '${filter}' OR sex IS NULL`;
+      } else {
+        return `sex = '${filter}'`;
+      }
+    });
+    return `${sexString}(${sexMap.join(' OR ')})`
+  }
+} 
+
+function locationBuilder(location) {
+  let locationString = ` AND `;
+  
+  if (location.length === 0) {
+    return '';
+  }
+
+  if (location.length === 1) {
+    return locationString + `occr_country = '${location}'`
+  }
+  
+  if (location.length > 1) {
+    const locationMap = location.map(filter => {
+      if (filter === 'UNK') {
+        return `occr_country IS NULL`;
+      } else {
+        return `occr_country = '${filter}'`;
+      }
+    });
+    return `${locationString}(${locationMap.join(' OR ')})`
+  }
+} 
+
 app.post('/getdata', (req, res) => {
   console.log('got a request with body:\n ', req.body)
   let query = 
-  "SELECT sex, age, age_cod, occr_country, REPT_DT, occp_cod "
-+ "FROM demo "
-+ "WHERE REPT_DT BETWEEN " + req.body.REPT_DT.start + " AND " + req.body.REPT_DT.end;
+  `SELECT sex, age, age_cod, occr_country, REPT_DT, occp_cod `
++ `FROM demo `
++ `WHERE (REPT_DT BETWEEN ${req.body.REPT_DT.start} AND ${req.body.REPT_DT.end})`;
+
+  query += sexBuilder(req.body.sex);
+  query += locationBuilder(req.body.occr_country);
+
+  // if (req.body.occr_country !== []) {
+  //   const occr_countryString = req.body.occr_country.map(occr_country => ` AND occr_country = '${occr_country}'`);
+  //   query = query + occr_countryString;
+  // }
+
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send(data);

@@ -45,7 +45,9 @@ class Sex extends Component {
   }
 
   handleClick = (e) => {
-    this.props.toggleFilter(e.activeLabel);
+    if (e && e.activeLabel) {
+      this.props.toggleFilter(e.activeLabel);
+    }
   }
 
   resizeGraph = () => {
