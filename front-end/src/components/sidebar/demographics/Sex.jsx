@@ -10,6 +10,7 @@ const styles = {
   },
   responsiveContainer: {
     'margin-left': '-15px',
+    'font-size': '10pt',
   },
   maxHeight: {
     height: '100%',
@@ -80,7 +81,10 @@ class Sex extends Component {
             <XAxis dataKey="sex" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip />
+            <Tooltip
+              cursor={{ stroke: '#424242', strokeWidth: 1 }}
+              wrapperStyle={{ padding: '4px' }}
+            />
             <Bar dataKey="count" stroke="#1A237E" fill="url(#colorBlue)" />
           </BarChart>
         </ResponsiveContainer>

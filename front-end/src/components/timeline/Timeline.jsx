@@ -211,6 +211,7 @@ class Timeline extends Component {
           offset={50}
           animationDuration={0}
           labelFormatter={this.formatDate}
+          wrapperStyle={{ padding: '4px' }}
         />
         <Area
           type="monotone"

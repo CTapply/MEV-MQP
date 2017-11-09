@@ -55,20 +55,6 @@ app.get('/', (req, res) => {
   res.status(200).send({});
 })
 
-
-// {
-//   "REPT_DT": {
-//     "start": "20170305",
-//     "end": "20170315"
-//   },
-//   "sex": [],
-//   "occr_country": [],
-//   "age": {
-//     "start": 123,
-//     "end": 123
-//   }
-// }
-
 function sexBuilder(sex) {
   let sexString = ` AND `;
   
@@ -129,11 +115,6 @@ app.post('/getdata', (req, res) => {
 
   query += sexBuilder(req.body.sex);
   query += locationBuilder(req.body.occr_country);
-
-  // if (req.body.occr_country !== []) {
-  //   const occr_countryString = req.body.occr_country.map(occr_country => ` AND occr_country = '${occr_country}'`);
-  //   query = query + occr_countryString;
-  // }
 
   console.log(query);
   db.query(query, (err, data) => {

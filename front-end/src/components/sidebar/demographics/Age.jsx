@@ -10,6 +10,7 @@ const styles = {
   },
   responsiveContainer: {
     'margin-left': '-15px',
+    'font-size': '10pt',
   },
   maxHeight: {
     height: '100%',
@@ -67,10 +68,13 @@ class Age extends Component {
                 <stop offset="99%" stopColor="#283593" stopOpacity={0.4} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="age" />
+            <XAxis dataKey="age" tickCount={13} />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip />
+            <Tooltip
+              cursor={{ stroke: '#424242', strokeWidth: 1 }}
+              wrapperStyle={{ padding: '4px' }}
+            />
             <Bar dataKey="count" stroke="#1A237E" fill="url(#colorBlue)" />
           </BarChart>
         </ResponsiveContainer>
