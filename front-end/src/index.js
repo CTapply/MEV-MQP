@@ -10,13 +10,14 @@ import './index.css';
 
 
 import reducers from './reducers/index';
-import App from './components/App';
+//import App from './components/App';
+import ReportView from './components/ReportView';
 
 const store = createStore(reducers, applyMiddleware(thunk));
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ReportView />
   </Provider>,
   document.getElementById('root'),
 );
