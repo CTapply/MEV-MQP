@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Route } from 'react-router';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Timeline from './timeline/Timeline';
@@ -18,12 +20,16 @@ class TimelineContainer extends Component {
       case 'SLIDING_TIMELINE':
         return (
           <div className={this.props.classes.timeline} >
+            <Link to="/test">Test</Link>
             <Timeline />
           </div>
         );
       default:
         return (
-          <Timeline />
+          <div>
+            <Link to="/test">TestPage</Link>
+            <Timeline />
+          </div>
         );
     }
   }
