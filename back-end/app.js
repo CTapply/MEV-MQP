@@ -119,6 +119,11 @@ function locationBuilder(location) {
   }
 }
 
+/**
+ * Parses a range of dates into the low and high end
+ * @param {String} filter this is a range of years to filter for
+ * @return {Object} containing the lowEnd and highEnd of the age Range
+ */
 function getAgeRange(filter) {
   if (filter === '99+') return { lowEnd: 99, highEnd: 1000000 };
   const splitAge = filter.split('-');
@@ -161,6 +166,9 @@ function ageBuilder(age) {
   }
 } 
 
+/**
+ * Endpoint that takes in some body with filters to query the database and return the data for the main visualization
+ */
 app.post('/getdata', (req, res) => {
   console.log('got a request with body:\n ', req.body)
   let query = 
@@ -234,6 +242,9 @@ app.post('/getvis', (req, res) => {
   })
 });
 
+/**
+ * Endpoint that takes in some body with a date range to query the database and return the data for the timeline visualization
+ */
 app.post('/gettimelinedata', (req, res) => {
   console.log('got a request for timeline data')
   cache.send_command('JSON.GET', ['timeline'], (err, data) => {
