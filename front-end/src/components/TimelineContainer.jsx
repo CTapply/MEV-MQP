@@ -20,14 +20,14 @@ class TimelineContainer extends Component {
       case 'SLIDING_TIMELINE':
         return (
           <div className={this.props.classes.timeline} >
-            <Link to="/test">Test</Link>
+            <Link to="/report">Test</Link>
             <Timeline />
           </div>
         );
       default:
         return (
           <div>
-            <Link to="/test">TestPage</Link>
+            <Link to="/report">TestPage</Link>
             <Timeline />
           </div>
         );

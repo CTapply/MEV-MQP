@@ -14,7 +14,7 @@ import storage from 'redux-persist/lib/storage/session';
 
 import reducers from './reducers/index';
 import App from './components/App';
-import ReportApp from './components/ReportApp';
+import ReportView from './components/ReportView';
 
 import './index.css';
 
@@ -48,7 +48,7 @@ ReactDOM.render(
       <ConnectedRouter history={history}>
         <div>
           <Route exact path="/" component={App} />
-          <Route path="/test" component={ReportApp} />
+          <Route path="/report" component={ReportView} />
         </div>
       </ConnectedRouter>
     </Provider>

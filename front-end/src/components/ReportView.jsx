@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Route } from 'react-router';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
@@ -17,12 +20,7 @@ const blueTheme = createMuiTheme({
 
 const styles = theme => ({});
 
-class App extends Component {
-  static propTypes = {
-    classes: PropTypes.shape({
-    }).isRequired,
-  }
-
+class ReportView extends Component {
   asd = () => 123;
 
   render() {
@@ -30,10 +28,21 @@ class App extends Component {
       <MuiThemeProvider theme={blueTheme} >
         <div className="ReportView">
           <ReportContainer />
+          <Link to="/">Go Back</Link>
         </div>
       </MuiThemeProvider>
     );
   }
 }
+const mapStateToProps = state => ({
+  meType: state.mainVisualization.meType,
+  product: state.mainVisualization.product,
+  stage: state.mainVisualization.stage,
+  cause: state.mainVisualization.cause,
+  location: state.location,
+});
 
-export default withStyles(styles)(App);
+export default connect(
+  mapStateToProps,
+  null,
+)(withStyles(styles)(ReportView));
