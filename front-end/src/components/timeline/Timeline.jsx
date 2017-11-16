@@ -278,7 +278,7 @@ class Timeline extends Component {
       <Grid item sm={3} md={2}>
         <Paper elevation={4} className={this.props.classes.calendartWrapper} >
           <Button raised className="cal-button" color="primary" onClick={this.updateSelectedDate} >Set Date!</Button>
-          <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="asd" id="dateRangePicker" />
+          <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="03/16/2017 - 03/31/2017" id="dateRangePicker" />
         </Paper>
       </Grid>
       <Grid item sm={9} md={10}>

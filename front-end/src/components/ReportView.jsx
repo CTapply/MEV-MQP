@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
+import Button from 'material-ui/Button';
 import PropTypes from 'prop-types';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
@@ -28,7 +29,7 @@ class ReportView extends Component {
       <MuiThemeProvider theme={blueTheme} >
         <div className="ReportView">
           <ReportContainer />
-          <Link to="/">Go Back</Link>
+          <Link to="/"><Button raised className="cal-button" color="primary">Go Back</Button></Link>
         </div>
       </MuiThemeProvider>
     );
