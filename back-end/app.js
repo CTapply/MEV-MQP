@@ -6,6 +6,7 @@ const { Client } = require('pg')
 const bodyParser = require('body-parser');
 const os = require('os');
 
+// Initialze a dummy cache for systems that can't run REDIS
 let cache = {
   get: () => Promise.resolve(null),
   send_command: (type, from, callback) => {
@@ -18,15 +19,18 @@ let cache = {
   set: () => Promise.resolve(),
 };
 
+// Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
   cache = redis.createClient();  
 }
 
+// We cannot use REDIS if on Windows
 if (os.platform() === 'win32') {
   console.log('on window, not using local cache');
 }
 
+// Connect to the Database on AWS
 const db = new Client({
   user: 'MEVUser',
   host: 'test-mevdb.ccrdelq8psso.us-east-1.rds.amazonaws.com',
@@ -55,6 +59,11 @@ app.get('/', (req, res) => {
   res.status(200).send({});
 })
 
+/**
+ * Creates the string of a SQL WHERE statement (Starts with AND) for Sex Filtering
+ * @param {Array} sex List of things to filter for
+ * @return {String} AND statement used for SQL query to add filtering for Sex filters
+ */
 function sexBuilder(sex) {
   let sexString = ` AND `;
   
@@ -82,6 +91,11 @@ function sexBuilder(sex) {
   }
 } 
 
+/**
+ * Creates the string of a SQL WHERE statement (Starts with AND) for Location Filtering
+ * @param {Array} location List of things to filter for
+ * @return {String} AND statement used for SQL query to add filtering for Location filters
+ */
 function locationBuilder(location) {
   let locationString = ` AND `;
   
@@ -113,6 +127,11 @@ function getAgeRange(filter) {
   return { lowEnd, highEnd };
 }
 
+/**
+ * Creates the string of a SQL WHERE statement (Starts with AND) for Age Filtering
+ * @param {Array} age List of things to filter for
+ * @return {String} AND statement used for SQL query to add filtering for Age filters
+ */
 function ageBuilder(age) {
   let ageString = ` AND `;
   
