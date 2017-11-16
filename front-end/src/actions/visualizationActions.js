@@ -1,3 +1,7 @@
+/**
+ * Gets the data used for the TreeMap visualization with the given filter parameters
+ * @param {object} queryParams 
+ */
 export const getVisData = queryParams => (dispatch) => {
   const fetchData = {
     method: 'POST',

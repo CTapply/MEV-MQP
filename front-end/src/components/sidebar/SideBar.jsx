@@ -7,6 +7,9 @@ import Demograpics from './Demographics';
 import SelectedDate from './SelectedDate';
 import styles from './SideBarStyles';
 
+/**
+ * This is the container component for the SideBar panel
+ */
 class SideBar extends Component {
   static propTypes = {
     // selectedDates: PropTypes.shape({
@@ -39,6 +42,12 @@ const mapStateToProps = state => ({
   selectedDates: state.demographic.selectedDates,
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
   null,

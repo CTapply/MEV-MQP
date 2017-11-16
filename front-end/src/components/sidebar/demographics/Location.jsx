@@ -17,6 +17,9 @@ const styles = {
   },
 };
 
+/**
+ * This is the component that displays the Location Demographic visualization
+ */
 class Location extends Component {
   static propTypes = {
     location: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -34,6 +37,7 @@ class Location extends Component {
       graphHeight: '85%',
     };
 
+    // Listen for window resize, but wait till they have stopped to do the size calculations.
     let stillResizingTimer;
     window.addEventListener('resize', () => {
       clearTimeout(stillResizingTimer);
@@ -45,12 +49,18 @@ class Location extends Component {
     this.resizeGraph();
   }
 
-  handleClick = (e) => {
+  /**
+   * Toggles the filter in Redux State for the bar clicked on in the chart
+   */
+  handleFilterClickToggle = (e) => {
     if (e && e.activeLabel) {
       this.props.toggleFilter(e.activeLabel);
     }
   }
 
+  /**
+   * Calculates the best size for the visualization for better scalability
+   */
   resizeGraph = () => {
     const container = document.getElementById('location-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
@@ -70,7 +80,7 @@ class Location extends Component {
         <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
           <BarChart
             data={this.props.location}
-            onClick={this.handleClick}
+            onClick={this.handleFilterClickToggle}
           >
             <defs>
               <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">

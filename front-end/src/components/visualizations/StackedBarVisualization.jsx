@@ -7,6 +7,9 @@ import Paper from 'material-ui/Paper';
 import CustomizedContent from './CustomizedContent';
 import styles from './StackedBarVisualizationStyles';
 
+/**
+ * This is the component for the TreeMap visualization
+ */
 class StackedBarVisualization extends Component {
   static propTypes = {
     classes: PropTypes.shape({
@@ -22,6 +25,7 @@ class StackedBarVisualization extends Component {
       treeMapHeight: 155,
     };
 
+    // Listen for window resize, but wait till they have stopped to do the size calculations.
     let stillResizingTimer;
     window.addEventListener('resize', () => {
       clearTimeout(stillResizingTimer);
@@ -30,12 +34,22 @@ class StackedBarVisualization extends Component {
   }
 
   componentDidMount() {
+    // Once the screen has loaded, optimize the size of the TreeMap
     this.resizeTreeMap();
   }
 
+  /**
+   * Generates a random integer between the two given values
+   * @param {int} min
+   * @param {int} max
+   * @return {int} Random int between the Min and Max
+   */
   getRandomInt = (min, max) =>
     (Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min))) + Math.ceil(min));
 
+  /**
+   * Calculates the best size for the visualization for better scalability
+   */
   resizeTreeMap = () => {
     const firstTreeMap = document.getElementById('firstTreeMap');
     const firstTreeMapHeight = window.getComputedStyle(firstTreeMap, null).getPropertyValue('height');
@@ -142,6 +156,12 @@ const mapStateToProps = state => ({
   cause: state.mainVisualization.cause,
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
   null,

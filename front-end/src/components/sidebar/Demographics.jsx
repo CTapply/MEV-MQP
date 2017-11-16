@@ -4,19 +4,20 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import { filterData } from '../../actions/filterActions';
 import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter } from '../../actions/demographicActions';
 import Sex from './demographics/Sex';
 import Age from './demographics/Age';
 import Location from './demographics/Location';
 import styles from './DemographicsStyles';
 
+/**
+ * This is the container component for the Demographics panel
+ */
 class Demographics extends Component {
   static propTypes = {
-    filterData: PropTypes.func.isRequired,    
-    toggleSexFilter: PropTypes.func.isRequired,    
-    toggleAgeFilter: PropTypes.func.isRequired,    
-    toggleLocationFilter: PropTypes.func.isRequired,    
+    toggleSexFilter: PropTypes.func.isRequired,
+    toggleAgeFilter: PropTypes.func.isRequired,
+    toggleLocationFilter: PropTypes.func.isRequired,
     sex: PropTypes.arrayOf(PropTypes.object).isRequired,
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
     location: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -30,13 +31,7 @@ class Demographics extends Component {
     }).isRequired,
   }
 
-  // If state changes, we want to re-query the database
-  componentDidUpdate() {
-    // console.log(this.props.filters);
-    // this.props.filterData({
-    //   ...this.props.filters,
-    // });
-  }
+  asd = () => 123;
 
   render() {
     return (
@@ -80,7 +75,13 @@ const mapStateToProps = state => ({
   },
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
-  { filterData, toggleSexFilter, toggleAgeFilter, toggleLocationFilter },
+  { toggleSexFilter, toggleAgeFilter, toggleLocationFilter },
 )(withStyles(styles)(Demographics));

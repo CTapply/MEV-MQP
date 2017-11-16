@@ -5,6 +5,10 @@ const initialVisualizationState = {
   cause: [{ name: 'Cause', size: 1 }],
 };
 
+/**
+ * Reducer that listens and handles all Redux state operations
+ * for the TreeMap Visualization
+ */
 export default (state = initialVisualizationState, action = {}) => {
   switch (action.type) {
     case 'UPDATE_VIS':

@@ -6,6 +6,10 @@ const initialTimelineState = {
   }],
 };
 
+/**
+ * Reducer that listens and handles all Redux state operations
+ * for the Timeline
+ */
 export default (state = initialTimelineState, action = {}) => {
   switch (action.type) {
     case 'SET_ENTIRE_TIMELINE':

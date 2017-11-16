@@ -17,9 +17,13 @@ const styles = {
   },
 };
 
+/**
+ * This is the component that displays the Age Demographic visualization
+ */
 class Age extends Component {
   static propTypes = {
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
+    toggleFilter: PropTypes.func.isRequired,    
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
       responsiveContainer: PropTypes.string,
@@ -33,6 +37,7 @@ class Age extends Component {
       graphHeight: '85%',
     };
 
+    // Listen for window resize, but wait till they have stopped to do the size calculations.
     let stillResizingTimer;
     window.addEventListener('resize', () => {
       clearTimeout(stillResizingTimer);
@@ -44,6 +49,18 @@ class Age extends Component {
     this.resizeGraph();
   }
 
+  /**
+   * Toggles the filter in Redux State for the bar clicked on in the chart
+   */
+  handleFilterClickToggle = (e) => {
+    if (e && e.activeLabel) {
+      this.props.toggleFilter(e.activeLabel);
+    }
+  }
+
+  /**
+   * Calculates the best size for the visualization for better scalability
+   */
   resizeGraph = () => {
     const container = document.getElementById('age-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
@@ -61,7 +78,10 @@ class Age extends Component {
           Age
         </Typography>
         <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
-          <BarChart data={this.props.age}>
+          <BarChart
+            data={this.props.age}
+            onClick={this.handleFilterClickToggle}
+          >
             <defs>
               <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />

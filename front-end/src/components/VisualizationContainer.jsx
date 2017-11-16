@@ -4,6 +4,9 @@ import { withStyles } from 'material-ui/styles';
 import StackedBarVisualization from './visualizations/StackedBarVisualization';
 import styles from './VisualizationContainerStyles';
 
+/**
+ * This is the container component for the Main Visualization panel
+ */
 class VisualizationContainer extends Component {
   static visualizationPreference = 'STACKED_BAR';
 

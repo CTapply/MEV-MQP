@@ -1,19 +1,19 @@
 import { getDemographicData } from './demographicActions';
 import { getVisData } from './visualizationActions';
 
+/**
+ * Queries the Database with the current Filters in the Redux State
+ */
 export const filterData = () => (dispatch, getState) => {
   const postBody = {
     ...getState().filters,
   };
 
-  console.log('Updated filter with: ', postBody);
+  console.log('Filtering the Data');
 
+  // Dispatch the new Filters to the appropriate Actions to get newly filtered data.
   dispatch(getDemographicData(postBody));
-
-  console.log('Update viz');
-
   dispatch(getVisData(postBody));
-  // TODO: Call to get main visualization data
 };
 
 export const asd = () => 123;

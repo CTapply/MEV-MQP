@@ -1,16 +1,17 @@
 const initialFilterState = {
   REPT_DT: {
-    start: 123,
-    end: 123,
+    start: 20170101,
+    end: 20170101,
   },
   sex: [],
   occr_country: [],
-  age: {
-    start: 123,
-    end: 123,
-  },
+  age: [],
 };
 
+/**
+ * Reducer that listens and handles all Redux state operations
+ * for the Filters
+ */
 export default (state = initialFilterState, action = {}) => {
   switch (action.type) {
     case 'SET_DATE_RANGE':

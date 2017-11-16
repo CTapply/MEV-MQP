@@ -4,6 +4,9 @@ import { withStyles } from 'material-ui/styles';
 import Timeline from './timeline/Timeline';
 import styles from './TimelineContainerStyles';
 
+/**
+ * This is the container component for the Timeline panel
+ */
 class TimelineContainer extends Component {
   static TimelinePreference = 'SLIDING_TIMELINE';
 

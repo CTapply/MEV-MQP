@@ -1,8 +1,14 @@
 import { Brush } from 'recharts';
 
-
+/**
+ * This is the wrapper component of the Recharts Brush to add our own custom functionality
+ */
 class BrushImpl extends Brush {
-  addScrollHandler = (e) => {
+  /**
+   * When you scroll on the timeline WITHOUT the control key held
+   * This function will scroll in the timeline in either direction.
+   */
+  scrollHandler = (e) => {
     e.preventDefault();
     const { startX, endX } = this.state;
     const { x, width, travellerWidth, startIndex, endIndex, onChange } = this.props;
@@ -44,7 +50,11 @@ class BrushImpl extends Brush {
     });
   }
 
-  addZoomHandler = (e) => {
+  /**
+   * When you scroll on the timeline with the control key held
+   * This function will zoom in the timeline based on mouse postion in the chart.
+   */
+  zoomHandler = (e) => {
     e.preventDefault();
     if (this.state.endX - this.state.startX < 2 && e.deltaY > 0) {
       return null;
@@ -105,9 +115,9 @@ class BrushImpl extends Brush {
   componentDidMount() {
     document.getElementById('timeline-chart').addEventListener('wheel', (e) => {
       if (e.ctrlKey) {
-        this.addZoomHandler(e);
+        this.zoomHandler(e);
       } else {
-        this.addScrollHandler(e);
+        this.scrollHandler(e);
       }
     }, true);
   }

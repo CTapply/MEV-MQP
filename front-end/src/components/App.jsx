@@ -19,6 +19,9 @@ const blueTheme = createMuiTheme({
 
 const styles = theme => ({});
 
+/**
+ * This is the component for the App
+ */
 class App extends Component {
   static propTypes = {
     classes: PropTypes.shape({

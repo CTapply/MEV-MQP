@@ -16,7 +16,7 @@ class CustomizedContent extends Component {
     }
 
     render = () => {
-      console.log(this.props)
+      // console.log(this.props)
       return (!isNaN(this.props.width) && !isNaN(this.props.height)) ? (
         <g>
           <rect

@@ -9,14 +9,17 @@ import Button from 'material-ui/Button';
 import { Area, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, ReferenceArea } from 'recharts';
 import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
-import { setSelectedDate, setSelectedTimeline } from '../../actions/timelineActions';
+import { setSelectedDate, getEntireTimeline } from '../../actions/timelineActions';
 import styles from './TimelineStyles';
 import './Timeline.css';
 
+/**
+ * This is the component for the Timeline visualization
+ */
 class Timeline extends Component {
   static propTypes = {
     setSelectedDate: PropTypes.func.isRequired,
-    setSelectedTimeline: PropTypes.func.isRequired,
+    getEntireTimeline: PropTypes.func.isRequired,
     entireTimelineData: PropTypes.arrayOf(
       PropTypes.shape({
         init_fda_dt: PropTypes.string.isRequired,
@@ -49,8 +52,10 @@ class Timeline extends Component {
   }
 
   componentDidMount() {
-    this.props.setSelectedTimeline();
+    // Load the entire timeline data on start up.
+    this.props.getEntireTimeline();
 
+    // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mousedown', (e) => {
       this.setState({ currentlySelecting: true });
       this.setState({ selectedStartX: this.state.mouseMovePosition });
@@ -65,6 +70,7 @@ class Timeline extends Component {
       e.preventDefault();
     }, false);
 
+    // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mouseup', () => {
       let dateRange;
       this.setState({ currentlySelecting: false });
@@ -81,6 +87,7 @@ class Timeline extends Component {
       document.getElementById('dateRangePicker').dispatchEvent(event);
     }, false);
 
+    // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mousemove', () => {
       let dateRange;
       if (this.state.currentlySelecting) {
@@ -101,8 +108,16 @@ class Timeline extends Component {
     }, true);
   }
 
+  /**
+   * Returns the current location of the mouse (relative to the Graph)
+   */
   getmouseZoomLocation = () => this.state.mouseZoomLocation;
 
+  /**
+   * Parses the Formatted date range string and returns an object with unformatted dates
+   * @param {string} dateRange Formatted date as dd/mm/yyyy - dd/mm/yyyy
+   * @return {object} containing the startDate as yyyymmdd and the endDate as yyyymmdd
+   */
   getUnformattedDateFromFormattedRange = (dateRange) => {
     const splitRange = dateRange.split(' ');
     const formattedStart = splitRange[0];
@@ -117,6 +132,9 @@ class Timeline extends Component {
     };
   }
 
+  /**
+   * Sets the currently selected date from the text box into the Redux State
+   */
   updateSelectedDate = () => {
     const dateRange = document.getElementById('dateRangePicker').value;
     const dates = this.getUnformattedDateFromFormattedRange(dateRange);
@@ -126,6 +144,11 @@ class Timeline extends Component {
     });
   };
 
+  /**
+   * Parses an unformatted date into a formatted date
+   * @param {string} date Unformatted date as yyyymmddd
+   * @return {string} Formatted date as dd/mm/yyyy
+   */
   formatDate = (date) => {
     const dateString = `${date}`;
     const year = dateString.substring(0, 4);
@@ -134,8 +157,17 @@ class Timeline extends Component {
     return `${month}/${day}/${year}`;
   }
 
+  /**
+   * Combines two formatted dates into a formatted date range
+   * @param {string} startDate Formatted date as dd/mm/yyyy
+   * @param {string} endDate Formatted date as dd/mm/yyyy
+   * @return {string} Formatted date range as dd/mm/yyyy - dd/mm/yyyy
+   */
   formatDateRange = (startDate, endDate) => `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`
 
+  /**
+   * Records the current Mouse position and saves it to local state
+   */
   recordMouseMove = (e) => {
     if (e && e.activeLabel) {
       if (this.state.mouseMovePosition !== e.activeLabel) {
@@ -144,8 +176,9 @@ class Timeline extends Component {
     }
   }
 
-  data = () => this.props.entireTimelineData;
-
+  /**
+   * Dummy data that is used to show an empty graph while the timeline is loading
+   */
   loadingData = () => [
     { loading: 1 },
     { loading: 2 },
@@ -187,7 +220,7 @@ class Timeline extends Component {
   renderTimeline = () => (
     <ResponsiveContainer width="100%" height="100%" >
       <AreaChartImpl
-        data={this.data()}
+        data={this.props.entireTimelineData}
         margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         onMouseMove={this.recordMouseMove}
       >
@@ -258,8 +291,8 @@ class Timeline extends Component {
           stroke="#8884d8"
           height={1}
           travellerWidth={10}
-          startIndex={this.data().length - 30}
-          endIndex={this.data().length - 1}
+          startIndex={this.props.entireTimelineData.length - 30}
+          endIndex={this.props.entireTimelineData.length - 1}
           getmouseZoomLocation={this.getmouseZoomLocation}
         />
         <ReferenceArea
@@ -284,7 +317,7 @@ class Timeline extends Component {
       <Grid item sm={9} md={10}>
         <Paper elevation={4} className={this.props.classes.timelineChartWrapper} >
           <div className={this.props.classes.timelineChart} id="timeline-chart" >
-            {(this.data().length > 1) ? this.renderTimeline() : this.renderLoading()}
+            {(this.props.entireTimelineData.length > 1) ? this.renderTimeline() : this.renderLoading()}
           </div>
         </Paper>
       </Grid>
@@ -296,7 +329,13 @@ const mapStateToProps = state => ({
   entireTimelineData: state.timeline.entireTimelineData,
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
-  { setSelectedDate, setSelectedTimeline },
+  { setSelectedDate, getEntireTimeline },
 )(withStyles(styles)(Timeline));
