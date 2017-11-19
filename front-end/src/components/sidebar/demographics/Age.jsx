@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
+import CustomTooltip from './CustomTooltip';
 
 const styles = {
   labelFont: {
@@ -92,10 +93,13 @@ class Age extends Component {
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip
+              content={<CustomTooltip />}
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
               wrapperStyle={{ padding: '4px' }}
+              demographic="age"
             />
-            <Bar dataKey="count" stroke="#1A237E" fill="url(#colorBlue)" />
+            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorBlue)" />
+            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorGrey)" />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -48,6 +48,16 @@ class StackedBarVisualization extends Component {
     (Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min))) + Math.ceil(min));
 
   /**
+   * Toggles the filter in Redux State for the bar clicked on in the chart
+   */
+  handleFilterClickToggle = type => (e) => {
+    console.log('Click on treemap', e)
+    if (e && e.name) {
+      // this.props.toggleFilter(e.name);
+    }
+  }
+
+  /**
    * Calculates the best size for the visualization for better scalability
    */
   resizeTreeMap = () => {
@@ -75,6 +85,7 @@ class StackedBarVisualization extends Component {
               ratio={4 / 3}
               stroke="#ddd"
               fill="url(#colorBlue)"
+              onClick={this.handleFilterClickToggle('ME-Type')}
               content={<CustomizedContent colors={this.COLORS} />}
               isAnimationActive={false}
               animationDuration={0}
@@ -96,6 +107,7 @@ class StackedBarVisualization extends Component {
               ratio={4 / 3}
               stroke="#ddd"
               fill="url(#colorBlue)"
+              onClick={this.handleFilterClickToggle('Product')}
               content={<CustomizedContent colors={this.COLORS} />}
               isAnimationActive={false}
               animationDuration={0}
@@ -116,6 +128,7 @@ class StackedBarVisualization extends Component {
               ratio={4 / 3}
               stroke="#ddd"
               fill="url(#colorBlue)"
+              onClick={this.handleFilterClickToggle('Stage')}
               content={<CustomizedContent colors={this.COLORS} />}
               isAnimationActive={false}
               animationDuration={0}
@@ -136,6 +149,7 @@ class StackedBarVisualization extends Component {
               ratio={4 / 3}
               stroke="#ddd"
               fill="url(#colorBlue)"
+              onClick={this.handleFilterClickToggle('Cause')}
               content={<CustomizedContent colors={this.COLORS} />}
               isAnimationActive={false}
               animationDuration={0}

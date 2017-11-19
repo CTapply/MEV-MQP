@@ -1,21 +1,13 @@
 import _ from 'lodash';
 import { filterData } from './filterActions';
 
-const fixAge = (row) => {
+const cleanRow = (row) => {
   if (row.age === null) row.age = 'UNK';
-};
-const fixSex = (row) => {
   if (!row.sex) row.sex = 'UNK';
-};
-const fixCountry = (row) => {
   if (!row.occr_country) row.occr_country = 'UNK';
+  if (!row.occp_cod) row.occp_cod = 'UNK';
+  if (!row.outc_cod) row.outc_cod = 'UNK';
 };
-
-const fixers = [
-  fixAge,
-  fixSex,
-  fixCountry,
-];
 
 const countCountry = row => row.occr_country;
 const countSex = row => row.sex;
@@ -73,51 +65,57 @@ const counters = {
 };
 
 const handleAccumulator = (accumulator, row) => {
-  for (const type in counters) {
-    const label = counters[type](row);
-    if (!(label in accumulator[type])) {
-      accumulator[type][label] = 1;
-    } else {
-      accumulator[type][label] += 1;
+  Object.keys(counters).forEach((demographic) => {
+    const outcomeValue = _.result(accumulator, [demographic, counters[demographic](row), row.outc_cod], 0);
+    _.set(accumulator, [demographic, counters[demographic](row), row.outc_cod], outcomeValue + 1);
+    if (row.outc_cod !== 'UNK') {
+      const seriousCountValue = _.result(accumulator, [demographic, counters[demographic](row), 'serious'], 0);
+      _.set(accumulator, [demographic, counters[demographic](row), 'serious'], seriousCountValue + 1);
     }
-  }
+    const countValue = _.result(accumulator, [demographic, counters[demographic](row), 'count'], 0);
+    _.set(accumulator, [demographic, counters[demographic](row), 'count'], countValue + 1);
+  });
 };
 
 const defaultSexObject = {
-  F: 0,
-  M: 0,
-  UNK: 0,
+  F: { count: 0 },
+  M: { count: 0 },
+  UNK: { count: 0 },
 };
 
 const defaultAgeObject = {
-  '0-5': 0,
-  '06-09': 0,
-  '10-19': 0,
-  '20-29': 0,
-  '30-39': 0,
-  '40-49': 0,
-  '50-59': 0,
-  '60-69': 0,
-  '70-79': 0,
-  '80-89': 0,
-  '90-99': 0,
-  '99+': 0,
-  UNK: 0,
+  '0-5': { count: 0 },
+  '06-09': { count: 0 },
+  '10-19': { count: 0 },
+  '20-29': { count: 0 },
+  '30-39': { count: 0 },
+  '40-49': { count: 0 },
+  '50-59': { count: 0 },
+  '60-69': { count: 0 },
+  '70-79': { count: 0 },
+  '80-89': { count: 0 },
+  '90-99': { count: 0 },
+  '99+': { count: 0 },
+  UNK: { count: 0 },
 };
 
 const defaultLocationObject = {
-  US: 0,
-  CA: 0,
-  JP: 0,
-  GB: 0,
-  FR: 0,
+  US: { count: 0 },
+  CA: { count: 0 },
+  JP: { count: 0 },
+  GB: { count: 0 },
+  FR: { count: 0 },
 };
 
 const reduceData = rows => rows.reduce((accumulator, row) => {
-  fixers.forEach(fix => fix(row));
+  cleanRow(row);
   handleAccumulator(accumulator, row);
   return accumulator;
-}, { sex: Object.assign({}, defaultSexObject), age: Object.assign({}, defaultAgeObject), country: Object.assign({}, defaultLocationObject) });
+}, {
+  sex: JSON.parse(JSON.stringify(defaultSexObject)),
+  age: JSON.parse(JSON.stringify(defaultAgeObject)),
+  country: JSON.parse(JSON.stringify(defaultLocationObject)),
+});
 
 export const getDemographicData = queryParams => (dispatch) => {
   const fetchData = {
@@ -131,29 +129,23 @@ export const getDemographicData = queryParams => (dispatch) => {
     }),
   };
 
-  console.log(fetchData.body);
-
   fetch('http://localhost:3001/getdata', fetchData)
     .then(response => response.json())
     .then((allReports) => {
       const reducedData = reduceData(allReports.rows);
       const demographics = {
         sex: _.sortBy(Object.keys(reducedData.sex)
-          .map(sexRange => ({ sex: sexRange, count: reducedData.sex[sexRange] })), 'sex'),
+          .map(sexRange => ({ sex: sexRange, ...reducedData.sex[sexRange] })), 'sex'),
         age: _.sortBy(Object.keys(reducedData.age)
-          .map(ageRange => ({ age: ageRange, count: reducedData.age[ageRange] })), 'age'),
+          .map(ageRange => ({ age: ageRange, ...reducedData.age[ageRange] })), 'age'),
         location: _.reverse(_.sortBy(Object.keys(reducedData.country)
-          .map(countryRange => ({ country: countryRange, count: reducedData.country[countryRange] })), 'count')),
-        selectedDates: {
-          startDate: Number(queryParams.startDate),
-          endDate: Number(queryParams.endDate),
-        },
+          .map(countryRange => ({ country: countryRange, ...reducedData.country[countryRange] })), 'count')),
       };
       console.log('Updated Demographics', demographics);
       dispatch({ type: 'UPDATE_DEMOGRAPHICS', demographics });
     })
     .catch((err) => {
-      console.error.bind(err);
+      console.log(err);
     });
 };
 

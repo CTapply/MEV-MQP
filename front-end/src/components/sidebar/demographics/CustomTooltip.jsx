@@ -1,0 +1,84 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
+import { withStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
+
+const styles = {
+  toolTipStyle: {
+    padding: '5px',
+    'background-color': 'white',
+    overflow: 'hidden',
+    border: '1px solid rgba(102,102,102,1)',
+    color: 'rgba(0,0,0,1)',
+    'text-overflow': 'ellipsis',
+    background: '#f4f4f4',
+    '-webkit-box-shadow': '1px 1px 1px 0 rgba(0,0,0,0.3)',
+    'box-shadow': '1px 1px 1px 0 rgba(0,0,0,0.3)',
+    'text-shadow': '1px 1px 1px rgba(0,0,0,0.2)',
+    // 'font-size': '20pt',
+    'z-index': '10000',
+  },
+  toolTipParagraph: {
+    margin: '0px',
+  },
+};
+
+/**
+ * This is the component that displays the Age Demographic visualization
+ */
+class CustomTooltip extends Component {
+  static propTypes = {
+    demographic: PropTypes.string.isRequired,
+    active: PropTypes.bool.isRequired,
+    payload: PropTypes.arrayOf(PropTypes.object).isRequired,
+    classes: PropTypes.shape({
+      toolTipStyle: PropTypes.string,
+      toolTipParagraph: PropTypes.string,
+    }).isRequired,
+  }
+
+  asd = () => 123;
+
+  outcomeCodes = {
+    count: 'Total Count',
+    DE: 'Death',
+    CA: 'Congenital Anomaly',
+    DS: 'Disability',
+    HO: 'Hospitalization',
+    LT: 'Life-Threatening',
+    RI: 'Required Intervention',
+    OT: 'Other Serious',
+    UNK: 'Not Serious',
+  }
+
+  renderToolTip = () => {
+    const { payload } = this.props.payload[0];
+    return (
+      <div id="custom-tooltip" className={this.props.classes.toolTipStyle}>
+        <p className={this.props.classes.toolTipParagraph}>
+          <b>{payload[this.props.demographic]}</b>
+        </p>
+        {Object.keys(payload).map(key => ((key !== this.props.demographic && key !== 'serious')
+          ? (
+            <p
+              className={this.props.classes.toolTipParagraph}
+              key={key}
+            >
+              {this.outcomeCodes[key]}: {payload[key]}
+            </p>
+          )
+          : null
+        ))}
+      </div>
+    );
+  }
+
+  render() {
+    return (this.props.active)
+      ? this.renderToolTip()
+      : null;
+  }
+}
+
+export default withStyles(styles)(CustomTooltip);
