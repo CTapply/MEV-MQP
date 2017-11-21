@@ -1,48 +1,6 @@
 import _ from 'lodash';
 import { filterData } from './filterActions';
 
-const cleanRow = (row) => {
-  if (row.age === null) row.age = 'UNK';
-  if (!row.sex) row.sex = 'UNK';
-  if (!row.occr_country) row.occr_country = 'UNK';
-  if (!row.occp_cod) row.occp_cod = 'UNK';
-  if (!row.outc_cod) row.outc_cod = 'UNK';
-};
-
-const countCountry = row => row.occr_country;
-const countSex = row => row.sex;
-const countAge = (row) => {
-  // const ageRange = ['0-5', '06-09', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-89', '90-99', '99+'];
-  const ageRange = Object.keys(defaultAgeObject).sort();
-  if (row.age === 'UNK') {
-    return 'UNK';
-  }
-
-  let index = Math.min(Math.floor(row.age / 10) + 1, 11);
-  if (index === 1 && (row.age / 10) <= 0.5) index = 0;
-  if (index < 0) return 'UNK';
-  return ageRange[index];
-};
-
-const counters = {
-  sex: countSex,
-  age: countAge,
-  country: countCountry,
-};
-
-const handleAccumulator = (accumulator, row) => {
-  Object.keys(counters).forEach((demo) => {
-    const outcomeValue = _.result(accumulator, [demo, counters[demo](row), row.outc_cod], 0);
-    _.set(accumulator, [demo, counters[demo](row), row.outc_cod], outcomeValue + 1);
-    if (row.outc_cod !== 'UNK') {
-      const seriousCountValue = _.result(accumulator, [demo, counters[demo](row), 'serious'], 0);
-      _.set(accumulator, [demo, counters[demo](row), 'serious'], seriousCountValue + 1);
-    }
-    const countValue = _.result(accumulator, [demo, counters[demo](row), 'count'], 0);
-    _.set(accumulator, [demo, counters[demo](row), 'count'], countValue + 1);
-  });
-};
-
 const defaultSexObject = {
   F: { count: 0, serious: 0 },
   M: { count: 0, serious: 0 },
@@ -71,6 +29,47 @@ const defaultLocationObject = {
   JP: { count: 0, serious: 0 },
   GB: { count: 0, serious: 0 },
   FR: { count: 0, serious: 0 },
+};
+
+const cleanRow = (row) => {
+  if (row.age === null) row.age = 'UNK';
+  if (!row.sex) row.sex = 'UNK';
+  if (!row.occr_country) row.occr_country = 'UNK';
+  if (!row.occp_cod) row.occp_cod = 'UNK';
+  if (!row.outc_cod) row.outc_cod = 'UNK';
+};
+
+const countCountry = row => row.occr_country;
+const countSex = row => row.sex;
+const countAge = (row) => {
+  const ageRange = Object.keys(defaultAgeObject).sort();
+  if (row.age === 'UNK') {
+    return 'UNK';
+  }
+
+  let index = Math.min(Math.floor(row.age / 10) + 1, 11);
+  if (index === 1 && (row.age / 10) <= 0.5) index = 0;
+  if (index < 0) return 'UNK';
+  return ageRange[index];
+};
+
+const counters = {
+  sex: countSex,
+  age: countAge,
+  country: countCountry,
+};
+
+const handleAccumulator = (accumulator, row) => {
+  Object.keys(counters).forEach((demo) => {
+    const outcomeValue = _.result(accumulator, [demo, counters[demo](row), row.outc_cod], 0);
+    _.set(accumulator, [demo, counters[demo](row), row.outc_cod], outcomeValue + 1);
+    if (row.outc_cod !== 'UNK') {
+      const seriousCountValue = _.result(accumulator, [demo, counters[demo](row), 'serious'], 0);
+      _.set(accumulator, [demo, counters[demo](row), 'serious'], seriousCountValue + 1);
+    }
+    const countValue = _.result(accumulator, [demo, counters[demo](row), 'count'], 0);
+    _.set(accumulator, [demo, counters[demo](row), 'count'], countValue + 1);
+  });
 };
 
 const reduceData = rows => rows.reduce((accumulator, row) => {
