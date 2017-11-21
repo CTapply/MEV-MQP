@@ -29,12 +29,12 @@ export const getVisData = queryParams => (dispatch) => {
 };
 
 export const toggleMETypeFilter = filter => (dispatch, getState) => {
-  if (getState().filters.sex.includes(filter)) {
-    dispatch({ type: 'SET_SEX', sex: getState().filters.sex.filter(item => item !== filter) });
-    dispatch(filterData());
-  } else {
-    dispatch({ type: 'SET_SEX', sex: getState().filters.sex.concat(filter) });
-    dispatch(filterData());
-  }
+  // if (getState().filters.sex.includes(filter)) {
+  //   dispatch({ type: 'SET_SEX', sex: getState().filters.sex.filter(item => item !== filter) });
+  //   dispatch(filterData());
+  // } else {
+  //   dispatch({ type: 'SET_SEX', sex: getState().filters.sex.concat(filter) });
+  //   dispatch(filterData());
+  // }
 };
 
