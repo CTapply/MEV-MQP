@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Demograpics from './Demographics';
-import SelectedDate from './SelectedDate';
+// import SelectedDate from './SelectedDate';
 import styles from './SideBarStyles';
 
 /**

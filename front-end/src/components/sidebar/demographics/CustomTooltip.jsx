@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { withStyles } from 'material-ui/styles';
-import Typography from 'material-ui/Typography';
+// import Typography from 'material-ui/Typography';
 
 const styles = {
   toolTipStyle: {
@@ -31,14 +30,16 @@ class CustomTooltip extends Component {
   static propTypes = {
     demographic: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
-    payload: PropTypes.arrayOf(PropTypes.object).isRequired,
+    payload: PropTypes.arrayOf(PropTypes.object),
     classes: PropTypes.shape({
       toolTipStyle: PropTypes.string,
       toolTipParagraph: PropTypes.string,
     }).isRequired,
   }
 
-  asd = () => 123;
+  static defaultProps = {
+    payload: [],
+  }
 
   outcomeCodes = {
     count: 'Total Count',
@@ -53,7 +54,10 @@ class CustomTooltip extends Component {
   }
 
   renderToolTip = () => {
-    const { payload } = this.props.payload[0];
+    let payload = {};
+    if (this.props.payload[0]) {
+      payload = this.props.payload[0].payload;
+    }
     return (
       <div id="custom-tooltip" className={this.props.classes.toolTipStyle}>
         <p className={this.props.classes.toolTipParagraph}>
@@ -75,7 +79,7 @@ class CustomTooltip extends Component {
   }
 
   render() {
-    return (this.props.active)
+    return (this.props.active && this.props.payload)
       ? this.renderToolTip()
       : null;
   }

@@ -2,12 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { withStyles } from 'material-ui/styles';
+import Chip from 'material-ui/Chip';
+import Avatar from 'material-ui/Avatar';
 import Typography from 'material-ui/Typography';
 import CustomTooltip from './CustomTooltip';
+import ClearFilterIcon from '../../../resources/clearFilterIcon.svg';
 
 const styles = {
   labelFont: {
+    'text-align': 'center',
     'font-size': '20pt',
+    'pointer-events': 'none',
+    'padding-left': '45px',
   },
   responsiveContainer: {
     'margin-left': '-15px',
@@ -15,6 +21,22 @@ const styles = {
   },
   maxHeight: {
     height: '100%',
+  },
+  clearFilterChip: {
+    'font-size': '9pt',
+    height: '14pt',
+    float: 'right',
+    transform: 'translateY(8px) translateX(-5px)',
+  },
+  chipAvatar: {
+    height: '11pt',
+    width: '11pt',
+    transform: 'translateX(3px)',
+  },
+  '@media (max-width: 970px)': {
+    labelFont: {
+      'padding-left': '0px',
+    },
   },
 };
 
@@ -24,9 +46,11 @@ const styles = {
 class Age extends Component {
   static propTypes = {
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
-    toggleFilter: PropTypes.func.isRequired,    
+    toggleFilter: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
+      clearFilterChip: PropTypes.string,
+      chipAvatar: PropTypes.string,
       responsiveContainer: PropTypes.string,
       maxHeight: PropTypes.string,
     }).isRequired,
@@ -48,6 +72,13 @@ class Age extends Component {
 
   componentDidMount() {
     this.resizeGraph();
+  }
+
+  /**
+   * Clears all of the currently selected filters for this component
+   */
+  clearFilter = () => {
+    this.props.toggleFilter('CLEAR');
   }
 
   /**
@@ -75,7 +106,13 @@ class Age extends Component {
   render() {
     return (
       <div id="age-container" className={this.props.classes.maxHeight} >
-        <Typography id="age-graph-title" className={this.props.classes.labelFont} type="title" align="center" component="h1">
+        <Chip
+          avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}
+          label="Clear Filter"
+          onClick={this.clearFilter}
+          className={this.props.classes.clearFilterChip}
+        />
+        <Typography id="age-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
           Age
         </Typography>
         <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
