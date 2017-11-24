@@ -39,7 +39,6 @@ class Timeline extends Component {
   constructor() {
     super();
     this.state = {
-      setStart: true,
       selectedStartX: 0,
       selectedEndX: 0,
       previewStartX: 0,
@@ -106,6 +105,11 @@ class Timeline extends Component {
         }
       }
     }, true);
+
+    // When the date range changes we should update the reference area
+    document.getElementById('dateRangePicker').addEventListener('change', (e) => {
+      console.log(e);
+    });
   }
 
   /**
@@ -138,6 +142,9 @@ class Timeline extends Component {
   updateSelectedDate = () => {
     const dateRange = document.getElementById('dateRangePicker').value;
     const dates = this.getUnformattedDateFromFormattedRange(dateRange);
+
+    this.setState({ previewStartX: dates.startDate });
+    this.setState({ previewEndX: dates.endDate });
 
     this.props.setSelectedDate({
       ...dates,
