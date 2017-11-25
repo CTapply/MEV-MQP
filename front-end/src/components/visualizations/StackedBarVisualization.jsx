@@ -63,8 +63,10 @@ class StackedBarVisualization extends Component {
   resizeTreeMap = () => {
     const firstTreeMap = document.getElementById('firstTreeMap');
     const firstTreeMapHeight = window.getComputedStyle(firstTreeMap, null).getPropertyValue('height');
-    this.setState({ treeMapHeight: parseInt(firstTreeMapHeight, 10) - 10 });
-    this.setState({ mainWidth: document.getElementById('main-visualization').getBoundingClientRect().width - 20 });
+    this.setState({
+      treeMapHeight: parseInt(firstTreeMapHeight, 10) - 10,
+      mainWidth: document.getElementById('main-visualization').getBoundingClientRect().width - 20,
+    });
   }
 
   // COLORS = (['#34557F', '#67AAFF', '#4D80BF', '#20467D', '#5D99E5']);

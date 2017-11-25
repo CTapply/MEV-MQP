@@ -9,7 +9,6 @@ class AreaChartImpl extends AreaChart {
 
   componentDidMount() {
   }
-
 }
 
 export default AreaChartImpl;

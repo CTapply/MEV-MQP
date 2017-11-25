@@ -133,8 +133,10 @@ class BrushImpl extends Brush {
         .range([x, (x + width) - travellerWidth]);
       this.scaleValues = this.scale.domain().map(entry => this.scale(entry));
 
-      const brushStartIndex = _.findKey(data, { init_fda_dt: dates.startDate });
-      const brushEndIndex = _.findKey(data, { init_fda_dt: dates.endDate });
+      const brushStartIndex = Number(_.findKey(data, { init_fda_dt: dates.startDate }));
+      let brushEndIndex = Number(_.findKey(data, { init_fda_dt: dates.endDate }));
+
+      if (brushStartIndex === brushEndIndex) brushEndIndex += 1;
 
       const newIndex = this.getIndex({
         startX: this.scale(brushStartIndex),

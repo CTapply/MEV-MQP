@@ -52,25 +52,35 @@ class Timeline extends Component {
   componentDidMount() {
     // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mousedown', (e) => {
-      this.setState({ currentlySelecting: true });
-      this.setState({ selectedStartX: this.state.mouseMovePosition });
-      this.setState({ previewStartX: this.state.mouseMovePosition });
+      this.setState({
+        currentlySelecting: true,
+        selectedStartX: this.state.mouseMovePosition,
+        previewStartX: this.state.mouseMovePosition,
+      });
 
       const dateRange = this.formatDateRange(this.state.selectedStartX, this.state.selectedStartX);
       document.getElementById('dateRangePicker').value = dateRange;
 
       // Clear  the Other end to start a new selection TODO
-      this.setState({ selectedEndX: 0 });
-      this.setState({ previewEndX: 0 });
+      this.setState({
+        selectedEndX: 0,
+        previewEndX: 0,
+      });
       e.preventDefault();
     }, false);
 
     // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mouseup', () => {
       let dateRange;
-      this.setState({ currentlySelecting: false });
-      this.setState({ selectedEndX: this.state.mouseMovePosition });
-      this.setState({ previewEndX: this.state.mouseMovePosition });
+      const previewEndXVal = (this.state.mouseMovePosition === this.state.selectedStartX)
+        ? Number(this.state.mouseMovePosition) + 1
+        : this.state.mouseMovePosition;
+      this.setState({
+        currentlySelecting: false,
+        selectedEndX: this.state.mouseMovePosition,
+        previewEndX: previewEndXVal,
+      });
+
       if (this.state.selectedEndX > this.state.selectedStartX) {
         dateRange = this.formatDateRange(this.state.selectedStartX, this.state.selectedEndX);
         document.getElementById('dateRangePicker').value = dateRange;
@@ -135,17 +145,10 @@ class Timeline extends Component {
     const dates = this.getUnformattedDateFromFormattedRange(dateRange);
 
     // When the date range changes we should update the reference area
-    this.setState({ previewStartX: dates.startDate });
-    this.setState({ previewEndX: dates.endDate });
-
-    // const brushStartIndex = _.findKey(this.props.entireTimelineData, { init_fda_dt: dates.startDate });
-    // const brushEndIndex = _.findKey(this.props.entireTimelineData, { init_fda_dt: dates.endDate });
-
-    // console.log(brushStartIndex);
-    // console.log(brushEndIndex);
-
-    // this.setState({ currentBrushStartIndex: brushStartIndex });
-    // this.setState({ currentBrushEndIndex: brushEndIndex });
+    this.setState({
+      previewStartX: dates.startDate,
+      previewEndX: dates.endDate,
+    });
 
     this.props.setSelectedDate({
       ...dates,
