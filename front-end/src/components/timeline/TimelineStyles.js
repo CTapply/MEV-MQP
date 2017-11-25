@@ -24,8 +24,19 @@ export default {
     overflow: 'hidden',
     padding: '8px',
   },
+  '@keyframes pulseShadow': {
+    from: {
+      boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .10)',
+    },
+    to: {
+      boxShadow: '0 3px 15px 10px rgba(255, 105, 135, .4)',
+    },
+  },
   nonSetDateButton: {
     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .30)',
+    'animation-duration': '1s',
+    'animation-name': 'pulseShadow',
+    'animation-iteration-count': 'infinite',
+    'animation-direction': 'alternate',
   },
 };
