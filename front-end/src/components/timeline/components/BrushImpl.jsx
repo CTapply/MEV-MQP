@@ -1,9 +1,16 @@
 import { Brush } from 'recharts';
+import PropTypes from 'prop-types';
+import { scalePoint } from 'd3-scale';
+import _ from 'lodash';
 
 /**
  * This is the wrapper component of the Recharts Brush to add our own custom functionality
  */
 class BrushImpl extends Brush {
+  static propTypes = {
+    getUnformattedDateFromFormattedRange: PropTypes.func.isRequired,
+  }
+
   /**
    * When you scroll on the timeline WITHOUT the control key held
    * This function will scroll in the timeline in either direction.
@@ -11,7 +18,7 @@ class BrushImpl extends Brush {
   scrollHandler = (e) => {
     e.preventDefault();
     const { startX, endX } = this.state;
-    const { x, width, travellerWidth, startIndex, endIndex, onChange } = this.props;
+    const { x, width, travellerWidth, onChange } = this.props;
     let delta = 0;
 
     if (e.deltaY > 0) {
@@ -24,7 +31,6 @@ class BrushImpl extends Brush {
       console.log('DeltaY is 0');
     }
 
-
     if (delta > 0) {
       delta = Math.min(
         delta,
@@ -34,19 +40,20 @@ class BrushImpl extends Brush {
     } else if (delta < 0) {
       delta = Math.max(delta, x - startX, x - endX);
     }
+
     const newIndex = this.getIndex({
       startX: startX + delta,
       endX: endX + delta,
     });
 
-    if ((newIndex.startIndex !== startIndex || newIndex.endIndex !== endIndex) && onChange) {
-      onChange(newIndex);
-    }
-
     this.setState({
       startX: startX + delta,
       endX: endX + delta,
       slideMoveStartX: e.pageX,
+    }, () => {
+      if (onChange) {
+        onChange(newIndex);
+      }
     });
   }
 
@@ -61,7 +68,6 @@ class BrushImpl extends Brush {
     }
 
     let movingTravellerId;
-    const { x, width, travellerWidth, onChange } = this.props;
     const params = { startX: this.state.startX, endX: this.state.endX };
     let delta = 0;
 
@@ -91,12 +97,6 @@ class BrushImpl extends Brush {
 
     const prevValue = this.state[movingTravellerId];
 
-    if (delta > 0) {
-      delta = Math.min(delta, (x + width) - travellerWidth - prevValue);
-    } else if (delta < 0) {
-      delta = Math.max(delta, x - prevValue);
-    }
-
     params[movingTravellerId] = prevValue + delta;
     const newIndex = this.getIndex(params);
 
@@ -104,8 +104,8 @@ class BrushImpl extends Brush {
       [movingTravellerId]: prevValue + delta,
       brushMoveStartX: e.pageX,
     }, () => {
-      if (onChange) {
-        onChange(newIndex);
+      if (this.props.onChange) {
+        this.props.onChange(newIndex);
       }
     });
 
@@ -120,6 +120,36 @@ class BrushImpl extends Brush {
         this.scrollHandler(e);
       }
     }, true);
+
+    document.getElementById('setDateBtn').addEventListener('click', () => {
+      const dateRange = document.getElementById('dateRangePicker').value;
+      const dates = this.props.getUnformattedDateFromFormattedRange(dateRange);
+
+      const { data, x, width, travellerWidth } = this.props;
+      const len = data.length;
+
+      this.scale = scalePoint()
+        .domain(_.range(0, len))
+        .range([x, (x + width) - travellerWidth]);
+      this.scaleValues = this.scale.domain().map(entry => this.scale(entry));
+
+      const brushStartIndex = _.findKey(data, { init_fda_dt: dates.startDate });
+      const brushEndIndex = _.findKey(data, { init_fda_dt: dates.endDate });
+
+      const newIndex = this.getIndex({
+        startX: this.scale(brushStartIndex),
+        endX: this.scale(brushEndIndex),
+      });
+
+      this.setState({
+        startX: this.scale(brushStartIndex),
+        endX: this.scale(brushEndIndex),
+      }, () => {
+        if (this.props.onChange) {
+          this.props.onChange(newIndex);
+        }
+      });
+    });
   }
 }
 

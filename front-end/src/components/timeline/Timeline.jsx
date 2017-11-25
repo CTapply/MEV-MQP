@@ -9,7 +9,7 @@ import Button from 'material-ui/Button';
 import { Area, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, ReferenceArea } from 'recharts';
 import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
-import { setSelectedDate, getEntireTimeline } from '../../actions/timelineActions';
+import { setSelectedDate } from '../../actions/timelineActions';
 import styles from './TimelineStyles';
 import './Timeline.css';
 
@@ -19,7 +19,6 @@ import './Timeline.css';
 class Timeline extends Component {
   static propTypes = {
     setSelectedDate: PropTypes.func.isRequired,
-    getEntireTimeline: PropTypes.func.isRequired,
     entireTimelineData: PropTypes.arrayOf(
       PropTypes.shape({
         init_fda_dt: PropTypes.string.isRequired,
@@ -51,9 +50,6 @@ class Timeline extends Component {
   }
 
   componentDidMount() {
-    // Load the entire timeline data on start up.
-    this.props.getEntireTimeline();
-
     // Add listener for when the user clicks and drags to select a time range for filtering.
     document.getElementById('timeline-chart').addEventListener('mousedown', (e) => {
       this.setState({ currentlySelecting: true });
@@ -105,11 +101,6 @@ class Timeline extends Component {
         }
       }
     }, true);
-
-    // When the date range changes we should update the reference area
-    document.getElementById('dateRangePicker').addEventListener('change', (e) => {
-      console.log(e);
-    });
   }
 
   /**
@@ -143,8 +134,18 @@ class Timeline extends Component {
     const dateRange = document.getElementById('dateRangePicker').value;
     const dates = this.getUnformattedDateFromFormattedRange(dateRange);
 
+    // When the date range changes we should update the reference area
     this.setState({ previewStartX: dates.startDate });
     this.setState({ previewEndX: dates.endDate });
+
+    // const brushStartIndex = _.findKey(this.props.entireTimelineData, { init_fda_dt: dates.startDate });
+    // const brushEndIndex = _.findKey(this.props.entireTimelineData, { init_fda_dt: dates.endDate });
+
+    // console.log(brushStartIndex);
+    // console.log(brushEndIndex);
+
+    // this.setState({ currentBrushStartIndex: brushStartIndex });
+    // this.setState({ currentBrushEndIndex: brushEndIndex });
 
     this.props.setSelectedDate({
       ...dates,
@@ -301,6 +302,7 @@ class Timeline extends Component {
           startIndex={this.props.entireTimelineData.length - 30}
           endIndex={this.props.entireTimelineData.length - 1}
           getmouseZoomLocation={this.getmouseZoomLocation}
+          getUnformattedDateFromFormattedRange={this.getUnformattedDateFromFormattedRange}
         />
         <ReferenceArea
           x1={this.state.previewStartX}
@@ -317,7 +319,7 @@ class Timeline extends Component {
     <Grid container spacing={8} className={this.props.classes.gridContainer}>
       <Grid item sm={3} md={2}>
         <Paper elevation={4} className={this.props.classes.calendartWrapper} >
-          <Button raised className="cal-button" color="primary" onClick={this.updateSelectedDate} >Set Date!</Button>
+          <Button raised className="cal-button" color="primary" onClick={this.updateSelectedDate} id="setDateBtn" >Set Date!</Button>
           <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="asd" id="dateRangePicker" />
         </Paper>
       </Grid>
@@ -344,5 +346,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { setSelectedDate, getEntireTimeline },
+  { setSelectedDate },
 )(withStyles(styles)(Timeline));
