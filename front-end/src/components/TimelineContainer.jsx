@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import Button from 'material-ui/Button';
 import PropTypes from 'prop-types';

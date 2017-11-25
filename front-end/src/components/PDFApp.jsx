@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import PropTypes from 'prop-types';
+import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Paper from 'material-ui/Paper';
+import Dialog, {
+  DialogActions,
+  DialogTitle,
+} from 'material-ui/Dialog';
+import Button from 'material-ui/Button';
+import styles from './PDFAppStyles';
 
 const blueTheme = createMuiTheme({
   palette: {
@@ -16,20 +24,38 @@ const blueTheme = createMuiTheme({
 });
 
 class PDFApp extends Component {
+  static propTypes = {
+    classes: PropTypes.shape({
+      pdfView: PropTypes.string,
+      dialog: PropTypes.string,
+    }).isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        id: PropTypes.string,
+      }),
+    }),
+  }
+
+  static defaultProps = {
+    match: {},
+  };
+
   constructor(props) {
     super(props);
     this.state = {
-      reportText: 'Loading...',
+      reportText: '',
+      open: false,
+      error: '',
     };
   }
 
   componentWillMount() {
-    this.processID(this.props.match.params.id);
+    this.processID(Number(this.props.match.params.id, 10));
   }
 
   processID = (id) => {
-    if (typeof id === 'undefined') {
-      this.setState({ reportText: 'No ID found in URL' });
+    if (isNaN(id)) {
+      this.setState({ open: true, error: 'No ID found in URL' });
     } else {
       const fetchData = {
         method: 'POST',
@@ -45,7 +71,7 @@ class PDFApp extends Component {
           if (report.rows.length > 0) {
             this.setState({ reportText: report.rows[0].report_text });
           } else {
-            this.setState({ reportText: 'ID not found in DB' });
+            this.setState({ open: true, error: `ID ${id} not found in DB` });
           }
         });
     }
@@ -55,16 +81,44 @@ class PDFApp extends Component {
     this.setState({ reportText: value });
   }
 
+  handleClose = () => {
+    this.setState({ open: false, error: '' });
+  };
+
   render() {
     return (
       <MuiThemeProvider theme={blueTheme} >
-        <div className="ReportView">
+        <div className={this.props.classes.pdfView}>
+          <Dialog
+            open={this.state.open}
+            onRequestClose={this.handleClose}
+            style={{
+              height: '40vh',
+              maxWidth: 'none',
+            }}
+          >
+            <DialogTitle>
+              <div className={this.props.classes.dialog}>
+                <h4>{this.state.error}</h4>
+              </div>
+            </DialogTitle>
+            <DialogActions>
+              <Button
+                onClick={this.handleClose}
+                color={'primary'}
+              >
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
           <h1>PDF View</h1>
-          <ReactQuill value={this.state.reportText} onChange={this.handleChange} />
+          <Paper elevation={4}>
+            <ReactQuill value={this.state.reportText} onChange={this.handleChange} />
+          </Paper>
         </div>
       </MuiThemeProvider>
     );
   }
 }
 
-export default PDFApp;
+export default withStyles(styles)(PDFApp);

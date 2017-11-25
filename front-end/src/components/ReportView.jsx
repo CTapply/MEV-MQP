@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import Button from 'material-ui/Button';
-import PropTypes from 'prop-types';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import ReportContainer from './reports/ReportContainer';
@@ -32,7 +30,9 @@ class ReportView extends Component {
           <Link to="/"><Button raised className="cal-button" color="primary">Go Back</Button></Link>
           <br />
           <br />
-          <Link to="/pdf" target="_blank"><Button raised className="cal-button" color="primary">Open a PDF view</Button></Link>
+          <Link to="/pdf/133371451" target="_blank"><Button raised className="cal-button" color="primary">Example PDF View</Button></Link>
+          <Link to="/pdf/" target="_blank"><Button raised className="cal-button" color="primary">No ID Passed PDF View</Button></Link>
+          <Link to="/pdf/100" target="_blank"><Button raised className="cal-button" color="primary">Invalid ID Passed PDF View</Button></Link>
         </div>
       </MuiThemeProvider>
     );

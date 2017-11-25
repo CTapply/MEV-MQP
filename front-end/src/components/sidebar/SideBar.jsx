@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Demograpics from './Demographics';
-import SelectedDate from './SelectedDate';
 import styles from './SideBarStyles';
 
 class SideBar extends Component {
@@ -21,17 +20,17 @@ class SideBar extends Component {
   asd = () => 2;
 
   render = () => (
-      <Grid container spacing={0} className={this.props.classes.sideBar}>
-        {/* <Grid item xs={12}>
+    <Grid container spacing={0} className={this.props.classes.sideBar}>
+      {/* <Grid item xs={12}>
           <SelectedDate
             startDate={this.props.selectedDates.startDate}
             endDate={this.props.selectedDates.endDate}
           />
         </Grid> */}
-        <Grid item xs={12}>
-          <Demograpics />
-        </Grid>
+      <Grid item xs={12}>
+        <Demograpics />
       </Grid>
+    </Grid>
   )
 }
 

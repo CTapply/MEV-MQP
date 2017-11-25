@@ -5,7 +5,7 @@ class AreaChartImpl extends AreaChart {
 
   constructor(props) {
     super(props);
-    console.log(this.state)
+    //console.log(this.state)
   }
   
   componentDidMount() {
