@@ -30,6 +30,9 @@ class ReportView extends Component {
         <div className="ReportView">
           <ReportContainer />
           <Link to="/"><Button raised className="cal-button" color="primary">Go Back</Button></Link>
+          <br />
+          <br />
+          <Link to="/pdf" target="_blank"><Button raised className="cal-button" color="primary">Open a PDF view</Button></Link>
         </div>
       </MuiThemeProvider>
     );

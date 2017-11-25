@@ -122,6 +122,17 @@ app.post('/getdata', (req, res) => {
   })
 });
 
+app.post('/getreporttext', (req, res) => {
+  console.log('got a report text request with body:\n ', req.body)
+  let query =
+  'SELECT report_text '
++ 'FROM demo '
++ 'WHERE primaryid = ' + req.body.primaryid;
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
 app.post('/getvis', (req, res) => {
   console.log('got a request with body:\n ', req.body)
   let returnObject = {};
