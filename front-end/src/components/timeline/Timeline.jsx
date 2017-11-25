@@ -32,6 +32,7 @@ class Timeline extends Component {
       timelineChartWrapper: PropTypes.string,
       timelineChart: PropTypes.string,
       calendartWrapper: PropTypes.string,
+      nonSetDateButton: PropTypes.string,
     }).isRequired,
   }
 
@@ -57,6 +58,9 @@ class Timeline extends Component {
         selectedStartX: this.state.mouseMovePosition,
         previewStartX: this.state.mouseMovePosition,
       });
+
+      // Make the Set Date button Orange since we are no longer selected the range we have filtered for
+      document.getElementById('setDateBtn').classList.add(this.props.classes.nonSetDateButton);
 
       const dateRange = this.formatDateRange(this.state.selectedStartX, this.state.selectedStartX);
       document.getElementById('dateRangePicker').value = dateRange;
@@ -149,6 +153,9 @@ class Timeline extends Component {
       previewStartX: dates.startDate,
       previewEndX: dates.endDate,
     });
+
+    // Remove the class that makes the Set Date Button Orange
+    document.getElementById('setDateBtn').classList.remove(this.props.classes.nonSetDateButton);
 
     this.props.setSelectedDate({
       ...dates,
@@ -322,7 +329,7 @@ class Timeline extends Component {
     <Grid container spacing={8} className={this.props.classes.gridContainer}>
       <Grid item sm={3} md={2}>
         <Paper elevation={4} className={this.props.classes.calendartWrapper} >
-          <Button raised className="cal-button" color="primary" onClick={this.updateSelectedDate} id="setDateBtn" >Set Date!</Button>
+          <Button raised color="primary" onClick={this.updateSelectedDate} id="setDateBtn" >Set Date!</Button>
           <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="asd" id="dateRangePicker" />
         </Paper>
       </Grid>
