@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   toolTipStyle: {
+    'font-size': '10pt',
     padding: '5px',
     'background-color': 'white',
     overflow: 'hidden',
@@ -24,11 +25,10 @@ const styles = {
 };
 
 /**
- * This is the component that displays the Tooltip for the Demographic visualizations
+ * This is the component that displays the Tooltip for the TreeMap visualizations
  */
 class CustomTooltip extends Component {
   static propTypes = {
-    demographic: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
     payload: PropTypes.arrayOf(PropTypes.object),
     classes: PropTypes.shape({
@@ -42,7 +42,7 @@ class CustomTooltip extends Component {
   }
 
   outcomeCodes = {
-    count: 'Total Count',
+    size: 'Total Count',
     DE: 'Death',
     CA: 'Congenital Anomaly',
     DS: 'Disability',
@@ -61,18 +61,19 @@ class CustomTooltip extends Component {
     return (
       <div id="custom-tooltip" className={this.props.classes.toolTipStyle}>
         <p className={this.props.classes.toolTipParagraph}>
-          <b>{payload[this.props.demographic]}</b>
+          <b>{payload.name}</b>
         </p>
-        {Object.keys(payload).map(key => ((key !== this.props.demographic && key !== 'serious')
-          ? (
-            <p
-              className={this.props.classes.toolTipParagraph}
-              key={key}
-            >
-              {this.outcomeCodes[key]}: {payload[key]}
-            </p>
-          )
-          : null
+        {Object.keys(payload).map(key => (
+          (Object.keys(this.outcomeCodes).includes(key) && payload[key])
+            ? (
+              <p
+                className={this.props.classes.toolTipParagraph}
+                key={key}
+              >
+                {this.outcomeCodes[key]}: {payload[key]}
+              </p>
+            )
+            : null
         ))}
       </div>
     );

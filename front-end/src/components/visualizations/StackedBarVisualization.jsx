@@ -6,6 +6,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import CustomizedContent from './CustomizedContent';
 import styles from './StackedBarVisualizationStyles';
+import CustomTooltip from './CustomTooltip';
 
 /**
  * This is the component for the TreeMap visualization
@@ -52,6 +53,7 @@ class StackedBarVisualization extends Component {
    */
   handleFilterClickToggle = type => (e) => {
     console.log('Click on treemap', e)
+    console.log(this.props.meType)
     if (e && e.name) {
       // this.props.toggleFilter(e.name);
     }
@@ -92,7 +94,11 @@ class StackedBarVisualization extends Component {
               isAnimationActive={false}
               animationDuration={0}
             >
-              <Tooltip />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#424242', strokeWidth: 1 }}
+                wrapperStyle={{ padding: '4px' }}
+              />
             </Treemap>
           </Paper>
         </div>
@@ -114,7 +120,11 @@ class StackedBarVisualization extends Component {
               isAnimationActive={false}
               animationDuration={0}
             >
-              <Tooltip />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#424242', strokeWidth: 1 }}
+                wrapperStyle={{ padding: '4px' }}
+              />
             </Treemap>
           </Paper>
         </div>
@@ -135,7 +145,11 @@ class StackedBarVisualization extends Component {
               isAnimationActive={false}
               animationDuration={0}
             >
-              <Tooltip />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#424242', strokeWidth: 1 }}
+                wrapperStyle={{ padding: '4px' }}
+              />
             </Treemap>
           </Paper>
         </div>
@@ -156,7 +170,11 @@ class StackedBarVisualization extends Component {
               isAnimationActive={false}
               animationDuration={0}
             >
-              <Tooltip />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#424242', strokeWidth: 1 }}
+                wrapperStyle={{ padding: '4px' }}
+              />
             </Treemap>
           </Paper>
         </div>

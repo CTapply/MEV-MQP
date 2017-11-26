@@ -25,11 +25,11 @@ export default {
     padding: '8px',
   },
   '@keyframes pulseShadow': {
-    from: {
+    '0%': {
       boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .10)',
     },
-    to: {
-      boxShadow: '0 3px 15px 10px rgba(255, 105, 135, .4)',
+    '100%': {
+      boxShadow: '0 3px 30px 10px rgba(255, 105, 135, .4)',
     },
   },
   nonSetDateButton: {
