@@ -43,7 +43,6 @@ class PDFApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      reportText: '',
       open: false,
       error: '',
     };
@@ -51,6 +50,33 @@ class PDFApp extends Component {
 
   componentWillMount() {
     this.processID(Number(this.props.match.params.id, 10));
+  }
+
+  componentDidMount() {
+    window.addEventListener('beforeunload', this.onUnload);
+    this.autosave = setInterval(() => this.saveWork(), 5000);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.onUnload);
+    clearInterval(this.autosave);
+  }
+
+  onUnload = () => this.saveWork()
+
+  saveWork = () => {
+    if (this.state.savedText !== this.state.reportText) {
+      const fetchData = {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: this.state.reportText, primaryid: Number(this.props.match.params.id, 10) }),
+      };
+      fetch('http://localhost:3001/savereporttext', fetchData);
+      this.setState({ savedText: this.state.reportText });
+    }
   }
 
   processID = (id) => {
@@ -69,7 +95,10 @@ class PDFApp extends Component {
         .then(response => response.json())
         .then((report) => {
           if (report.rows.length > 0) {
-            this.setState({ reportText: report.rows[0].report_text });
+            this.setState({
+              reportText: report.rows[0].report_text,
+              savedText: report.rows[0].report_text,
+            });
           } else {
             this.setState({ open: true, error: `ID ${id} not found in DB` });
           }
@@ -82,7 +111,7 @@ class PDFApp extends Component {
   }
 
   handleClose = () => {
-    this.setState({ open: false, error: '' });
+    this.setState({ open: false });
   };
 
   render() {
@@ -113,7 +142,12 @@ class PDFApp extends Component {
           </Dialog>
           <h1>PDF View</h1>
           <Paper elevation={4}>
-            <ReactQuill value={this.state.reportText} onChange={this.handleChange} />
+            <ReactQuill
+              theme="snow"
+              readOnly={this.state.error !== ''}
+              value={this.state.reportText}
+              onChange={this.handleChange}
+            />
           </Paper>
         </div>
       </MuiThemeProvider>

@@ -133,6 +133,18 @@ app.post('/getreporttext', (req, res) => {
   });
 });
 
+app.put('/savereporttext', (req, res) => {
+  console.log('got a save report text request');
+  let query =
+  'UPDATE demo '
++ 'SET report_text = $$' + req.body.text + '$$ '
++ 'WHERE primaryid = ' + req.body.primaryid;
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200);
+  });
+});
+
 app.post('/getvis', (req, res) => {
   console.log('got a request with body:\n ', req.body)
   let returnObject = {};
