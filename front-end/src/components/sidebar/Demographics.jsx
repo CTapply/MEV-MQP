@@ -44,7 +44,7 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Paper className={this.props.classes.maxHeight} elevation={4}>
             <Age
               age={this.props.age}
@@ -52,12 +52,16 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={3}>
           <Paper className={this.props.classes.maxHeight} elevation={4}>
             <Location
               location={this.props.location}
               toggleFilter={this.props.toggleLocationFilter}
             />
+          </Paper>
+        </Grid>
+        <Grid item xs={3}>
+          <Paper className={this.props.classes.maxHeight} elevation={4}>
           </Paper>
         </Grid>
       </Grid>

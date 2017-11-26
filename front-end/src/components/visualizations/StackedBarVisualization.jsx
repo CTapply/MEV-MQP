@@ -104,7 +104,7 @@ class StackedBarVisualization extends Component {
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: '#424242', strokeWidth: 1 }}
-                wrapperStyle={{ padding: '4px' }}
+                wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               />
             </Treemap>
           </Paper>
@@ -129,7 +129,7 @@ class StackedBarVisualization extends Component {
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: '#424242', strokeWidth: 1 }}
-                wrapperStyle={{ padding: '4px' }}
+                wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               />
             </Treemap>
           </Paper>
@@ -154,7 +154,7 @@ class StackedBarVisualization extends Component {
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: '#424242', strokeWidth: 1 }}
-                wrapperStyle={{ padding: '4px' }}
+                wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               />
             </Treemap>
           </Paper>
@@ -179,7 +179,7 @@ class StackedBarVisualization extends Component {
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: '#424242', strokeWidth: 1 }}
-                wrapperStyle={{ padding: '4px' }}
+                wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               />
             </Treemap>
           </Paper>

@@ -137,7 +137,7 @@ class Sex extends Component {
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
-              wrapperStyle={{ padding: '4px' }}
+              wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="sex"
             />
             <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorBlue)" />

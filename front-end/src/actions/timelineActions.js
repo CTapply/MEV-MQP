@@ -15,7 +15,7 @@ export const getEntireTimeline = () => (dispatch) => {
   fetch('http://localhost:3001/gettimelinedata', fetchData)
     .then(response => response.json())
     .then((allReports) => {
-      console.log("Got timeline", allReports)
+      console.log('Got timeline');
       dispatch({ type: 'SET_ENTIRE_TIMELINE', entireTimelineData: allReports });
     })
     .catch((err) => {

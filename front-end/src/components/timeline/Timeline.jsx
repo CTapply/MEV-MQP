@@ -262,7 +262,7 @@ class Timeline extends Component {
           offset={50}
           animationDuration={0}
           labelFormatter={this.formatDate}
-          wrapperStyle={{ padding: '4px' }}
+          wrapperStyle={{ padding: '4px', zIndex: 1000 }}
         />
         <Area
           type="monotone"

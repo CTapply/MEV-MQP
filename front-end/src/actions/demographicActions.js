@@ -104,9 +104,9 @@ export const getDemographicData = queryParams => (dispatch) => {
         age: _.sortBy(Object.keys(reducedData.age)
           .map(ageRange => ({ age: ageRange, ...reducedData.age[ageRange] })), 'age'),
         location: _.reverse(_.sortBy(Object.keys(reducedData.country)
-          .map(countryRange => ({ country: countryRange, ...reducedData.country[countryRange] })), 'count')),
+          .map(countryRange => ({ country: countryRange, ...reducedData.country[countryRange] })), 'count')).slice(0, 10),
       };
-      console.log('Updated Demographics', demographics);
+      console.log('Updated Demographics');
       dispatch({ type: 'UPDATE_DEMOGRAPHICS', demographics });
     })
     .catch((err) => {
