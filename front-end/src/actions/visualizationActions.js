@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { filterData } from './filterActions';
 
 /**
@@ -19,8 +20,14 @@ export const getVisData = queryParams => (dispatch) => {
   fetch('http://localhost:3001/getvis', fetchData)
     .then(response => response.json())
     .then((allReports) => {
-      const visData = allReports;
-      console.log(visData);
+      const visData = {
+        cause: _.reverse(_.sortBy(allReports.cause, 'size')),
+        meType: _.reverse(_.sortBy(allReports.meType, 'size')),
+        product: _.reverse(_.sortBy(allReports.product, 'size')),
+        stage: _.reverse(_.sortBy(allReports.stage, 'size')),
+      };
+
+      console.log('visData', visData)
       dispatch({ type: 'UPDATE_VIS', visData });
     })
     .catch((err) => {

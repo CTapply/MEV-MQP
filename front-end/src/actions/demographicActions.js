@@ -61,13 +61,13 @@ const counters = {
 
 const handleAccumulator = (accumulator, row) => {
   Object.keys(counters).forEach((demo) => {
-    const outcomeValue = _.result(accumulator, [demo, counters[demo](row), row.outc_cod], 0);
+    const outcomeValue = _.get(accumulator, [demo, counters[demo](row), row.outc_cod], 0);
     _.set(accumulator, [demo, counters[demo](row), row.outc_cod], outcomeValue + 1);
     if (row.outc_cod !== 'UNK') {
-      const seriousCountValue = _.result(accumulator, [demo, counters[demo](row), 'serious'], 0);
+      const seriousCountValue = _.get(accumulator, [demo, counters[demo](row), 'serious'], 0);
       _.set(accumulator, [demo, counters[demo](row), 'serious'], seriousCountValue + 1);
     }
-    const countValue = _.result(accumulator, [demo, counters[demo](row), 'count'], 0);
+    const countValue = _.get(accumulator, [demo, counters[demo](row), 'count'], 0);
     _.set(accumulator, [demo, counters[demo](row), 'count'], countValue + 1);
   });
 };

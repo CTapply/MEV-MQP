@@ -251,26 +251,6 @@ class Timeline extends Component {
             <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
             <stop offset="99%" stopColor="#283593" stopOpacity={0.2} />
           </linearGradient>
-          <linearGradient id="colorBlue1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#3D51DF" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#3D51DF" stopOpacity={0.6} />
-          </linearGradient>
-          <linearGradient id="colorBlue2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#283593" stopOpacity={0.6} />
-          </linearGradient>
-          <linearGradient id="colorBlue3" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#171E53" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#171E53" stopOpacity={0.6} />
-          </linearGradient>
-          <linearGradient id="colorBlue4" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#2B3AA0" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#2B3AA0" stopOpacity={0.6} />
-          </linearGradient>
-          <linearGradient id="colorBlue5" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#212C79" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#212C79" stopOpacity={0.6} />
-          </linearGradient>
         </defs>
         <XAxis
           dataKey="init_fda_dt"

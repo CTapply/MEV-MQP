@@ -15,7 +15,6 @@ const styles = {
     '-webkit-box-shadow': '1px 1px 1px 0 rgba(0,0,0,0.3)',
     'box-shadow': '1px 1px 1px 0 rgba(0,0,0,0.3)',
     'text-shadow': '1px 1px 1px rgba(0,0,0,0.2)',
-    // 'font-size': '20pt',
     'z-index': '10000',
   },
   toolTipParagraph: {
