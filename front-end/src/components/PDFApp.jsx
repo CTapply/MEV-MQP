@@ -107,6 +107,19 @@ class PDFApp extends Component {
   };
 
   handleChange = (value) => {
+    console.log('update');
+    const greenTag = /background-color: green/;
+    const redTag = /background-color: red/;
+    const blueTag = /background-color: blue/;
+    if (greenTag.exec(value)) {
+      console.log('there is green highlighted');
+    }
+    if (redTag.exec(value)) {
+      console.log('there is red highlighted');
+    }
+    if (blueTag.exec(value)) {
+      console.log('there is blue highlighted');
+    }
     this.setState({ reportText: value });
   }
 
@@ -115,6 +128,15 @@ class PDFApp extends Component {
   };
 
   render() {
+    const modules = { modules: {
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: ['white', 'red', 'green', 'blue'] }],
+        ['clean'],
+      ],
+    } };
+
     return (
       <MuiThemeProvider theme={blueTheme} >
         <div className={this.props.classes.pdfView}>
@@ -147,6 +169,7 @@ class PDFApp extends Component {
               readOnly={this.state.error !== ''}
               value={this.state.reportText}
               onChange={this.handleChange}
+              modules={modules.modules}
             />
           </Paper>
         </div>

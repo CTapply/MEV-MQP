@@ -141,7 +141,7 @@ app.put('/savereporttext', (req, res) => {
 + 'WHERE primaryid = ' + req.body.primaryid;
   console.log(query);
   db.query(query, (err, data) => {
-    res.status(200);
+    res.status(200).send();
   });
 });
 
