@@ -5,6 +5,7 @@ import { blue, green, red } from 'material-ui/colors';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Paper from 'material-ui/Paper';
+import _ from 'lodash';
 import Dialog, {
   DialogActions,
   DialogTitle,
@@ -43,24 +44,22 @@ class PDFApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: true,
       open: false,
       error: '',
       current: {
         reportText: '',
-        tag1: '',
+        tags: [],
       },
       saved: {
         reportText: '',
-        tag1: '',
+        tags: [],
       },
     };
   }
 
-  componentWillMount() {
-    this.processID(Number(this.props.match.params.id, 10));
-  }
-
   componentDidMount() {
+    this.processID(Number(this.props.match.params.id, 10));
     window.addEventListener('beforeunload', this.onUnload);
     this.autosave = setInterval(() => this.saveWork(), 5000);
   }
@@ -73,10 +72,8 @@ class PDFApp extends Component {
   onUnload = () => this.saveWork()
 
   saveWork = () => {
-    console.log(this.state.saved.reportText !== this.state.current.reportText ||
-    this.state.saved.tag1 !== this.state.current.tag1);
-    if (this.state.saved.reportText !== this.state.current.reportText ||
-      this.state.saved.tag1 !== this.state.current.tag1) {
+    console.log('saving ', !_.isEqual(this.state.current, this.state.saved));
+    if (!_.isEqual(this.state.current, this.state.saved)) {
       const fetchData = {
         method: 'PUT',
         mode: 'cors',
@@ -85,7 +82,7 @@ class PDFApp extends Component {
         },
         body: JSON.stringify({
           text: this.state.current.reportText,
-          tag1: this.state.current.tag1,
+          tags: this.state.current.tags,
           primaryid: Number(this.props.match.params.id, 10) }),
       };
       fetch('http://localhost:3001/savereporttext', fetchData);
@@ -95,7 +92,7 @@ class PDFApp extends Component {
 
   processID = (id) => {
     if (isNaN(id)) {
-      this.setState({ open: true, error: 'No ID found in URL' });
+      this.setState({ loading: false, open: true, error: 'No ID found in URL' });
     } else {
       const fetchData = {
         method: 'POST',
@@ -110,38 +107,37 @@ class PDFApp extends Component {
         .then((report) => {
           if (report.rows.length > 0) {
             this.setState({
+              loading: false,
               current: {
                 reportText: report.rows[0].report_text,
-                tag1: report.rows[0].tag1 },
+                tags: report.rows[0].tags },
               saved: {
                 reportText: report.rows[0].report_text,
-                tag1: report.rows[0].tag1,
-              },
+                tags: report.rows[0].tags },
             });
+            console.log('grabbed from db, stage = ', this.state.current);
           } else {
-            this.setState({ open: true, error: `ID ${id} not found in DB` });
+            this.setState({ loading: false, open: true, error: `ID ${id} not found in DB` });
           }
         });
     }
   };
 
   handleChange = (value) => {
-    console.log('update');
-    const greenTag = /background-color: green/;
-    const redTag = /background-color: red/;
-    const blueTag = /background-color: blue/;
-    let g = false;
-    if (greenTag.exec(value)) {
-      g = true;
-      console.log('there is green highlighted');
+    const greenRe = /background-color: green/;
+    const redRe = /background-color: red/;
+    const blueRe = /background-color: blue/;
+    const newTags = {};
+    if (greenRe.exec(value)) {
+      newTags.greenTag = 't';
     }
-    if (redTag.exec(value)) {
-      console.log('there is red highlighted');
+    if (redRe.exec(value)) {
+      newTags.redTag = 't';
     }
-    if (blueTag.exec(value)) {
-      console.log('there is blue highlighted');
+    if (blueRe.exec(value)) {
+      newTags.blueTag = 't';
     }
-    this.setState({ current: { reportText: value, tag1: g } });
+    this.setState({ current: { reportText: value, tags: newTags } });
   }
 
   handleClose = () => {
@@ -193,8 +189,8 @@ class PDFApp extends Component {
             <ReactQuill
               theme="snow"
               readOnly={this.state.error !== ''}
-              value={this.state.current.reportText}
-              onChange={this.handleChange}
+              value={this.state.loading ? '' : this.state.current.reportText}
+              onChange={this.state.loading ? null : this.handleChange}
               modules={modules.modules}
             />
           </Paper>
