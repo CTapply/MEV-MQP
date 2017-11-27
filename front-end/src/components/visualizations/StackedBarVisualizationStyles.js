@@ -13,7 +13,4 @@ export default {
     'vertical-align': 'middle',
     display: 'inline-block',
   },
-  customContentStyle: {
-    overflow: 'hidden',
-  },
 };

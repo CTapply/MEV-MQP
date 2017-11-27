@@ -81,8 +81,6 @@ class StackedBarVisualization extends Component {
     });
   }
 
-  COLORS = (['url(#colorSevere1)', 'url(#colorSevere2)', 'url(#colorSevere3)', 'url(#colorSevere4)', 'url(#colorSevere5)']);
-
   render = () => (
     <div className={this.props.classes.mainVisualization} id="main-visualization" >
       <div className={this.props.classes.treemapVisualization} id="firstTreeMap">
@@ -147,7 +145,7 @@ class StackedBarVisualization extends Component {
               stroke="#ddd"
               fill="url(#colorSevere)"
               onClick={this.handleFilterClickToggle('Stage')}
-              content={<CustomizedContent highestSeriousCount={this.getMaxSerious('stage')} contentStyle={this.props.classes.customContentStyle} />}
+              content={<CustomizedContent highestSeriousCount={this.getMaxSerious('stage')} />}
               isAnimationActive={false}
               animationDuration={0}
             >
