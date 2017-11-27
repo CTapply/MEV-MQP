@@ -21,6 +21,8 @@ const styles = {
   },
   maxHeight: {
     height: '100%',
+  },
+  noOverflow: {
     overflow: 'hidden',
   },
   clearFilterChip: {
@@ -59,6 +61,7 @@ class Sex extends Component {
       chipAvatar: PropTypes.string,
       responsiveContainer: PropTypes.string,
       maxHeight: PropTypes.string,
+      noOverflow: PropTypes.string,
     }).isRequired,
   }
 
@@ -112,26 +115,22 @@ class Sex extends Component {
   render() {
     return (
       <div id="sex-container" className={this.props.classes.maxHeight} >
-        <Chip
-          avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}
-          label="Clear Filter"
-          onClick={this.clearFilter}
-          className={this.props.classes.clearFilterChip}
-        />
-        <Typography id="sex-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
-          Sex
-        </Typography>
+        <div id="sex-header" className={this.props.classes.noOverflow} >
+          <Chip
+            avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}
+            label="Clear Filter"
+            onClick={this.clearFilter}
+            className={this.props.classes.clearFilterChip}
+          />
+          <Typography id="sex-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
+            Sex
+          </Typography>
+        </div>
         <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight} >
           <BarChart
             data={this.props.sex}
             onClick={this.handleFilterClickToggle}
           >
-            {/* <defs>
-              <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
-                <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.6} />
-              </linearGradient>
-            </defs> */}
             <XAxis dataKey="sex" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
