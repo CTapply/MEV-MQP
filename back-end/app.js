@@ -287,7 +287,6 @@ app.post('/getvis', (req, res) => {
     + "GROUP BY z.drugname"; 
 
   db.query(meTypeQuery, (err, meTypeData) => {
-    console.log(err)
     //db.query(productQuery, (err, productData) => {
       db.query(stageQuery, (err, stageData) => {
         db.query(causeQuery, (err, causeData) => {
