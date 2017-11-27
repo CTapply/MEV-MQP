@@ -125,7 +125,7 @@ app.post('/getdata', (req, res) => {
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
-  'SELECT report_text '
+  'SELECT report_text, tag1 '
 + 'FROM demo '
 + 'WHERE primaryid = ' + req.body.primaryid;
   db.query(query, (err, data) => {
@@ -137,7 +137,7 @@ app.put('/savereporttext', (req, res) => {
   console.log('got a save report text request');
   let query =
   'UPDATE demo '
-+ 'SET report_text = $$' + req.body.text + '$$ '
++ 'SET report_text = $$' + req.body.text + '$$, tag1 = ' + req.body.tag1 + ' '
 + 'WHERE primaryid = ' + req.body.primaryid;
   console.log(query);
   db.query(query, (err, data) => {

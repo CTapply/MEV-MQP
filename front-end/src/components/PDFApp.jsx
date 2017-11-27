@@ -45,6 +45,14 @@ class PDFApp extends Component {
     this.state = {
       open: false,
       error: '',
+      current: {
+        reportText: '',
+        tag1: '',
+      },
+      saved: {
+        reportText: '',
+        tag1: '',
+      },
     };
   }
 
@@ -65,17 +73,23 @@ class PDFApp extends Component {
   onUnload = () => this.saveWork()
 
   saveWork = () => {
-    if (this.state.savedText !== this.state.reportText) {
+    console.log(this.state.saved.reportText !== this.state.current.reportText ||
+    this.state.saved.tag1 !== this.state.current.tag1);
+    if (this.state.saved.reportText !== this.state.current.reportText ||
+      this.state.saved.tag1 !== this.state.current.tag1) {
       const fetchData = {
         method: 'PUT',
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: this.state.reportText, primaryid: Number(this.props.match.params.id, 10) }),
+        body: JSON.stringify({
+          text: this.state.current.reportText,
+          tag1: this.state.current.tag1,
+          primaryid: Number(this.props.match.params.id, 10) }),
       };
       fetch('http://localhost:3001/savereporttext', fetchData);
-      this.setState({ savedText: this.state.reportText });
+      this.setState({ saved: this.state.current });
     }
   }
 
@@ -96,8 +110,13 @@ class PDFApp extends Component {
         .then((report) => {
           if (report.rows.length > 0) {
             this.setState({
-              reportText: report.rows[0].report_text,
-              savedText: report.rows[0].report_text,
+              current: {
+                reportText: report.rows[0].report_text,
+                tag1: report.rows[0].tag1 },
+              saved: {
+                reportText: report.rows[0].report_text,
+                tag1: report.rows[0].tag1,
+              },
             });
           } else {
             this.setState({ open: true, error: `ID ${id} not found in DB` });
@@ -111,7 +130,9 @@ class PDFApp extends Component {
     const greenTag = /background-color: green/;
     const redTag = /background-color: red/;
     const blueTag = /background-color: blue/;
+    let g = false;
     if (greenTag.exec(value)) {
+      g = true;
       console.log('there is green highlighted');
     }
     if (redTag.exec(value)) {
@@ -120,7 +141,7 @@ class PDFApp extends Component {
     if (blueTag.exec(value)) {
       console.log('there is blue highlighted');
     }
-    this.setState({ reportText: value });
+    this.setState({ current: { reportText: value, tag1: g } });
   }
 
   handleClose = () => {
@@ -135,6 +156,11 @@ class PDFApp extends Component {
         [{ color: [] }, { background: ['white', 'red', 'green', 'blue'] }],
         ['clean'],
       ],
+      history: {
+        delay: 2000,
+        maxStack: 500,
+        userOnly: true,
+      },
     } };
 
     return (
@@ -167,7 +193,7 @@ class PDFApp extends Component {
             <ReactQuill
               theme="snow"
               readOnly={this.state.error !== ''}
-              value={this.state.reportText}
+              value={this.state.current.reportText}
               onChange={this.handleChange}
               modules={modules.modules}
             />
