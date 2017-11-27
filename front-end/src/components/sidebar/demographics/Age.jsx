@@ -120,12 +120,6 @@ class Age extends Component {
             data={this.props.age}
             onClick={this.handleFilterClickToggle}
           >
-            {/* <defs>
-              <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
-                <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.6} />
-              </linearGradient>
-            </defs> */}
             <XAxis dataKey="age" tickCount={13} />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
