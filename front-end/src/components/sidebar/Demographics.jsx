@@ -19,6 +19,7 @@ class Demographics extends Component {
     toggleSexFilter: PropTypes.func.isRequired,
     toggleAgeFilter: PropTypes.func.isRequired,
     toggleLocationFilter: PropTypes.func.isRequired,
+    toggleOccupationFilter: PropTypes.func.isRequired,
     sex: PropTypes.arrayOf(PropTypes.object).isRequired,
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
     location: PropTypes.arrayOf(PropTypes.object).isRequired,

@@ -21,6 +21,7 @@ const styles = {
   },
   maxHeight: {
     height: '100%',
+    overflow: 'hidden',
   },
   clearFilterChip: {
     'font-size': '9pt',
