@@ -29,6 +29,16 @@ const defaultLocationObject = {
   JP: { count: 0, serious: 0 },
   GB: { count: 0, serious: 0 },
   FR: { count: 0, serious: 0 },
+  UNK: { count: 0, serious: 0 },
+};
+
+const defaultOccupationObject = {
+  MD: { count: 0, serious: 0 },
+  PH: { count: 0, serious: 0 },
+  OT: { count: 0, serious: 0 },
+  LW: { count: 0, serious: 0 },
+  CN: { count: 0, serious: 0 },
+  UNK: { count: 0, serious: 0 },
 };
 
 const cleanRow = (row) => {
@@ -40,6 +50,7 @@ const cleanRow = (row) => {
 };
 
 const countCountry = row => row.occr_country;
+const countOccupation = row => row.occp_cod;
 const countSex = row => row.sex;
 const countAge = (row) => {
   const ageRange = Object.keys(defaultAgeObject).sort();
@@ -57,6 +68,7 @@ const counters = {
   sex: countSex,
   age: countAge,
   country: countCountry,
+  occp_cod: countOccupation,
 };
 
 const handleAccumulator = (accumulator, row) => {
@@ -80,6 +92,7 @@ const reduceData = rows => rows.reduce((accumulator, row) => {
   sex: JSON.parse(JSON.stringify(defaultSexObject)),
   age: JSON.parse(JSON.stringify(defaultAgeObject)),
   country: JSON.parse(JSON.stringify(defaultLocationObject)),
+  occp_cod: JSON.parse(JSON.stringify(defaultOccupationObject)),
 });
 
 export const getDemographicData = queryParams => (dispatch) => {
@@ -94,10 +107,12 @@ export const getDemographicData = queryParams => (dispatch) => {
     }),
   };
 
-  fetch('http://localhost:3001/getdata', fetchData)
+  fetch('http://localhost:3001/getdemographicdata', fetchData)
     .then(response => response.json())
     .then((allReports) => {
       const reducedData = reduceData(allReports.rows);
+      console.log('Updated Demographics', allReports.rows);
+      console.log('Updated Demographics', reducedData);
       const demographics = {
         sex: _.sortBy(Object.keys(reducedData.sex)
           .map(sexRange => ({ sex: sexRange, ...reducedData.sex[sexRange] })), 'sex'),
@@ -105,6 +120,8 @@ export const getDemographicData = queryParams => (dispatch) => {
           .map(ageRange => ({ age: ageRange, ...reducedData.age[ageRange] })), 'age'),
         location: _.reverse(_.sortBy(Object.keys(reducedData.country)
           .map(countryRange => ({ country: countryRange, ...reducedData.country[countryRange] })), 'count')).slice(0, 10),
+        occp_cod: _.reverse(_.sortBy(Object.keys(reducedData.occp_cod)
+          .map(occpRange => ({ occp_cod: occpRange, ...reducedData.occp_cod[occpRange] })), 'count')),
       };
       console.log('Updated Demographics');
       dispatch({ type: 'UPDATE_DEMOGRAPHICS', demographics });
@@ -155,6 +172,21 @@ export const toggleLocationFilter = filter => (dispatch, getState) => {
     dispatch(filterData());
   } else {
     dispatch({ type: 'SET_LOCATION', occr_country: getState().filters.occr_country.concat(filter) });
+    dispatch(filterData());
+  }
+};
+
+export const toggleOccupationFilter = filter => (dispatch, getState) => {
+  if (filter === 'CLEAR') {
+    if (getState().filters.occp_cod.length !== 0) {
+      dispatch({ type: 'SET_OCCUPATION', occp_cod: [] });
+      dispatch(filterData());
+    }
+  } else if (getState().filters.occp_cod.includes(filter)) {
+    dispatch({ type: 'SET_OCCUPATION', occp_cod: getState().filters.occp_cod.filter(item => item !== filter) });
+    dispatch(filterData());
+  } else {
+    dispatch({ type: 'SET_OCCUPATION', occp_cod: getState().filters.occp_cod.concat(filter) });
     dispatch(filterData());
   }
 };

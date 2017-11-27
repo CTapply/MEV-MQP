@@ -13,7 +13,7 @@ const styles = {
     'text-align': 'center',
     'font-size': '20pt',
     'pointer-events': 'none',
-    'padding-left': '45px',
+    transform: 'translateX(45px)',
   },
   responsiveContainer: {
     'margin-left': '-15px',
@@ -33,14 +33,24 @@ const styles = {
     width: '11pt',
     transform: 'translateX(3px)',
   },
+  '@media (max-width: 1450px)': {
+    labelFont: {
+      transform: 'translateX(20px)',
+    },
+  },
+  '@media (max-width: 1100px)': {
+    labelFont: {
+      transform: 'translateX(0px)',
+    },
+  },
 };
 
 /**
- * This is the component that displays the Location Demographic visualization
+ * This is the component that displays the Sex Demographic visualization
  */
-class Location extends Component {
+class ReportedBy extends Component {
   static propTypes = {
-    location: PropTypes.arrayOf(PropTypes.object).isRequired,
+    occp_cod: PropTypes.arrayOf(PropTypes.object).isRequired,
     toggleFilter: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
@@ -89,9 +99,9 @@ class Location extends Component {
    * Calculates the best size for the visualization for better scalability
    */
   resizeGraph = () => {
-    const container = document.getElementById('location-container');
+    const container = document.getElementById('occupation-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
-    const graphTitle = document.getElementById('location-graph-title');
+    const graphTitle = document.getElementById('occupation-graph-title');
     const graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
     this.setState({
       graphHeight: (parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10)) + 10,
@@ -100,19 +110,19 @@ class Location extends Component {
 
   render() {
     return (
-      <div id="location-container" className={this.props.classes.maxHeight} >
+      <div id="occupation-container" className={this.props.classes.maxHeight} >
         <Chip
           avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}
           label="Clear Filter"
           onClick={this.clearFilter}
           className={this.props.classes.clearFilterChip}
         />
-        <Typography id="location-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
-          Location
+        <Typography id="occupation-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
+          Occupation
         </Typography>
-        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
+        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight} >
           <BarChart
-            data={this.props.location}
+            data={this.props.occp_cod}
             onClick={this.handleFilterClickToggle}
           >
             {/* <defs>
@@ -121,14 +131,14 @@ class Location extends Component {
                 <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.6} />
               </linearGradient>
             </defs> */}
-            <XAxis dataKey="country" />
+            <XAxis dataKey="occp_cod" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
-              demographic="country"
+              demographic="occp_cod"
             />
             <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorSevere)" />
             <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorNotSerious)" />
@@ -139,4 +149,4 @@ class Location extends Component {
   }
 }
 
-export default withStyles(styles)(Location);
+export default withStyles(styles)(ReportedBy);

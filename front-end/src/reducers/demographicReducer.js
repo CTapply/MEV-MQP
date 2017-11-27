@@ -2,6 +2,7 @@ const initialDemographicState = {
   sex: [],
   age: [],
   location: [],
+  occp_cod: [],
 };
 
 /**

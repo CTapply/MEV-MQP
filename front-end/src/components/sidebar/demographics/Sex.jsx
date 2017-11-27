@@ -125,12 +125,12 @@ class Sex extends Component {
             data={this.props.sex}
             onClick={this.handleFilterClickToggle}
           >
-            <defs>
-              <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-                <stop offset="99%" stopColor="#283593" stopOpacity={0.4} />
+            {/* <defs>
+              <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
+                <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.6} />
               </linearGradient>
-            </defs>
+            </defs> */}
             <XAxis dataKey="sex" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
@@ -140,8 +140,8 @@ class Sex extends Component {
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="sex"
             />
-            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorBlue)" />
-            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorGrey)" />
+            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorSevere)" />
+            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorNotSerious)" />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -81,7 +81,7 @@ class StackedBarVisualization extends Component {
     });
   }
 
-  COLORS = (['url(#colorBlue1)', 'url(#colorBlue2)', 'url(#colorBlue3)', 'url(#colorBlue4)', 'url(#colorBlue5)']);
+  COLORS = (['url(#colorSevere1)', 'url(#colorSevere2)', 'url(#colorSevere3)', 'url(#colorSevere4)', 'url(#colorSevere5)']);
 
   render = () => (
     <div className={this.props.classes.mainVisualization} id="main-visualization" >
@@ -95,7 +95,7 @@ class StackedBarVisualization extends Component {
               dataKey="size"
               ratio={4 / 3}
               stroke="#ddd"
-              fill="url(#colorBlue)"
+              fill="url(#colorSevere)"
               onClick={this.handleFilterClickToggle('ME-Type')}
               content={<CustomizedContent highestSeriousCount={this.getMaxSerious('meType')} />}
               isAnimationActive={false}
@@ -120,7 +120,7 @@ class StackedBarVisualization extends Component {
               dataKey="size"
               ratio={4 / 3}
               stroke="#ddd"
-              fill="url(#colorBlue)"
+              fill="url(#colorSevere)"
               onClick={this.handleFilterClickToggle('Product')}
               content={<CustomizedContent highestSeriousCount={this.getMaxSerious('product')} />}
               isAnimationActive={false}
@@ -145,7 +145,7 @@ class StackedBarVisualization extends Component {
               dataKey="size"
               ratio={4 / 3}
               stroke="#ddd"
-              fill="url(#colorBlue)"
+              fill="url(#colorSevere)"
               onClick={this.handleFilterClickToggle('Stage')}
               content={<CustomizedContent highestSeriousCount={this.getMaxSerious('stage')} contentStyle={this.props.classes.customContentStyle} />}
               isAnimationActive={false}
@@ -170,7 +170,7 @@ class StackedBarVisualization extends Component {
               dataKey="size"
               ratio={4 / 3}
               stroke="#ddd"
-              fill="url(#colorBlue)"
+              fill="url(#colorSevere)"
               onClick={this.handleFilterClickToggle('Cause')}
               content={<CustomizedContent highestSeriousCount={this.getMaxSerious('cause')} />}
               isAnimationActive={false}

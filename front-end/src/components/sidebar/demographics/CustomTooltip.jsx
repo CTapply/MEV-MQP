@@ -52,6 +52,39 @@ class CustomTooltip extends Component {
     UNK: 'Not Serious',
   }
 
+  occupationTitleCodes = {
+    MD: 'Physician',
+    PH: 'Pharmacist',
+    OT: 'Other Health Professional',
+    LW: 'Lawyer',
+    CN: 'Consumer',
+    UNK: 'Unknown',
+  }
+
+  sexTitleCodes = {
+    M: 'Male',
+    F: 'Female',
+    UNK: 'Unknown',
+  }
+
+  renderTooltipTitle = () => {
+    const payload = this.props.payload[0].payload;
+    switch (this.props.demographic) {
+      case 'occp_cod':
+        return (
+          <b>{this.occupationTitleCodes[payload[this.props.demographic]]}</b>
+        );
+      case 'sex':
+        return (
+          <b>{this.sexTitleCodes[payload[this.props.demographic]]}</b>
+        );
+      default:
+        return (
+          <b>{payload[this.props.demographic]}</b>
+        );
+    }
+  }
+
   renderToolTip = () => {
     let payload = {};
     if (this.props.payload[0]) {
@@ -60,7 +93,7 @@ class CustomTooltip extends Component {
     return (
       <div id="custom-tooltip" className={this.props.classes.toolTipStyle}>
         <p className={this.props.classes.toolTipParagraph}>
-          <b>{payload[this.props.demographic]}</b>
+          {this.renderTooltipTitle()}
         </p>
         {Object.keys(payload).map(key => ((key !== this.props.demographic && key !== 'serious')
           ? (

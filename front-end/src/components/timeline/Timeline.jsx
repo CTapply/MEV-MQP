@@ -216,13 +216,13 @@ class Timeline extends Component {
         onMouseMove={this.recordMouseMove}
       >
         <defs>
-          <linearGradient id="colorGrey" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#757575" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#757575" stopOpacity={0.2} />
+          <linearGradient id="colorNotSerious" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="15%" stopColor="#283593" stopOpacity={1} />
+            <stop offset="99%" stopColor="#283593" stopOpacity={1} />
           </linearGradient>
-          <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#283593" stopOpacity={0.2} />
+          <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
+            <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.8} />
           </linearGradient>
         </defs>
         <XAxis
@@ -243,13 +243,13 @@ class Timeline extends Component {
         onMouseMove={this.recordMouseMove}
       >
         <defs>
-          <linearGradient id="colorGrey" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#757575" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#757575" stopOpacity={0.2} />
-          </linearGradient>
-          <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="colorNotSerious" x1="0" y1="0" x2="0" y2="1">
             <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#283593" stopOpacity={0.2} />
+            <stop offset="99%" stopColor="#283593" stopOpacity={0.8} />
+          </linearGradient>
+          <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
+            <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.8} />
           </linearGradient>
         </defs>
         <XAxis
@@ -270,7 +270,7 @@ class Timeline extends Component {
           stroke="#1A237E"
           fillOpacity={1}
           stackId="1"
-          fill="url(#colorBlue)"
+          fill="url(#colorSevere)"
           animationDuration={700}
           connectNulls={false}
         />
@@ -280,7 +280,7 @@ class Timeline extends Component {
           stroke="#424242"
           fillOpacity={1}
           stackId="1"
-          fill="url(#colorGrey)"
+          fill="url(#colorNotSerious)"
           animationDuration={700}
           connectNulls={false}
         />

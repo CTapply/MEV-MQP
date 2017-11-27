@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer, ReferenceArea } from 'recharts';
 import { withStyles } from 'material-ui/styles';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
@@ -120,12 +120,12 @@ class Age extends Component {
             data={this.props.age}
             onClick={this.handleFilterClickToggle}
           >
-            <defs>
-              <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-                <stop offset="99%" stopColor="#283593" stopOpacity={0.4} />
+            {/* <defs>
+              <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
+                <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.6} />
               </linearGradient>
-            </defs>
+            </defs> */}
             <XAxis dataKey="age" tickCount={13} />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
@@ -135,8 +135,25 @@ class Age extends Component {
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="age"
             />
-            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorBlue)" />
-            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorGrey)" />
+            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorSevere)" />
+            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorNotSerious)" />
+            {/* <ReferenceArea
+              x1="0-5"
+              x2="20-29"
+              stroke="red"
+              strokeOpacity={0.3}
+              xAxisId={0}
+            />
+            <ReferenceArea
+              style={{
+                width: '40px',
+              }}
+              x1="40-49"
+              x2="50-59"
+              stroke="red"
+              strokeOpacity={0.3}
+              xAxisId={0}
+            /> */}
           </BarChart>
         </ResponsiveContainer>
       </div>
