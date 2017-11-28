@@ -2,14 +2,13 @@ const initialDemographicState = {
   sex: [],
   age: [],
   location: [],
-  selectedDates: {
-    startDate: 20170101,
-    endDate: 20170701,
-    // startDate: new Date(2017, 0, 1, 0, 0, 0, 0),
-    // endDate: new Date(),
-  },
+  occp_cod: [],
 };
 
+/**
+ * Reducer that listens and handles all Redux state operations
+ * for the Demographics
+ */
 export default (state = initialDemographicState, action = {}) => {
   switch (action.type) {
     case 'UPDATE_DEMOGRAPHICS':

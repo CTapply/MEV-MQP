@@ -1,16 +1,18 @@
 const initialFilterState = {
   REPT_DT: {
-    start: 123,
-    end: 123,
+    start: 20170101,
+    end: 20170101,
   },
   sex: [],
   occr_country: [],
-  age: {
-    start: 123,
-    end: 123,
-  },
+  age: [],
+  occp_cod: [],
 };
 
+/**
+ * Reducer that listens and handles all Redux state operations
+ * for the Filters
+ */
 export default (state = initialFilterState, action = {}) => {
   switch (action.type) {
     case 'SET_DATE_RANGE':
@@ -21,6 +23,8 @@ export default (state = initialFilterState, action = {}) => {
       return Object.assign({}, state, { occr_country: action.occr_country });
     case 'SET_AGE':
       return Object.assign({}, state, { age: action.age });
+    case 'SET_OCCUPATION':
+      return Object.assign({}, state, { occp_cod: action.occp_cod });
     default: return state;
   }
 };

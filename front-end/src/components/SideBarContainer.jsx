@@ -4,6 +4,9 @@ import { withStyles } from 'material-ui/styles';
 import SideBar from './sidebar/SideBar';
 import styles from './SideBarContainerStyles';
 
+/**
+ * This is the container component for the SideBar panel
+ */
 class SideBarContainer extends Component {
   static propTypes = {
     classes: PropTypes.shape({

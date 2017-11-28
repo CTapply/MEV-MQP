@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer, ReferenceArea } from 'recharts';
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { withStyles } from 'material-ui/styles';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
@@ -13,7 +13,7 @@ const styles = {
     'text-align': 'center',
     'font-size': '20pt',
     'pointer-events': 'none',
-    'padding-left': '45px',
+    transform: 'translateX(45px)',
   },
   responsiveContainer: {
     'margin-left': '-15px',
@@ -36,19 +36,24 @@ const styles = {
     width: '11pt',
     transform: 'translateX(3px)',
   },
-  '@media (max-width: 970px)': {
+  '@media (max-width: 1450px)': {
     labelFont: {
-      'padding-left': '0px',
+      transform: 'translateX(20px)',
+    },
+  },
+  '@media (max-width: 1100px)': {
+    labelFont: {
+      transform: 'translateX(0px)',
     },
   },
 };
 
 /**
- * This is the component that displays the Age Demographic visualization
+ * This is the component that displays the Sex Demographic visualization
  */
-class Age extends Component {
+class ReportedBy extends Component {
   static propTypes = {
-    age: PropTypes.arrayOf(PropTypes.object).isRequired,
+    occp_cod: PropTypes.arrayOf(PropTypes.object).isRequired,
     toggleFilter: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
@@ -98,9 +103,9 @@ class Age extends Component {
    * Calculates the best size for the visualization for better scalability
    */
   resizeGraph = () => {
-    const container = document.getElementById('age-container');
+    const container = document.getElementById('occupation-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
-    const graphTitle = document.getElementById('age-graph-title');
+    const graphTitle = document.getElementById('occupation-graph-title');
     const graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
     this.setState({
       graphHeight: (parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10)) + 10,
@@ -109,24 +114,24 @@ class Age extends Component {
 
   render() {
     return (
-      <div id="age-container" className={this.props.classes.maxHeight} >
-        <div id="age-header" className={this.props.classes.noOverflow} >
+      <div id="occupation-container" className={this.props.classes.maxHeight} >
+        <div id="occupation-header" className={this.props.classes.noOverflow} >
           <Chip
             avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}
             label="Clear Filter"
             onClick={this.clearFilter}
             className={this.props.classes.clearFilterChip}
           />
-          <Typography id="age-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
-            Age
+          <Typography id="occupation-graph-title" className={this.props.classes.labelFont} type="title" component="h1">
+            Occupation
           </Typography>
         </div>
-        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
+        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight} >
           <BarChart
-            data={this.props.age}
+            data={this.props.occp_cod}
             onClick={this.handleFilterClickToggle}
           >
-            <XAxis dataKey="age" tickCount={13} />
+            <XAxis dataKey="occp_cod" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip
@@ -134,27 +139,10 @@ class Age extends Component {
               offset={15}
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
-              demographic="age"
+              demographic="occp_cod"
             />
             <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorSevere)" />
             <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorNotSerious)" />
-            {/* <ReferenceArea
-              x1="0-5"
-              x2="20-29"
-              stroke="red"
-              strokeOpacity={0.3}
-              xAxisId={0}
-            />
-            <ReferenceArea
-              style={{
-                width: '40px',
-              }}
-              x1="40-49"
-              x2="50-59"
-              stroke="red"
-              strokeOpacity={0.3}
-              xAxisId={0}
-            /> */}
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -162,4 +150,4 @@ class Age extends Component {
   }
 }
 
-export default withStyles(styles)(Age);
+export default withStyles(styles)(ReportedBy);

@@ -13,6 +13,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "history": "^4.7.2",
+    "d3-scale": "^1.0.7",
     "jquery": "^3.2.1",
     "jss": "^8.1.0",
     "lodash": "^4.17.4",

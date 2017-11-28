@@ -1,6 +1,9 @@
 import { filterData } from './filterActions';
 
-export const setSelectedTimeline = () => (dispatch) => {
+/**
+ * Gets the data to build the timeline for the entire database
+ */
+export const getEntireTimeline = () => (dispatch) => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -9,12 +12,10 @@ export const setSelectedTimeline = () => (dispatch) => {
     },
   };
 
-  console.log('grabbing timeline data');
-
   fetch('http://localhost:3001/gettimelinedata', fetchData)
     .then(response => response.json())
     .then((allReports) => {
-      // console.log(allReports);
+      console.log('Got timeline');
       dispatch({ type: 'SET_ENTIRE_TIMELINE', entireTimelineData: allReports });
     })
     .catch((err) => {
@@ -22,8 +23,10 @@ export const setSelectedTimeline = () => (dispatch) => {
     });
 };
 
+/**
+ * Sets the filter with the given dates then filters all data.
+ */
 export const setSelectedDate = selectedDates => (dispatch) => {
   dispatch({ type: 'SET_DATE_RANGE', REPT_DT: { start: selectedDates.startDate, end: selectedDates.endDate } });
-  console.log('Setting Date Range');
   dispatch(filterData());
 };
