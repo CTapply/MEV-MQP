@@ -50,8 +50,14 @@ makeData = () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
-    body: this.props.filters,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ...this.props.filters,
+    }),
   };
+  console.log(fetchData);
   fetch('http://localhost:3001/getreports', fetchData)
     .then(response => response.json())
     .then((reports) => {
