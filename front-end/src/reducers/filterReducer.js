@@ -1,5 +1,5 @@
 const initialFilterState = {
-  REPT_DT: {
+  init_fda_dt: {
     start: 20170101,
     end: 20170101,
   },
@@ -16,7 +16,7 @@ const initialFilterState = {
 export default (state = initialFilterState, action = {}) => {
   switch (action.type) {
     case 'SET_DATE_RANGE':
-      return Object.assign({}, state, { REPT_DT: action.REPT_DT });
+      return Object.assign({}, state, { init_fda_dt: action.init_fda_dt });
     case 'SET_SEX':
       return Object.assign({}, state, { sex: action.sex });
     case 'SET_LOCATION':

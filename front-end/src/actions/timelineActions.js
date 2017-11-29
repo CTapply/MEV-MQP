@@ -27,6 +27,6 @@ export const getEntireTimeline = () => (dispatch) => {
  * Sets the filter with the given dates then filters all data.
  */
 export const setSelectedDate = selectedDates => (dispatch) => {
-  dispatch({ type: 'SET_DATE_RANGE', REPT_DT: { start: selectedDates.startDate, end: selectedDates.endDate } });
+  dispatch({ type: 'SET_DATE_RANGE', init_fda_dt: { start: selectedDates.startDate, end: selectedDates.endDate } });
   dispatch(filterData());
 };

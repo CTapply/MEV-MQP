@@ -11,42 +11,15 @@ class ReportTable extends Component {
   constructor() {
     super();
     this.state = {
-      data: [], // this.makeData(),
+      data: [],
     };
   }
 
   componentDidMount() {
     this.makeData();
   }
-  // range = (len) => {
-  //   const arr = [];
-  //   for (let i = 0; i < len; i++) {
-  //     arr.push(i);
-  //   }
-  //   return arr;
-  // };
 
-// newPerson = () => {
-//   const statusChance = Math.random();
-//   return {
-//     firstName: 'test',
-//     lastName: 'test',
-//     age: Math.floor(Math.random() * 30),
-//     visits: Math.floor(Math.random() * 100),
-//     progress: Math.floor(Math.random() * 100),
-//     status:
-//       statusChance > 0.66
-//         ? 'relationship'
-//         : statusChance > 0.33 ? 'complicated' : 'single',
-//   };
-// };
-
-makeData = () => {
-  // const leng = 5355;
-  // return (this.range(leng).map(d => ({
-  //   ...this.newPerson(),
-  //   children: this.range(10).map(this.newPerson),
-  // })));
+makeData = () => { 
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -61,7 +34,8 @@ makeData = () => {
   fetch('http://localhost:3001/getreports', fetchData)
     .then(response => response.json())
     .then((reports) => {
-      console.log(reports);
+      console.log(reports.rows);
+      this.setState({ data: reports.rows });
     });
 };
 
@@ -78,18 +52,19 @@ render() {
             columns: [
               {
                 Header: 'Event Date',
-                accessor: 'firstName',
+                accessor: 'init_fda_dt',
               },
               {
                 Header: 'Primary ID',
-                id: 'lastName',
-                accessor: d => d.lastName,
+                accessor: 'primaryid',
               },
               {
                 Header: 'Case ID',
+                accessor: 'caseid',
               },
               {
                 Header: 'Case Version',
+                accessor: 'caseversion',
               },
             ],
           },
@@ -98,14 +73,15 @@ render() {
             columns: [
               {
                 Header: 'Age',
-                accessor: 'age',
+                accessor: 'age_year',
               },
               {
                 Header: 'Sex',
-                accessor: 'status',
+                accessor: 'sex',
               },
               {
                 Header: 'Weight',
+                accessor: 'wt_lb',
               },
             ],
           },
@@ -114,13 +90,15 @@ render() {
             columns: [
               {
                 Header: 'Drugs',
-                accessor: 'visits',
+                accessor: 'drugname',
               },
               {
                 Header: 'Medication Error',
+                accessor: 'me_type',
               },
               {
                 Header: 'Outcome',
+                accessor: 'outc_cod',
               },
             ],
           },
