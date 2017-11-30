@@ -6,6 +6,7 @@ import VisualizationContainer from './VisualizationContainer';
 import SideBarContainer from './SideBarContainer';
 import TimelineContainer from './TimelineContainer';
 
+
 const blueTheme = createMuiTheme({
   palette: {
     primary: blue,

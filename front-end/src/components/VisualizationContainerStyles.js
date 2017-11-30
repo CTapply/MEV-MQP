@@ -1,6 +1,6 @@
 export default {
   mainVisualization: {
-    height: '65vh',
+    height: 'calc(65vh - 52px)',
     padding: '0px',
     width: '100%',
     overflow: 'visible',

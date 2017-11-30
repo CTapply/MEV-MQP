@@ -1,7 +1,7 @@
 export default {
   sideBar: {
     width: '100%',
-    height: '20vh',
+    height: '15vh',
     padding: '0px',
   },
 };

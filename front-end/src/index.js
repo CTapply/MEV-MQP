@@ -14,8 +14,10 @@ import storage from 'redux-persist/lib/storage/session';
 
 import reducers from './reducers/index';
 import App from './components/App';
+import About from './components/About';
 import ReportView from './components/ReportView';
 import PDFApp from './components/PDFApp';
+import TopNavigation from './components/navigation/TopNavigation';
 
 import './index.css';
 
@@ -24,7 +26,7 @@ const history = createHistory();
 const config = {
   key: 'root',
   storage,
-}
+};
 
 const rootReducer = persistCombineReducers(config, {
   ...reducers,
@@ -48,8 +50,10 @@ ReactDOM.render(
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
+          <TopNavigation />
           <Route exact path="/" component={App} />
           <Route path="/report" component={ReportView} />
+          <Route path="/about" component={About} />
           <Route path="/pdf/:id?" component={PDFApp} />
         </div>
       </ConnectedRouter>
