@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import {
+  SortingState, SelectionState, FilteringState, GroupingState, PagingState,
+  LocalFiltering, LocalGrouping, LocalSorting, LocalPaging,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid,
+  VirtualTableView, TableHeaderRow, TableFilterRow, TableSelection, TableGroupRow,
+  GroupingPanel, DragDropContext, TableColumnReordering,
+} from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import styles from '../ReportContainerStyles';
-import { Redirect } from 'react-router';
 
-class ReportTable extends Component {
+class ReportTable extends React.PureComponent {
   constructor() {
     super();
     this.state = {
@@ -20,6 +26,51 @@ class ReportTable extends Component {
   componentDidMount() {
     this.makeData();
   }
+
+getRowId = row => row.primaryid;
+
+columns = [
+  {
+    title: 'Event Date',
+    name: 'init_fda_dt',
+  },
+  {
+    title: 'Primary ID',
+    name: 'primaryid',
+  },
+  {
+    title: 'Case ID',
+    name: 'caseid',
+  },
+  {
+    title: 'Case Version',
+    name: 'caseversion',
+  },
+  {
+    title: 'Age',
+    name: 'age_year',
+  },
+  {
+    title: 'Sex',
+    name: 'sex',
+  },
+  {
+    title: 'Weight',
+    name: 'wt_lb',
+  },
+  {
+    title: 'Drugs',
+    name: 'drugname',
+  },
+  {
+    title: 'Medication Error',
+    name: 'me_type',
+  },
+  {
+    title: 'Outcome',
+    name: 'outc_cod',
+  },
+];
 
 makeData = () => {
   const fetchData = {
@@ -45,81 +96,31 @@ handleClick = (ev) => {
 }
 
 render() {
-  const { data } = this.state;
   return (
     <div>
-      {console.log(this.props.filters)}
-      <ReactTable
-        getTdProps={(state, rowInfo, column, instance) => ({
-          onClick: (e, handleOriginal) => {
-            this.props.handleClick(rowInfo.original.primaryid);
-            if (handleOriginal) {
-              handleOriginal();
-            }
-          },
-        })}
-        data={data}
-        columns={[
-          {
-            Header: 'Case Information',
-            columns: [
-              {
-                Header: 'Event Date',
-                accessor: 'init_fda_dt',
-              },
-              {
-                Header: 'Primary ID',
-                accessor: 'primaryid',
-              },
-              {
-                Header: 'Case ID',
-                accessor: 'caseid',
-              },
-              {
-                Header: 'Case Version',
-                accessor: 'caseversion',
-              },
-            ],
-          },
-          {
-            Header: 'Demographics',
-            columns: [
-              {
-                Header: 'Age',
-                accessor: 'age_year',
-              },
-              {
-                Header: 'Sex',
-                accessor: 'sex',
-              },
-              {
-                Header: 'Weight',
-                accessor: 'wt_lb',
-              },
-            ],
-          },
-          {
-            Header: 'Stats',
-            columns: [
-              {
-                Header: 'Drugs',
-                accessor: 'drugname',
-              },
-              {
-                Header: 'Medication Error',
-                accessor: 'me_type',
-              },
-              {
-                Header: 'Outcome',
-                accessor: 'outc_cod',
-              },
-            ],
-          },
-        ]}
-        defaultPageSize={10}
-        className="-striped -highlight"
-      />
-      <br />
+      <Grid
+        rows={this.state.data}
+        columns={this.columns}
+        getRowId={this.getRowId}
+      >
+        <DragDropContext />
+        <SortingState />
+        <GroupingState />
+        <PagingState
+          defaultCurrentPage={0}
+          defaultPageSize={10}
+        />
+        <LocalSorting />
+        <LocalGrouping />
+        <LocalPaging />
+        <SelectionState
+          defaultSelection={[1, 3, 18]}
+        />
+        <VirtualTableView />
+        <TableHeaderRow allowSorting />
+        <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
+        <TableGroupRow />
+      </Grid>
     </div>
   );
 }
