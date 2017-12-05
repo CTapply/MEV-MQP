@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
-  SortingState, SelectionState, FilteringState, GroupingState, PagingState,
-  LocalFiltering, LocalGrouping, LocalSorting, LocalPaging,
+  RowDetailState, SortingState, LocalSorting,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  VirtualTableView, TableHeaderRow, TableFilterRow, TableSelection, TableGroupRow,
-  GroupingPanel, DragDropContext, TableColumnReordering,
+  VirtualTableView,
+  TableHeaderRow,
+  TableRowDetail,
 } from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import styles from '../ReportContainerStyles';
+import Button from 'material-ui/Button';
 
 class ReportTable extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       primaryid: '',
       data: [],
@@ -25,6 +27,13 @@ class ReportTable extends React.PureComponent {
 
   componentDidMount() {
     this.makeData();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.bin !== this.props.bin) {
+      this.makeData();
+      console.log(`bin: ${this.props.bin}`);
+    }
   }
 
 getRowId = row => row.primaryid;
@@ -81,6 +90,7 @@ makeData = () => {
     },
     body: JSON.stringify({
       ...this.props.filters,
+      ...this.props.bin,
     }),
   };
   console.log(fetchData);
@@ -91,9 +101,25 @@ makeData = () => {
     });
 };
 
-handleClick = (ev) => {
-  console.log(ev);
-}
+rowTemplate = row => (<div> {console.log(this.props.bin)}
+  <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
+  <Button
+    style={{ margin: 12 }}
+    raised
+    className="cal-button"
+    color="primary"
+  >
+    Move to important
+  </Button>
+  <Button
+    style={{ margin: 12 }}
+    raised
+    className="cal-button"
+    color="primary"
+  >
+    Move to unimportant
+  </Button>
+</div>)
 
 render() {
   return (
@@ -101,25 +127,15 @@ render() {
       <Grid
         rows={this.state.data}
         columns={this.columns}
-        getRowId={this.getRowId}
       >
-        <DragDropContext />
+        <RowDetailState />
         <SortingState />
-        <GroupingState />
-        <PagingState
-          defaultCurrentPage={0}
-          defaultPageSize={10}
-        />
         <LocalSorting />
-        <LocalGrouping />
-        <LocalPaging />
-        <SelectionState
-          defaultSelection={[1, 3, 18]}
-        />
         <VirtualTableView />
         <TableHeaderRow allowSorting />
-        <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-        <TableGroupRow />
+        <TableRowDetail
+          template={this.rowTemplate}
+        />
       </Grid>
     </div>
   );
