@@ -56,7 +56,7 @@ const styles = {
 };
 
 /**
- * This is the container component for the Demographics panel
+ * This is the container component for the Currently Selected Filters
  */
 class CurrentlySelectedFilters extends Component {
   static propTypes = {

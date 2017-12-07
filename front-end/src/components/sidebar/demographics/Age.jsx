@@ -98,10 +98,8 @@ class Age extends Component {
   /**
    * Toggles the filter in Redux State for the bar clicked on in the chart
    */
-  handleFilterClickToggle = (e, asd) => {
+  handleFilterClickToggle = (e) => {
     // this.getCursorRectangle();
-    console.log(e)
-    console.log(asd)
     if (e && e.activeLabel) {
       this.props.toggleFilter(e.activeLabel);
     }
