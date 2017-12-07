@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
 import { Link } from 'react-router-dom';
 import Typography from 'material-ui/Typography';
+import { setUserInfo } from '../../actions/userActions';
 import Button from 'material-ui/Button';
 import List, {
   ListItem,
@@ -15,6 +17,7 @@ import styles from './NavigationStyles';
 
 class TopNavigation extends Component {
   static propTypes = {
+    setUserInfo: PropTypes.func.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -25,6 +28,10 @@ class TopNavigation extends Component {
   state = {
     left: false,
   };
+  logout = (event) => {
+    event.preventDefault();
+    this.props.setUserInfo(false, -1, '');
+  }
   toggleDrawer = (side, open) => () => {
     this.setState({
       [side]: open,
@@ -32,7 +39,6 @@ class TopNavigation extends Component {
   };
 
   render = () => (
-
     <div className={this.props.classes.topNavigationContainer}>
       <nav className={`${this.props.classes.topNavigationContainer} navbar navbar-default`}>
         <div className="container-fluid">
@@ -51,6 +57,34 @@ class TopNavigation extends Component {
                   </div>
                   <Divider style={{ backgroundColor: 'rgb(255,255,255)' }} />
                   <List>
+                    {!this.props.isLoggedIn ? (
+                      <Link to="/login" className={this.props.classes.listLink}>
+                        <ListItem button >
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                                Login
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                      </Link>
+                    ) : (
+                      <Link to="/" onClick={this.logout} className={this.props.classes.listLink}>
+                        <ListItem button >
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                                Logout
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                      </Link>
+                    )
+                    }
                     <Link to="/" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText
@@ -63,7 +97,7 @@ class TopNavigation extends Component {
                         />
                       </ListItem>
                     </Link>
-                    <Link to="/about"  className={this.props.classes.listLink}>
+                    <Link to="/about" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText
                           disableTypography
@@ -107,4 +141,11 @@ class TopNavigation extends Component {
   )
 }
 
-export default withStyles(styles)(TopNavigation);
+const mapStateToProps = state => ({
+  isLoggedIn: state.user.isLoggedIn,
+});
+
+export default connect(
+  mapStateToProps,
+  { setUserInfo },
+)(withStyles(styles)(TopNavigation));

@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import Button from 'material-ui/Button';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
-import ReportContainer from './reports/ReportContainer';
+import ReportTable from './reports/ReportTable.jsx';
+
 
 const blueTheme = createMuiTheme({
   palette: {
@@ -24,22 +25,30 @@ class ReportView extends Component {
     super();
     this.state = {
       primaryid: '',
+      bin: 'all',
     };
   }
 
-  handleClick = (id) => {
-    this.setState({primaryid: id})
+  handleAllClick = () => {
+    this.setState({ bin: 'all' });
+  }
+  handleImportantClick = () => {
+    this.setState({ bin: 'important' });
+  }
+  handleUnimportantClick = () => {
+    this.setState({ bin: 'unimportant' });
   }
 
   render() {
     return (
       <MuiThemeProvider theme={blueTheme} >
         <div className="ReportView">
-          <ReportContainer handleClick={this.handleClick} />
-          <Link to="/"><Button raised className="cal-button" color="primary">Go Back</Button></Link>
-          <br />
-          <br />
-          <Link to={`/pdf/${this.state.primaryid}`} target="_blank"><Button raised className="cal-button" color="primary">{`Go to report ${this.state.primaryid}`}</Button></Link>
+          <h1> {`Currently inside bin: ${this.state.bin}`} </h1>
+          <ReportTable bin={this.state.bin} />
+          <Link to="/"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
+          <Button raised onClick={this.handleAllClick} style={{ margin: 12 }} className="cal-button" color="primary">All Bin</Button>
+          <Button raised onClick={this.handleImportantClick} style={{ margin: 12 }} className="cal-button" color="primary">Important Bin</Button>
+          <Button raised onClick={this.handleUnimportantClick} style={{ margin: 12 }} className="cal-button" color="primary">Unimportant Bin</Button>
         </div>
       </MuiThemeProvider>
     );

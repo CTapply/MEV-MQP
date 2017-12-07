@@ -366,6 +366,28 @@ app.post('/getreporttext', (req, res) => {
   });
 });
 
+app.post('/getuser', (req, res) => {
+  console.log('looking for user with request body: \n', req.body);
+  let query =
+  'SELECT user_id, email '
++ 'FROM users '
++ 'WHERE email=\'' + req.body.email + '\'';
+console.log('user quer: \n', query);
+  db.query(query, (err, data) => {
+    //console.log(data);
+    res.status(200).send(data);
+  });
+});
+
+app.put('/saveuser', (req, res) => {
+  console.log('got a save report text request');
+  let query =
+  'INSERT INTO users(email) VALUES (\''+ req.body.email +'\');'
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
 app.put('/savereporttext', (req, res) => {
   console.log('got a save report text request');
   tags = JSON.stringify(req.body.tags) === '{}' ? 'null' : '\'' + JSON.stringify(req.body.tags) + '\'';
