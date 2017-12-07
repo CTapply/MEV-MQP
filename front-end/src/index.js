@@ -14,6 +14,7 @@ import storage from 'redux-persist/lib/storage/session';
 
 import reducers from './reducers/index';
 import App from './components/App';
+import Login from './components/Login';
 import About from './components/About';
 import ReportView from './components/ReportView';
 import PDFApp from './components/PDFApp';
@@ -53,6 +54,7 @@ ReactDOM.render(
           <TopNavigation />
           <Route exact path="/" component={App} />
           <Route path="/report" component={ReportView} />
+          <Route path="/login" component={Login} />
           <Route path="/about" component={About} />
           <Route path="/pdf/:id?" component={PDFApp} />
         </div>

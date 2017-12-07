@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import {
+  RowDetailState, SortingState, LocalSorting,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid,
+  VirtualTableView,
+  TableHeaderRow,
+  TableRowDetail,
+} from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import styles from '../ReportContainerStyles';
-import { Redirect } from 'react-router';
+import Button from 'material-ui/Button';
 
-class ReportTable extends Component {
-  constructor() {
-    super();
+class ReportTable extends React.PureComponent {
+  constructor(props) {
+    super(props);
     this.state = {
       primaryid: '',
       data: [],
@@ -21,6 +29,58 @@ class ReportTable extends Component {
     this.makeData();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.bin !== this.props.bin) {
+      this.makeData();
+      console.log(`bin: ${this.props.bin}`);
+    }
+  }
+
+getRowId = row => row.primaryid;
+
+columns = [
+  {
+    title: 'Event Date',
+    name: 'init_fda_dt',
+  },
+  {
+    title: 'Primary ID',
+    name: 'primaryid',
+  },
+  {
+    title: 'Case ID',
+    name: 'caseid',
+  },
+  {
+    title: 'Case Version',
+    name: 'caseversion',
+  },
+  {
+    title: 'Age',
+    name: 'age_year',
+  },
+  {
+    title: 'Sex',
+    name: 'sex',
+  },
+  {
+    title: 'Weight',
+    name: 'wt_lb',
+  },
+  {
+    title: 'Drugs',
+    name: 'drugname',
+  },
+  {
+    title: 'Medication Error',
+    name: 'me_type',
+  },
+  {
+    title: 'Outcome',
+    name: 'outc_cod',
+  },
+];
+
 makeData = () => {
   const fetchData = {
     method: 'POST',
@@ -30,6 +90,7 @@ makeData = () => {
     },
     body: JSON.stringify({
       ...this.props.filters,
+      ...this.props.bin,
     }),
   };
   console.log(fetchData);
@@ -40,86 +101,42 @@ makeData = () => {
     });
 };
 
-handleClick = (ev) => {
-  console.log(ev);
-}
+rowTemplate = row => (<div> {console.log(this.props.bin)}
+  <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
+  <Button
+    style={{ margin: 12 }}
+    raised
+    className="cal-button"
+    color="primary"
+  >
+    Move to important
+  </Button>
+  <Button
+    style={{ margin: 12 }}
+    raised
+    className="cal-button"
+    color="primary"
+  >
+    Move to unimportant
+  </Button>
+</div>)
 
 render() {
-  const { data } = this.state;
   return (
     <div>
-      {console.log(this.props.filters)}
-      <ReactTable
-        getTdProps={(state, rowInfo, column, instance) => ({
-          onClick: (e, handleOriginal) => {
-            this.props.handleClick(rowInfo.original.primaryid);
-            if (handleOriginal) {
-              handleOriginal();
-            }
-          },
-        })}
-        data={data}
-        columns={[
-          {
-            Header: 'Case Information',
-            columns: [
-              {
-                Header: 'Event Date',
-                accessor: 'init_fda_dt',
-              },
-              {
-                Header: 'Primary ID',
-                accessor: 'primaryid',
-              },
-              {
-                Header: 'Case ID',
-                accessor: 'caseid',
-              },
-              {
-                Header: 'Case Version',
-                accessor: 'caseversion',
-              },
-            ],
-          },
-          {
-            Header: 'Demographics',
-            columns: [
-              {
-                Header: 'Age',
-                accessor: 'age_year',
-              },
-              {
-                Header: 'Sex',
-                accessor: 'sex',
-              },
-              {
-                Header: 'Weight',
-                accessor: 'wt_lb',
-              },
-            ],
-          },
-          {
-            Header: 'Stats',
-            columns: [
-              {
-                Header: 'Drugs',
-                accessor: 'drugname',
-              },
-              {
-                Header: 'Medication Error',
-                accessor: 'me_type',
-              },
-              {
-                Header: 'Outcome',
-                accessor: 'outc_cod',
-              },
-            ],
-          },
-        ]}
-        defaultPageSize={10}
-        className="-striped -highlight"
-      />
-      <br />
+      <Grid
+        rows={this.state.data}
+        columns={this.columns}
+      >
+        <RowDetailState />
+        <SortingState />
+        <LocalSorting />
+        <VirtualTableView />
+        <TableHeaderRow allowSorting />
+        <TableRowDetail
+          template={this.rowTemplate}
+        />
+      </Grid>
     </div>
   );
 }
