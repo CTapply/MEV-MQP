@@ -355,6 +355,17 @@ app.post('/getreports', (req, res) => {
   });
 });
 
+app.post('/getusertrash', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM bins '
++ 'WHERE user_id = ' + req.body.userID;
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
@@ -380,9 +391,17 @@ console.log('user quer: \n', query);
 });
 
 app.put('/saveuser', (req, res) => {
-  console.log('got a save report text request');
   let query =
-  'INSERT INTO users(email) VALUES (\''+ req.body.email +'\');'
+  'INSERT INTO users(email) VALUES (\''+ req.body.email +'\');';
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/makeusertrash', (req, res) => {
+  console.log('got a make trash request');
+  let query =
+  'INSERT INTO bins (user_id, name, primaryid) VALUES (' + req.body.userID + ', \'trash\',null)';
   db.query(query, (err, data) => {
     res.status(200).send();
   });
