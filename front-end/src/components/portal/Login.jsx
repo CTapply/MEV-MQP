@@ -4,15 +4,18 @@ import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import { setUserInfo } from '../../actions/userActions';
+import MEVColors from '../../theme';
 
-
-const blueTheme = createMuiTheme({
+const defaultTheme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      ...blue,
+      500: MEVColors.buttonLight,
+    },
     secondary: {
       ...green,
-      A400: '#00e677',
     },
+    ...MEVColors,
     error: red,
   },
 });
@@ -103,7 +106,7 @@ class Login extends Component {
   render() {
     let result = (<div />);
     if (this.logged_in) {
-      result = (<MuiThemeProvider theme={blueTheme} >
+      result = (<MuiThemeProvider theme={defaultTheme} >
         <div className="About container">
           <div className="row">
             <div className="col-sm-12">
@@ -118,7 +121,7 @@ class Login extends Component {
         </div>
       </MuiThemeProvider>);
     } else {
-      result = (<MuiThemeProvider theme={blueTheme} >
+      result = (<MuiThemeProvider theme={defaultTheme} >
         <div className="About container">
           <div className="row">
             <div className="col-sm-12">

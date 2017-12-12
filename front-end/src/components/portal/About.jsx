@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
+import MEVColors from '../../theme';
 
-
-const blueTheme = createMuiTheme({
+const defaultTheme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      ...blue,
+      500: MEVColors.buttonLight,
+    },
     secondary: {
       ...green,
-      A400: '#00e677',
     },
+    ...MEVColors,
     error: red,
   },
 });
@@ -30,7 +33,7 @@ class About extends Component {
 
   render() {
     return (
-      <MuiThemeProvider theme={blueTheme} >
+      <MuiThemeProvider theme={defaultTheme} >
         <div className="About container">
           <div className="row">
             <div className="col-sm-12">

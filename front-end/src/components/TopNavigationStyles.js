@@ -1,13 +1,15 @@
+import MEVColors from '../theme';
+
 export default {
   topNavigationContainer: {
     margin: '0px',
     width: '100%',
-    'background-color': '#DA2536',
+    'background-color': MEVColors.severeLight,
     zIndex: 100,
     border: 'none',
   },
   drawerClass: {
-    'background-color': '#AB1D2A',
+    'background-color': MEVColors.severeDark,
     color: '#fff',
   },
   logo: {

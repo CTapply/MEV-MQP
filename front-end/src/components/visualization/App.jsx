@@ -5,15 +5,18 @@ import { blue, green, red } from 'material-ui/colors';
 import TreeMap from './components/treeMap/TreeMap';
 import Demographics from './components/demographics/Demographics';
 import Timeline from './components/timeline/Timeline';
+import MEVColors from '../../theme';
 
-
-const blueTheme = createMuiTheme({
+const defaultTheme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      ...blue,
+      500: MEVColors.buttonLight,
+    },
     secondary: {
       ...green,
-      A400: '#00e677',
     },
+    ...MEVColors,
     error: red,
   },
 });
@@ -33,7 +36,7 @@ class App extends Component {
 
   render() {
     return (
-      <MuiThemeProvider theme={blueTheme} >
+      <MuiThemeProvider theme={defaultTheme} >
         <div className="App">
           <Demographics />
           <TreeMap />

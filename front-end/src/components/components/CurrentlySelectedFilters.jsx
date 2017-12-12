@@ -9,7 +9,7 @@ import Avatar from 'material-ui/Avatar';
 import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../../actions/demographicActions';
 import { toggleMETypeFilter, toggleProductFilter, toggleStageFilter, toggleCauseFilter } from '../../actions/visualizationActions';
 import ClearFilterIcon from '../../resources/clearFilterIcon.svg';
-
+import MEVColors from '../../theme';
 
 const styles = {
   filterPaper: {
@@ -52,7 +52,7 @@ const styles = {
   },
   toolTipParagraph: {
     margin: '0px',
-    color: 'rgba(255,255,255,1)',
+    color: '#FFF',
   },
 };
 

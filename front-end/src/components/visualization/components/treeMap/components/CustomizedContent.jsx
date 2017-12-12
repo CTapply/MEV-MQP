@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import MEVColors from '../../../../../theme';
 
 class CustomizedContent extends Component {
   static defaultProps = {
@@ -35,11 +36,10 @@ class CustomizedContent extends Component {
     // const purple = '6824EA';
     // const blue = '123266';
 
-    const red = 'DA2536';
-    const blue = '123266';
-
-    let color1 = red;
-    let color2 = blue;
+    const red = MEVColors.severeLight;
+    const blue = MEVColors.notSevereLight;
+    let color1 = red.slice(1);
+    let color2 = blue.slice(1);
     // let color1;
     // let color2;
 
@@ -77,8 +77,8 @@ class CustomizedContent extends Component {
       <g id={this.props.id} >
         <defs>
           <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={0.8} />
-            <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={0.8} />
+            <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
+            <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
           </linearGradient>
         </defs>
         <rect

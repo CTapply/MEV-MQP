@@ -13,6 +13,7 @@ import BrushImpl from './components/BrushImpl';
 import { getEntireTimeline, setSelectedDate } from '../../../../actions/timelineActions';
 import CustomTooltip from './components/CustomTooltip';
 import styles from './TimelineStyles';
+import MEVColors from '../../../../theme';
 import './Timeline.css';
 
 /**
@@ -240,12 +241,12 @@ class Timeline extends Component {
       >
         <defs>
           <linearGradient id="colorNotSerious" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#283593" stopOpacity={1} />
-            <stop offset="99%" stopColor="#283593" stopOpacity={1} />
+            <stop offset="15%" stopColor={MEVColors.notSevereDark} stopOpacity={1} />
+            <stop offset="99%" stopColor={MEVColors.notSevereLight} stopOpacity={1} />
           </linearGradient>
           <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.8} />
+            <stop offset="15%" stopColor={MEVColors.severeDark} stopOpacity={0.8} />
+            <stop offset="99%" stopColor={MEVColors.severeLight} stopOpacity={0.8} />
           </linearGradient>
         </defs>
         <XAxis
@@ -267,12 +268,12 @@ class Timeline extends Component {
       >
         <defs>
           <linearGradient id="colorNotSerious" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#283593" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#283593" stopOpacity={0.8} />
+            <stop offset="15%" stopColor={MEVColors.notSevereDark} stopOpacity={0.8} />
+            <stop offset="99%" stopColor={MEVColors.notSevereLight} stopOpacity={0.8} />
           </linearGradient>
           <linearGradient id="colorSevere" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="15%" stopColor="#DA2536" stopOpacity={0.8} />
-            <stop offset="99%" stopColor="#AB1D2A" stopOpacity={0.8} />
+            <stop offset="15%" stopColor={MEVColors.severeDark} stopOpacity={0.8} />
+            <stop offset="99%" stopColor={MEVColors.severeLight} stopOpacity={0.8} />
           </linearGradient>
         </defs>
         <XAxis
@@ -292,7 +293,7 @@ class Timeline extends Component {
         <Area
           type="monotone"
           dataKey="serious"
-          stroke="#1A237E"
+          stroke={MEVColors.severeStroke}
           fillOpacity={1}
           stackId="1"
           fill="url(#colorSevere)"
@@ -302,7 +303,7 @@ class Timeline extends Component {
         <Area
           type="monotone"
           dataKey="not_serious"
-          stroke="#424242"
+          stroke={MEVColors.notSevereStroke}
           fillOpacity={1}
           stackId="1"
           fill="url(#colorNotSerious)"

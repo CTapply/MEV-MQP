@@ -2,6 +2,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
 html {
   font-size: 10pt;
+}
+
+a:hover {
+  text-decoration: none;
 }

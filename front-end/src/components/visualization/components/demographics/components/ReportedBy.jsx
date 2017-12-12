@@ -7,6 +7,7 @@ import Avatar from 'material-ui/Avatar';
 import Typography from 'material-ui/Typography';
 import CustomTooltip from './components/CustomTooltip';
 import ClearFilterIcon from '../../../../../resources/clearFilterIcon.svg';
+import MEVColors from '../../../../../theme';
 
 const styles = {
   labelFont: {
@@ -150,8 +151,8 @@ class ReportedBy extends Component {
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="occp_cod"
             />
-            <Bar dataKey="serious" stroke="#1A237E" stackId="a" fill="url(#colorSevere)" />
-            <Bar dataKey="UNK" stroke="#424242" stackId="a" fill="url(#colorNotSerious)" />
+            <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
+            <Bar dataKey="UNK" stroke={MEVColors.notSevereStroke} stackId="a" fill="url(#colorNotSerious)" />
           </BarChart>
         </ResponsiveContainer>
       </div>
