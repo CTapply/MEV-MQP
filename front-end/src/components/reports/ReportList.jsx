@@ -35,9 +35,11 @@ class ReportList extends Component {
   handleAllClick = () => {
     this.setState({ bin: 'all' });
   }
+
   handleImportantClick = () => {
     this.setState({ bin: 'important' });
   }
+
   handleUnimportantClick = () => {
     this.setState({ bin: 'unimportant' });
   }
