@@ -5,6 +5,7 @@ import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles
 import { blue, green, red } from 'material-ui/colors';
 import { setUserInfo } from '../../actions/userActions';
 import MEVColors from '../../theme';
+import { setUserInfo, makeUserTrash, checkUserTrash } from '../../actions/userActions';
 
 const defaultTheme = createMuiTheme({
   palette: {
@@ -28,6 +29,9 @@ const styles = theme => ({});
 class Login extends Component {
   static propTypes = {
     setUserInfo: PropTypes.func.isRequired,
+    makeUserTrash: PropTypes.func.isRequired,
+    checkUserTrash: PropTypes.func.isRequired,
+    userID: PropTypes.number.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -53,13 +57,11 @@ class Login extends Component {
     };
     fetch('http://localhost:3001/saveuser', fetchData)
       .then(() => {
-        setTimeout(() => {
-          this.setState({
-            type: 'success',
-            message: 'You have successfully been addded as a new user! Logging you in...',
-            logged_in: true,
-          });
-        }, 3000);
+        this.setState({
+          type: 'success',
+          message: 'You have successfully been addded as a new user! Logging you in...',
+          logged_in: true,
+        });
         this.sendFormData();
       });
   }
@@ -90,14 +92,22 @@ class Login extends Component {
       .then((user) => {
         if (user.rows.length > 0) {
           this.props.setUserInfo(true, user.rows[0].email, user.rows[0].user_id);
-          this.props.history.push("/");
+          if (this.props.checkUserTrash(this.props.userID)) {
+            console.log('user trash found');
+          } else {
+            this.props.makeUserTrash(this.props.userID);
+          }
+          this.props.history.push('/');
         } else {
           this.setState({
             type: 'danger',
             message: 'You have not successfully logged in, but well add you as a user!',
             logged_in: true,
           });
+          setTimeout(() => {
+          }, 10000);
           this.saveUser();
+          console.log('userid', this.props.userID);
         }
       });
   }
@@ -152,11 +162,10 @@ class Login extends Component {
 }
 
 const mapStateToProps = state => ({
-  sex: state.demographic.sex,
-  age: state.demographic.age,
+  userID: state.user.userID,
 });
 
 export default connect(
   mapStateToProps,
-  { setUserInfo },
+  { setUserInfo, makeUserTrash, checkUserTrash },
 )(withStyles(styles)(Login));

@@ -12,6 +12,7 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
+import _ from 'lodash';
 
 const styles = {};
 
@@ -29,7 +30,7 @@ class ReportTable extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.bin !== this.props.bin) {
+    if (prevProps.bin !== this.props.bin || !_.isEqual(this.props.filters, prevProps.filters)) {
       this.makeData();
       console.log(`bin: ${this.props.bin}`);
     }
@@ -89,7 +90,8 @@ makeData = () => {
     },
     body: JSON.stringify({
       ...this.props.filters,
-      ...this.props.bin,
+      bin: this.props.bin,
+      userID: this.props.userID,
     }),
   };
   console.log(fetchData);
@@ -100,23 +102,34 @@ makeData = () => {
     });
 };
 
-rowTemplate = row => (<div> {console.log(this.props.bin)}
+handleMove = (primaryid) => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      primaryid,
+      bin: this.props.bin === '' ? 'trash' : '',
+      userID: this.props.userID,
+    }),
+  };
+  console.log(fetchData);
+  fetch('http://localhost:3001/binreport', fetchData)
+    .then(() => this.makeData());
+};
+
+detailRowContent = row => (<div>
   <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
   <Button
     style={{ margin: 12 }}
     raised
     className="cal-button"
     color="primary"
+    onClick={() => this.handleMove(row.row.primaryid)}
   >
-    Move to important
-  </Button>
-  <Button
-    style={{ margin: 12 }}
-    raised
-    className="cal-button"
-    color="primary"
-  >
-    Move to unimportant
+    {this.props.bin === 'trash' ? 'Remove from Trash bin' : 'Move to Trash bin'}
   </Button>
 </div>)
 
@@ -133,7 +146,7 @@ render() {
         <VirtualTableView />
         <TableHeaderRow allowSorting />
         <TableRowDetail
-          template={this.rowTemplate}
+          template={this.detailRowContent}
         />
       </Grid>
     </div>
@@ -144,6 +157,7 @@ render() {
 
 const mapStateToProps = state => ({
   filters: state.filters,
+  userID: state.user.userID,
 });
 
 export default connect(

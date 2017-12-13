@@ -1,7 +1,7 @@
 const initialUserState = {
   isLoggedIn: false,
-  userEmail: -1,
-  userID: '',
+  userEmail: '',
+  userID: -1,
 };
 
 /**

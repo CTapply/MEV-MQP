@@ -335,21 +335,77 @@ app.post('/getdemographicdata', (req, res) => {
 });
 
 app.post('/getreports', (req, res) => {
-  console.log('got a report request with body:\n ', req.body)
-  let query =
-  'SELECT * '
-+ 'FROM reports '
-+ `WHERE (init_fda_dt BETWEEN ${req.body.init_fda_dt.start} AND ${req.body.init_fda_dt.end})`;
+  console.log('got a report request with body:\n ', req.body);
+  let query = '';
+  if (req.body.bin === '') {
+    query =
+    'WITH bin_pids '
+  + 'AS (SELECT get_pid_from_bin as pids '
+  +     `FROM get_pid_from_bin(${req.body.userID}, 'trash')) `
+  + 'SELECT * '
+  + 'FROM reports '
+  + `WHERE (init_fda_dt BETWEEN ${req.body.init_fda_dt.start} AND ${req.body.init_fda_dt.end})`;
+    
+    query += sexBuilder(req.body.sex);
+    query += locationBuilder(req.body.occr_country);
+    query += ageBuilder(req.body.age);
+    query += occupationBuilder(req.body.occp_cod);
+    query += meTypeBuilder(req.body.meType);
+    // query += productBuilder(req.body.product);
+    query += stageBuilder(req.body.stage);
+    query += causeBuilder(req.body.cause);  
+    
+    query += ' AND primaryid::integer not in (select unnest(pids) from bin_pids)';
+  } else {
+    query = 
+    'WITH bin_pids '
+  + 'AS (SELECT get_pid_from_bin as pids '
+  +     `FROM get_pid_from_bin(${req.body.userID}, '${req.body.bin}')) `
+  + 'SELECT * '
+  + 'FROM reports '
+  + `WHERE (init_fda_dt BETWEEN ${req.body.init_fda_dt.start} AND ${req.body.init_fda_dt.end})`;
+  
+    query += sexBuilder(req.body.sex);
+    query += locationBuilder(req.body.occr_country);
+    query += ageBuilder(req.body.age);
+    query += occupationBuilder(req.body.occp_cod);
+    query += meTypeBuilder(req.body.meType);
+    // query += productBuilder(req.body.product);
+    query += stageBuilder(req.body.stage);
+    query += causeBuilder(req.body.cause);
 
-  query += sexBuilder(req.body.sex);
-  query += locationBuilder(req.body.occr_country);
-  query += ageBuilder(req.body.age);
-  query += occupationBuilder(req.body.occp_cod);
-  query += meTypeBuilder(req.body.meType);
-  // query += productBuilder(req.body.product);
-  query += stageBuilder(req.body.stage);
-  query += causeBuilder(req.body.cause);
+    query += ' AND primaryid::integer in (select unnest(pids) from bin_pids)';
+  }
   console.log(query)
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
+app.post('/binreport', (req, res) => {
+  console.log('got a bin request to move report with body:\n', req.body);
+  let query =
+  'UPDATE bins '
++ 'SET primaryid = '
+  if (req.body.bin !== '') {
+    query += `bins.primaryid || ${req.body.primaryid} WHERE `;
+    query += `bins.user_id = ${req.body.userID} AND bins.name = '${req.body.bin}'`;    
+  } else {
+    query += `array_remove(bins.primaryid, ${req.body.primaryid}) WHERE `;
+    query += `bins.user_id = ${req.body.userID} AND bins.name = 'trash'`;    
+  }
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.post('/getusertrash', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM bins '
++ 'WHERE user_id = ' + req.body.userID;
   db.query(query, (err, data) => {
     res.status(200).send(data);
   });
@@ -380,9 +436,17 @@ console.log('user quer: \n', query);
 });
 
 app.put('/saveuser', (req, res) => {
-  console.log('got a save report text request');
   let query =
-  'INSERT INTO users(email) VALUES (\''+ req.body.email +'\');'
+  'INSERT INTO users(email) VALUES (\''+ req.body.email +'\');';
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/makeusertrash', (req, res) => {
+  console.log('got a make trash request');
+  let query =
+  'INSERT INTO bins (user_id, name, primaryid) VALUES (' + req.body.userID + ', \'trash\',null)';
   db.query(query, (err, data) => {
     res.status(200).send();
   });

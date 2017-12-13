@@ -28,20 +28,16 @@ class ReportList extends Component {
     super();
     this.state = {
       primaryid: '',
-      bin: 'all',
+      bin: '',
     };
   }
 
-  handleAllClick = () => {
-    this.setState({ bin: 'all' });
+  handleNormalClick = () => {
+    this.setState({ bin: '' });
   }
-
-  handleImportantClick = () => {
-    this.setState({ bin: 'important' });
-  }
-
-  handleUnimportantClick = () => {
-    this.setState({ bin: 'unimportant' });
+  
+  handleTrashClick = () => {
+    this.setState({ bin: 'trash' });
   }
 
   render() {
@@ -51,9 +47,8 @@ class ReportList extends Component {
           <h1> {`Currently inside bin: ${this.state.bin}`} </h1>
           <ReportTable bin={this.state.bin} />
           <Link to="/"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
-          <Button raised onClick={this.handleAllClick} style={{ margin: 12 }} className="cal-button" color="primary">All Bin</Button>
-          <Button raised onClick={this.handleImportantClick} style={{ margin: 12 }} className="cal-button" color="primary">Important Bin</Button>
-          <Button raised onClick={this.handleUnimportantClick} style={{ margin: 12 }} className="cal-button" color="primary">Unimportant Bin</Button>
+          <Button raised onClick={this.handleNormalClick} style={{ margin: 12 }} className="cal-button" color="primary">Normal View</Button>
+          <Button raised onClick={this.handleTrashClick} style={{ margin: 12 }} className="cal-button" color="primary">Trash Bin</Button>
         </div>
       </MuiThemeProvider>
     );
