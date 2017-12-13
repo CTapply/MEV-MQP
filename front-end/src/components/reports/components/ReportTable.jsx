@@ -116,8 +116,8 @@ handleMove = (primaryid) => {
     }),
   };
   console.log(fetchData);
-  fetch('http://localhost:3001/binreport', fetchData);
-  this.makeData();
+  fetch('http://localhost:3001/binreport', fetchData)
+    .then(() => this.makeData());
 };
 
 detailRowContent = row => (<div>
