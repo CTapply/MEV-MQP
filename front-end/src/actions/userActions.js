@@ -1,4 +1,3 @@
-export const asd = () => {};
 /**
  * Gets the data to build the timeline for the entire database
  */

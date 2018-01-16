@@ -6,6 +6,8 @@ import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles
 import { blue, green, red } from 'material-ui/colors';
 import ReportTable from './components/ReportTable';
 import MEVColors from '../../theme';
+import { getUserBins, createUserBin } from '../../actions/reportActions';
+import TextField from 'material-ui/TextField';
 
 const defaultTheme = createMuiTheme({
   palette: {
@@ -30,26 +32,49 @@ class ReportList extends Component {
     this.state = {
       primaryid: '',
       bin: '',
+      userBins: [],
     };
+  }
+
+  componentDidMount() {
+    this.getBins();
+  }
+
+  getBins = () => {
+    this.props.getUserBins(this.props.userID).then((bins) => this.setState({ userBins: bins }));
+    console.log('this is the state now: ', this.state.userBins);
+  }
+
+  handleNewCaseClick = () => {
+    const binName = document.getElementById('newBinCreator').value.toLowerCase();
+    if (binName !== "" && !this.state.userBins.map(bin => {return bin.name}).includes(binName)) {
+      this.setState({ userBins: this.state.userBins.concat( {name: binName}) })
+      this.props.createUserBin(this.props.userID, binName);
+    }
   }
 
   handleNormalClick = () => {
     this.setState({ bin: '' });
   }
   
-  handleTrashClick = () => {
-    this.setState({ bin: 'trash' });
+  handleBinClick = (bin) => () => {
+    this.setState({ bin: bin.name });
   }
 
   render() {
     return (
       <MuiThemeProvider theme={defaultTheme} >
         <div className="ReportList">
-          <h1> {`Currently inside bin: ${this.state.bin}`} </h1>
+          <h1> {`Currently inside case: ${this.state.bin === '' ? 'all' : this.state.bin} `} </h1>
           <ReportTable bin={this.state.bin} />
           <Link to="/"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
           <Button raised onClick={this.handleNormalClick} style={{ margin: 12 }} className="cal-button" color="primary">Normal View</Button>
-          <Button raised onClick={this.handleTrashClick} style={{ margin: 12 }} className="cal-button" color="primary">Trash Bin</Button>
+          {this.state.userBins.map(bin => {
+            return <Button raised onClick={this.handleBinClick(bin)} style={{ margin: 12 }} className="cal-button" color="primary">{bin.name} Case</Button>
+          })}
+          <br/>
+          <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
+          <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
         </div>
       </MuiThemeProvider>
     );
@@ -61,9 +86,10 @@ const mapStateToProps = state => ({
   stage: state.mainVisualization.stage,
   cause: state.mainVisualization.cause,
   location: state.location,
+  userID: state.user.userID,
 });
 
 export default connect(
   mapStateToProps,
-  null,
+  { getUserBins, createUserBin },
 )(withStyles(styles)(ReportList));

@@ -399,6 +399,29 @@ app.post('/binreport', (req, res) => {
   });
 });
 
+app.post('/getuserbins', (req, res) => {
+  console.log('got a request to get bins with body:\n', req.body);
+  let query =
+  'SELECT name '
++ 'FROM bins '
++ `WHERE user_id = ${req.body.userID}`;
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+})
+
+app.post('/createuserbin', (req, res) => {
+  console.log('got a request to create new bin with body:\n', req.body);
+  let query =
+  'INSERT INTO bins '
++ `VALUES (${req.body.userID}, '${req.body.binName}', null)`;
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+})
+
 app.post('/getusertrash', (req, res) => {
   console.log('got a user request with body:\n ', req.body)
   let query =
