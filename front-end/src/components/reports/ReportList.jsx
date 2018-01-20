@@ -8,6 +8,11 @@ import ReportTable from './components/ReportTable';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
 import TextField from 'material-ui/TextField';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import Snackbar from 'material-ui/Snackbar';
+import Paper from 'material-ui/Paper';
+import Fade from 'material-ui/transitions/Fade';
 
 const defaultTheme = createMuiTheme({
   palette: {
@@ -31,8 +36,11 @@ class ReportList extends Component {
     super();
     this.state = {
       primaryid: '',
-      bin: '',
+      bin: 'all reports',
       userBins: [],
+      anchorEl: null,
+      selectedIndex: 0,
+      open: false,
     };
   }
 
@@ -41,15 +49,41 @@ class ReportList extends Component {
   }
 
   getBins = () => {
-    this.props.getUserBins(this.props.userID).then((bins) => this.setState({ userBins: bins }));
-    console.log('this is the state now: ', this.state.userBins);
+    this.props.getUserBins(this.props.userID)
+      .then((bins) => this.setState({ 
+        userBins: ['All Reports'].concat(bins.map(bin => {return this.toTitleCase(bin.name)})) 
+      }));
   }
 
+  toTitleCase = (str) => {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
+
+  handleClickListItem = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  }
+
+  handleMenuItemClick = (event, index) => {
+    this.setState({ selectedIndex: index, bin: this.state.userBins[index].toLowerCase(), anchorEl: null });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
+  handleInvalidCase = () => {
+    this.setState({ open: false });
+  };
+
   handleNewCaseClick = () => {
-    const binName = document.getElementById('newBinCreator').value.toLowerCase();
-    if (binName !== "" && !this.state.userBins.map(bin => {return bin.name}).includes(binName)) {
-      this.setState({ userBins: this.state.userBins.concat( {name: binName}) })
+    const binName = document.getElementById('newBinCreator').value.toLowerCase().trim();
+    console.log(this.state.userBins);
+    if (binName !== "" && !this.state.userBins.map(bin => {return bin.toLowerCase()}).includes(binName)) {
+      this.setState({ userBins: this.state.userBins.concat( this.toTitleCase(binName) ) });
+      console.log(this.state.userBins);
       this.props.createUserBin(this.props.userID, binName);
+    } else {
+      this.setState({ open: true });
     }
   }
 
@@ -65,16 +99,53 @@ class ReportList extends Component {
     return (
       <MuiThemeProvider theme={defaultTheme} >
         <div className="ReportList">
-          <h1> {`Currently inside case: ${this.state.bin === '' ? 'all' : this.state.bin} `} </h1>
-          <ReportTable bin={this.state.bin} />
+          <Paper elevation={15} className={'ppaaaper'} >
+            <List>
+              <ListItem
+                button
+                aria-haspopup="true"
+                aria-controls="lock-menu"
+                aria-label="Select a Case"
+                onClick={this.handleClickListItem}
+              >
+                <ListItemText
+                  primary={this.state.userBins[this.state.selectedIndex]}
+                  secondary="Select a Case"
+                />
+              </ListItem>
+            </List>
+            <Menu
+              id="lock-menu"
+              anchorEl={this.state.anchorEl}
+              open={Boolean(this.state.anchorEl)}
+              onClose={this.handleClose}
+            >
+              {this.state.userBins.map((option, index) => (
+                <MenuItem
+                  key={option}
+                  selected={index === this.state.selectedIndex}
+                  onClick={event => this.handleMenuItemClick(event, index)}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Paper>
+          <ReportTable bin={this.state.bin} bins={this.state.userBins} />
+          <Paper elevation={1} className={'ppaaaper'} >
+            <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
+            <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
+          </Paper>
           <Link to="/"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
-          <Button raised onClick={this.handleNormalClick} style={{ margin: 12 }} className="cal-button" color="primary">Normal View</Button>
-          {this.state.userBins.map(bin => {
-            return <Button raised onClick={this.handleBinClick(bin)} style={{ margin: 12 }} className="cal-button" color="primary">{bin.name} Case</Button>
-          })}
-          <br/>
-          <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
-          <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
+          <Snackbar
+            open={this.state.open}
+            onClose={this.handleInvalidCase}
+            transition={Fade}
+            SnackbarContentProps={{
+              'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">Invalid Case Name</span>}
+          />
         </div>
       </MuiThemeProvider>
     );
