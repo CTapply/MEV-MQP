@@ -50,16 +50,14 @@ class ReportList extends Component {
 
   getBins = () => {
     this.props.getUserBins(this.props.userID)
-      .then((bins) => this.setState({ 
-        userBins: ['All Reports'].concat(bins.map(bin => {return this.toTitleCase(bin.name)})) 
+      .then(bins => this.setState({
+        userBins: ['All Reports'].concat(bins.map(bin => this.toTitleCase(bin.name))),
       }));
   }
 
-  toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-  }
+  toTitleCase = str => str.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); })
 
-  handleClickListItem = event => {
+  handleClickListItem = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   }
 
@@ -78,8 +76,8 @@ class ReportList extends Component {
   handleNewCaseClick = () => {
     const binName = document.getElementById('newBinCreator').value.toLowerCase().trim();
     console.log(this.state.userBins);
-    if (binName !== "" && !this.state.userBins.map(bin => {return bin.toLowerCase()}).includes(binName)) {
-      this.setState({ userBins: this.state.userBins.concat( this.toTitleCase(binName) ) });
+    if (binName !== '' && !this.state.userBins.map(bin => bin.toLowerCase()).includes(binName)) {
+      this.setState({ userBins: this.state.userBins.concat(this.toTitleCase(binName)) });
       console.log(this.state.userBins);
       this.props.createUserBin(this.props.userID, binName);
     } else {
@@ -90,8 +88,8 @@ class ReportList extends Component {
   handleNormalClick = () => {
     this.setState({ bin: '' });
   }
-  
-  handleBinClick = (bin) => () => {
+
+  handleBinClick = bin => () => {
     this.setState({ bin: bin.name });
   }
 
@@ -99,7 +97,7 @@ class ReportList extends Component {
     return (
       <MuiThemeProvider theme={defaultTheme} >
         <div className="ReportList">
-          <Paper elevation={15} className={'ppaaaper'} >
+          <Paper elevation={15} className="ppaaaper" >
             <List>
               <ListItem
                 button
@@ -132,7 +130,7 @@ class ReportList extends Component {
             </Menu>
           </Paper>
           <ReportTable bin={this.state.bin} bins={this.state.userBins} />
-          <Paper elevation={1} className={'ppaaaper'} >
+          <Paper elevation={1} className="ppaaaper" >
             <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
             <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
           </Paper>

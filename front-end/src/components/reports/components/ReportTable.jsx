@@ -12,29 +12,35 @@ import {
   TableColumnReordering,
   TableSelection,
   TableRowDetail,
+  TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
+import { moveReport, getCaseReports } from '../../../actions/reportActions';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import _ from 'lodash';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Menu, { MenuItem } from 'material-ui/Menu';
 
 const styles = {};
 
 class ReportTable extends React.PureComponent {
+  static defaultProps = {
+    bins: [],
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       primaryid: '',
       data: [],
+      anchorEl: null,
+      selectedIndex: 0,
     };
   }
 
-  static defaultProps = {
-    bins: [],
-  }
-
   componentDidMount() {
-    this.makeData();
+    this.temp();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -45,6 +51,13 @@ class ReportTable extends React.PureComponent {
   }
 
 getRowId = row => row.primaryid;
+
+temp = () => {
+  this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+    .then(bins => this.setState({
+      data: bins,
+    }));
+}
 
 columns = [
   {
@@ -89,6 +102,19 @@ columns = [
   },
 ];
 
+columnWidths = {
+  init_fda_dt: 80,
+  primaryid: 80,
+  caseid: 80,
+  caseversion: 50,
+  age_year: 50,
+  sex: 50,
+  wt_lb: 50,
+  drugname: 100,
+  me_type: 100,
+  outc_cod: 75,
+};
+
 makeData = () => {
   const fetchData = {
     method: 'POST',
@@ -120,7 +146,7 @@ handleMove = (primaryid, toBin) => {
     body: JSON.stringify({
       primaryid,
       fromBin: this.props.bin,
-      toBin: toBin,
+      toBin,
       userID: this.props.userID,
     }),
   };
@@ -129,15 +155,15 @@ handleMove = (primaryid, toBin) => {
     .then(() => this.makeData());
 };
 
-detailRowContent = row => (<div>
-  <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
-  {this.props.bins.map(bin => {
-    return <Button style={{ margin: 12 }} raised key={`${bin}`} className={'bin-button'} color="primary" onClick={() => this.handleMove(row.row.primaryid, bin.toLowerCase())}> Move to {bin}</Button>
-  })}
-</div>)
+// detailRowContent = row => (<div>
+//   <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
+//   {this.props.bins.map(bin => {
+//     return <Button style={{ margin: 12 }} raised key={`${bin}`} className={'bin-button'} color="primary" onClick={() => this.handleMove(row.row.primaryid, bin.toLowerCase())}> Move to {bin}</Button>
+//   })}
+// </div>)
 
-/*
-  handleClickListItem = event => {
+
+  handleClickListItem = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   }
 
@@ -151,7 +177,7 @@ detailRowContent = row => (<div>
   };
 
   detailRowContent = row => (<div>
-    <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
+    <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
     <List>
       <ListItem
         button
@@ -183,40 +209,42 @@ detailRowContent = row => (<div>
       ))}
     </Menu>
   </div>)
-*/
 
-render() {
-  return (
-    <Paper elevation={15} className={'paperbby'} >
-      <Grid id='test2'
-        rows={this.state.data}
-        columns={this.columns}
-        getRowId={this.getRowId}
-      >
-        <RowDetailState
-          expandedRowIds={[]}
-          defaultExpandedRowIds={[]}
-        />
-        <DragDropProvider />
-        <SortingState
-          defaultSorting={[
+
+  render() {
+    return (
+      <Paper elevation={15} className="paperbby" >
+        <Grid
+          id="test2"
+          rows={this.state.data}
+          columns={this.columns}
+          getRowId={this.getRowId}
+        >
+          <RowDetailState
+            expandedRowIds={[]}
+            defaultExpandedRowIds={[]}
+          />
+          <DragDropProvider />
+          <SortingState
+            defaultSorting={[
             { columnName: 'Event Date', direction: 'asc' },
           ]}
-        />
-        <IntegratedSorting />
-        <VirtualTable />
-        <TableHeaderRow showSortingControls />
-        <SelectionState />
-        <IntegratedSelection />
-        <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-        <TableSelection showSelectAll />
-        <TableRowDetail
-          contentComponent={this.detailRowContent}
-        />
-      </Grid>
-    </Paper>
-  );
-}
+          />
+          <IntegratedSorting />
+          <VirtualTable />
+          <TableColumnResizing columnWidths={this.columnWidths} />
+          <TableHeaderRow showSortingControls />
+          <SelectionState />
+          <IntegratedSelection />
+          <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
+          <TableSelection showSelectAll />
+          <TableRowDetail
+            contentComponent={this.detailRowContent}
+          />
+        </Grid>
+      </Paper>
+    );
+  }
 }
 
 
@@ -227,5 +255,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  null,
+  { moveReport, getCaseReports },
 )(withStyles(styles)(ReportTable));
