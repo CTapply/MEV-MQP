@@ -79,9 +79,10 @@ class ReportTable extends React.PureComponent {
   componentDidUpdate(prevProps) {
     if (prevProps.bin !== this.props.bin || !_.isEqual(this.props.filters, prevProps.filters)) {
       this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
-        .then(bins => this.setState({
-          data: bins,
-        }));
+        .then((bins) => {
+          this.setState({ data: bins });
+          this.changeExpandedDetails([]);
+        });
     }
   }
 
