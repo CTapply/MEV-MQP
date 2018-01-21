@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Button from 'material-ui/Button';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
-import ReportTable from './components/ReportTable';
-import MEVColors from '../../theme';
-import { getUserBins, createUserBin } from '../../actions/reportActions';
 import TextField from 'material-ui/TextField';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import Snackbar from 'material-ui/Snackbar';
 import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
+import ReportTable from './components/ReportTable';
+import MEVColors from '../../theme';
+import { getUserBins, createUserBin } from '../../actions/reportActions';
+
+const styles = {};
 
 const defaultTheme = createMuiTheme({
   palette: {
@@ -29,13 +32,19 @@ const defaultTheme = createMuiTheme({
   },
 });
 
-const styles = theme => ({});
-
+/**
+ * This is the component for the Report page
+ */
 class ReportList extends Component {
+  static propTypes = {
+    getUserBins: PropTypes.func.isRequired,
+    createUserBin: PropTypes.func.isRequired,
+    userID: PropTypes.number.isRequired,
+  }
+
   constructor() {
     super();
     this.state = {
-      primaryid: '',
       bin: 'all reports',
       userBins: [],
       anchorEl: null,
@@ -48,6 +57,9 @@ class ReportList extends Component {
     this.getBins();
   }
 
+  /**
+   * Retrieves the names of the bins the user has created
+   */
   getBins = () => {
     this.props.getUserBins(this.props.userID)
       .then(bins => this.setState({
@@ -55,40 +67,59 @@ class ReportList extends Component {
       }));
   }
 
-  toTitleCase = str => str.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); })
+  /**
+   * Changes the first letter of any word in a string to be capital
+   */
+  toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
+  /**
+   * Handler for drop down menu click
+   */
   handleClickListItem = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   }
 
+  /**
+   * Handler for drop down menu item click
+   */
   handleMenuItemClick = (event, index) => {
-    this.setState({ selectedIndex: index, bin: this.state.userBins[index].toLowerCase(), anchorEl: null });
+    this.setState({
+      selectedIndex: index,
+      bin: this.state.userBins[index].toLowerCase(),
+      anchorEl: null,
+    });
   };
 
+  /**
+   * Handler for drop down menu closing
+   */
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
 
+  /**
+   * Handler for invalid case name input during case creation
+   */
   handleInvalidCase = () => {
     this.setState({ open: false });
   };
 
+  /**
+   * Checks name validity of new bin and shows an error or sends a backend fetch request
+   */
   handleNewCaseClick = () => {
     const binName = document.getElementById('newBinCreator').value.toLowerCase().trim();
-    console.log(this.state.userBins);
     if (binName !== '' && !this.state.userBins.map(bin => bin.toLowerCase()).includes(binName)) {
       this.setState({ userBins: this.state.userBins.concat(this.toTitleCase(binName)) });
-      console.log(this.state.userBins);
       this.props.createUserBin(this.props.userID, binName);
     } else {
       this.setState({ open: true });
     }
   }
 
-  handleNormalClick = () => {
-    this.setState({ bin: '' });
-  }
-
+  /**
+   * Sets the currently open bin
+   */
   handleBinClick = bin => () => {
     this.setState({ bin: bin.name });
   }
@@ -134,7 +165,7 @@ class ReportList extends Component {
             <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
             <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
           </Paper>
-          <Link to="/"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
+          <Link href="/" to="/" > <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
           <Snackbar
             open={this.state.open}
             onClose={this.handleInvalidCase}
@@ -149,15 +180,17 @@ class ReportList extends Component {
     );
   }
 }
+
 const mapStateToProps = state => ({
-  meType: state.mainVisualization.meType,
-  product: state.mainVisualization.product,
-  stage: state.mainVisualization.stage,
-  cause: state.mainVisualization.cause,
-  location: state.location,
   userID: state.user.userID,
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
   { getUserBins, createUserBin },

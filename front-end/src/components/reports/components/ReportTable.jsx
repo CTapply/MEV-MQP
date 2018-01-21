@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -14,202 +15,208 @@ import {
   TableRowDetail,
   TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
-import { moveReport, getCaseReports } from '../../../actions/reportActions';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import _ from 'lodash';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Menu, { MenuItem } from 'material-ui/Menu';
+import { moveReport, getCaseReports } from '../../../actions/reportActions';
 
 const styles = {};
 
+/**
+ * This is the component for the Report Table
+ */
 class ReportTable extends React.PureComponent {
-  static defaultProps = {
-    bins: [],
+  static propTypes = {
+    getCaseReports: PropTypes.func.isRequired,
+    moveReport: PropTypes.func.isRequired,
+    bins: PropTypes.arrayOf(PropTypes.string).isRequired,
+    filters: PropTypes.shape({
+      init_fda_dt: PropTypes.object,
+      sex: PropTypes.array,
+      occr_country: PropTypes.array,
+      age: PropTypes.array,
+      occp_cod: PropTypes.array,
+      meType: PropTypes.array,
+      product: PropTypes.array,
+      stage: PropTypes.array,
+      cause: PropTypes.array,
+    }).isRequired,
+    bin: PropTypes.string.isRequired,
+    userID: PropTypes.number.isRequired,
   }
 
   constructor(props) {
     super(props);
     this.state = {
-      primaryid: '',
       data: [],
       anchorEl: null,
       selectedIndex: 0,
     };
   }
 
+  /**
+   * Sends fetch request to retrieve list of reports to be shown in table
+   */
   componentDidMount() {
-    this.temp();
+    this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+      .then(bins => this.setState({
+        data: bins,
+      }));
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  /**
+   * Checks if the selected bin in the ReportList component changes and retrieves
+   * new list of reports if necessary
+   */
+  componentDidUpdate(prevProps) {
     if (prevProps.bin !== this.props.bin || !_.isEqual(this.props.filters, prevProps.filters)) {
-      this.makeData();
-      console.log(`bin: ${this.props.bin}`);
+      this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+        .then(bins => this.setState({
+          data: bins,
+        }));
     }
   }
 
-getRowId = row => row.primaryid;
-
-temp = () => {
-  this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
-    .then(bins => this.setState({
-      data: bins,
-    }));
-}
-
-columns = [
-  {
-    title: 'Event Date',
-    name: 'init_fda_dt',
-  },
-  {
-    title: 'Primary ID',
-    name: 'primaryid',
-  },
-  {
-    title: 'Case ID',
-    name: 'caseid',
-  },
-  {
-    title: 'Case Version',
-    name: 'caseversion',
-  },
-  {
-    title: 'Age',
-    name: 'age_year',
-  },
-  {
-    title: 'Sex',
-    name: 'sex',
-  },
-  {
-    title: 'Weight',
-    name: 'wt_lb',
-  },
-  {
-    title: 'Drugs',
-    name: 'drugname',
-  },
-  {
-    title: 'Medication Error',
-    name: 'me_type',
-  },
-  {
-    title: 'Outcome',
-    name: 'outc_cod',
-  },
-];
-
-columnWidths = {
-  init_fda_dt: 80,
-  primaryid: 80,
-  caseid: 80,
-  caseversion: 50,
-  age_year: 50,
-  sex: 50,
-  wt_lb: 50,
-  drugname: 100,
-  me_type: 100,
-  outc_cod: 75,
-};
-
-makeData = () => {
-  const fetchData = {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
+  /**
+   * Names and values for the columns of the table
+   */
+  columns = [
+    {
+      title: 'Event Date',
+      name: 'init_fda_dt',
     },
-    body: JSON.stringify({
-      ...this.props.filters,
-      bin: this.props.bin,
-      userID: this.props.userID,
-    }),
-  };
-  console.log(fetchData);
-  fetch('http://localhost:3001/getreports', fetchData)
-    .then(response => response.json())
-    .then((reports) => {
-      this.setState({ data: reports.rows });
-    });
-};
-
-handleMove = (primaryid, toBin) => {
-  const fetchData = {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
+    {
+      title: 'Primary ID',
+      name: 'primaryid',
     },
-    body: JSON.stringify({
-      primaryid,
-      fromBin: this.props.bin,
-      toBin,
-      userID: this.props.userID,
-    }),
+    {
+      title: 'Case ID',
+      name: 'caseid',
+    },
+    {
+      title: 'Case Version',
+      name: 'caseversion',
+    },
+    {
+      title: 'Age',
+      name: 'age_year',
+    },
+    {
+      title: 'Sex',
+      name: 'sex',
+    },
+    {
+      title: 'Weight',
+      name: 'wt_lb',
+    },
+    {
+      title: 'Drugs',
+      name: 'drugname',
+    },
+    {
+      title: 'Medication Error',
+      name: 'me_type',
+    },
+    {
+      title: 'Outcome',
+      name: 'outc_cod',
+    },
+  ];
+
+  /**
+   * Default widths for the columns of the table
+   */
+  columnWidths = {
+    init_fda_dt: 80,
+    primaryid: 80,
+    caseid: 80,
+    caseversion: 50,
+    age_year: 50,
+    sex: 50,
+    wt_lb: 50,
+    drugname: 100,
+    me_type: 100,
+    outc_cod: 75,
   };
-  console.log(fetchData);
-  fetch('http://localhost:3001/binreport', fetchData)
-    .then(() => this.makeData());
-};
 
-// detailRowContent = row => (<div>
-//   <Link to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
-//   {this.props.bins.map(bin => {
-//     return <Button style={{ margin: 12 }} raised key={`${bin}`} className={'bin-button'} color="primary" onClick={() => this.handleMove(row.row.primaryid, bin.toLowerCase())}> Move to {bin}</Button>
-//   })}
-// </div>)
+  /**
+   * Sends a backend request to move a report from one bin to another
+   */
+  handleMoveReport = (primaryid, toBin) => {
+    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID).then(() =>
+      this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+        .then(bins => this.setState({
+          data: bins,
+        })));
+  };
 
-
+  /**
+   * Handler for drop down menu click
+   */
   handleClickListItem = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   }
 
+  /**
+   * Handler for drop down menu item click
+   */
   handleMenuItemClick = (event, index, primaryid) => {
-    this.setState({ selectedIndex: index, anchorEl: null });
-    this.handleMove(primaryid, this.props.bins[index].toLowerCase());
+    this.setState({ selectedIndex: 0, anchorEl: null });
+    this.handleMoveReport(primaryid, this.props.bins[index].toLowerCase());
   };
 
+  /**
+   * Handler for drop down menu closing
+   */
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
 
-  detailRowContent = row => (<div>
-    <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank"><Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button></Link>
-    <List>
-      <ListItem
-        button
-        aria-haspopup="true"
-        aria-controls="lock-menu"
-        aria-label="Move to Bin"
-        onClick={this.handleClickListItem}
-      >
-        <ListItemText
-          primary={this.props.bins[this.state.selectedIndex]}
-          secondary="Move to Bin"
-        />
-      </ListItem>
-    </List>
-    <Menu
-      id="lock-menu"
-      anchorEl={this.state.anchorEl}
-      open={Boolean(this.state.anchorEl)}
-      onClose={this.handleClose}
-    >
-      {this.props.bins.map((option, index) => (
-        <MenuItem
-          key={option}
-          selected={index === this.state.selectedIndex}
-          onClick={event => this.handleMenuItemClick(event, index, row.row.primaryid)}
+  /**
+   * Defines the html content inside each expandable dropdown area for each row
+   * of the table
+   */
+  detailRowContent = row =>
+    (<div>
+      <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
+        <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button>
+      </Link>
+      <List>
+        <ListItem
+          button
+          aria-haspopup="true"
+          aria-controls="lock-menu"
+          aria-label="Move to Bin"
+          onClick={this.handleClickListItem}
         >
-          {option}
-        </MenuItem>
+          <ListItemText
+            primary={this.props.bins[this.state.selectedIndex]}
+            secondary="Move to Bin"
+          />
+        </ListItem>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={this.state.anchorEl}
+        open={Boolean(this.state.anchorEl)}
+        onClose={this.handleClose}
+      >
+        {this.props.bins.map((option, index) => (
+          <MenuItem
+            key={option}
+            selected={index === this.state.selectedIndex}
+            onClick={(event) => {
+              this.handleMenuItemClick(event, index, row.row.primaryid);
+            }}
+          >
+            {option}
+          </MenuItem>
       ))}
-    </Menu>
-  </div>)
-
+      </Menu>
+    </div>)
 
   render() {
     return (
@@ -218,12 +225,9 @@ handleMove = (primaryid, toBin) => {
           id="test2"
           rows={this.state.data}
           columns={this.columns}
-          getRowId={this.getRowId}
+          getRowId={row => row.primaryid}
         >
-          <RowDetailState
-            expandedRowIds={[]}
-            defaultExpandedRowIds={[]}
-          />
+          <RowDetailState />
           <DragDropProvider />
           <SortingState
             defaultSorting={[
@@ -253,6 +257,12 @@ const mapStateToProps = state => ({
   userID: state.user.userID,
 });
 
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
 export default connect(
   mapStateToProps,
   { moveReport, getCaseReports },

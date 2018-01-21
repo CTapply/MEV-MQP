@@ -397,7 +397,7 @@ app.post('/binreport', (req, res) => {
     + `WHERE bins.user_id = ${req.body.userID} AND NOT bins.name = '${req.body.toBin}' `
   }
 
-  if (req.body.fromBin !== 'all reports' && req.body.toBin !== 'all reports') {
+  if ((req.body.toBin === 'trash' || req.body.fromBin !== 'all reports') && req.body.toBin !== 'all reports') {
     console.log(toQuery, fromQuery);
     db.query(toQuery, (err, toData) => {
       db.query(fromQuery, (err, fromData) => {
