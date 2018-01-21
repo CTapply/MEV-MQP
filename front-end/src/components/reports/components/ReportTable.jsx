@@ -54,6 +54,11 @@ class ReportTable extends React.PureComponent {
       data: [],
       anchorEl: null,
       selectedIndex: 0,
+      expandedRows: [],
+    };
+
+    this.changeExpandedDetails = (expandedRows) => {
+      this.setState({ expandedRows });
     };
   }
 
@@ -151,6 +156,11 @@ class ReportTable extends React.PureComponent {
         .then(bins => this.setState({
           data: bins,
         })));
+    if (this.props.bin !== 'all reports' || toBin === 'trash') {
+      const newExpandedRows = this.state.expandedRows;
+      newExpandedRows.splice(this.state.expandedRows.indexOf(primaryid.toString()), 1);
+      this.changeExpandedDetails(newExpandedRows);
+    }
   };
 
   /**
@@ -179,8 +189,8 @@ class ReportTable extends React.PureComponent {
    * Defines the html content inside each expandable dropdown area for each row
    * of the table
    */
-  detailRowContent = row =>
-    (<div>
+  detailRowContent = row => (
+    <div>
       <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
         <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button>
       </Link>
@@ -214,7 +224,7 @@ class ReportTable extends React.PureComponent {
           >
             {option}
           </MenuItem>
-      ))}
+        ))}
       </Menu>
     </div>)
 
@@ -227,7 +237,10 @@ class ReportTable extends React.PureComponent {
           columns={this.columns}
           getRowId={row => row.primaryid}
         >
-          <RowDetailState />
+          <RowDetailState
+            expandedRows={this.state.expandedRows}
+            onExpandedRowsChange={this.changeExpandedDetails}
+          />
           <DragDropProvider />
           <SortingState
             defaultSorting={[

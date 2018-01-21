@@ -50,6 +50,7 @@ class ReportList extends Component {
       anchorEl: null,
       selectedIndex: 0,
       open: false,
+      value: '',
     };
   }
 
@@ -112,8 +113,10 @@ class ReportList extends Component {
     if (binName !== '' && !this.state.userBins.map(bin => bin.toLowerCase()).includes(binName)) {
       this.setState({ userBins: this.state.userBins.concat(this.toTitleCase(binName)) });
       this.props.createUserBin(this.props.userID, binName);
+      document.getElementById('newBinCreator').value = '';
+      this.setState({ open: true, value: `Case ${this.toTitleCase(binName)} Created!` });
     } else {
-      this.setState({ open: true });
+      this.setState({ open: true, value: 'Invalid Case Name' });
     }
   }
 
@@ -173,7 +176,7 @@ class ReportList extends Component {
             SnackbarContentProps={{
               'aria-describedby': 'message-id',
             }}
-            message={<span id="message-id">Invalid Case Name</span>}
+            message={<span id="message-id">{this.state.value}</span>}
           />
         </div>
       </MuiThemeProvider>
