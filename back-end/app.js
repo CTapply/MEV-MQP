@@ -32,10 +32,12 @@ if (os.platform() === 'win32') {
 
 // Connect to the Database on AWS
 const db = new Client({
-  host: 'localhost',
-    database: 'faers',
-    port: 5432,
-  });
+  user: 'mevuser',
+  host: 'mev.wpi.edu',
+  database: 'faers',
+  password: 'mevmqp',
+  port: '5432'
+});
 
 db.connect()
 .catch(err => console.log(err))
