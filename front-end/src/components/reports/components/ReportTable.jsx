@@ -231,36 +231,34 @@ class ReportTable extends React.PureComponent {
 
   render() {
     return (
-      <Paper elevation={15} className="paperbby" >
-        <Grid
-          id="test2"
-          rows={this.state.data}
-          columns={this.columns}
-          getRowId={row => row.primaryid}
-        >
-          <RowDetailState
-            expandedRows={this.state.expandedRows}
-            onExpandedRowsChange={this.changeExpandedDetails}
-          />
-          <DragDropProvider />
-          <SortingState
-            defaultSorting={[
+      <Grid
+        id="test2"
+        rows={this.state.data}
+        columns={this.columns}
+        getRowId={row => row.primaryid}
+      >
+        <RowDetailState
+          expandedRows={this.state.expandedRows}
+          onExpandedRowsChange={this.changeExpandedDetails}
+        />
+        <DragDropProvider />
+        <SortingState
+          defaultSorting={[
             { columnName: 'Event Date', direction: 'asc' },
           ]}
-          />
-          <IntegratedSorting />
-          <VirtualTable />
-          <TableColumnResizing columnWidths={this.columnWidths} />
-          <TableHeaderRow showSortingControls />
-          <SelectionState />
-          <IntegratedSelection />
-          <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-          <TableSelection showSelectAll />
-          <TableRowDetail
-            contentComponent={this.detailRowContent}
-          />
-        </Grid>
-      </Paper>
+        />
+        <IntegratedSorting />
+        <VirtualTable />
+        <TableColumnResizing columnWidths={this.columnWidths} />
+        <TableHeaderRow showSortingControls />
+        <SelectionState />
+        <IntegratedSelection />
+        <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
+        <TableSelection showSelectAll />
+        <TableRowDetail
+          contentComponent={this.detailRowContent}
+        />
+      </Grid>
     );
   }
 }

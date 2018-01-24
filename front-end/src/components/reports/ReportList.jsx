@@ -41,7 +41,7 @@ class ReportList extends Component {
     createUserBin: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
   }
-        
+
   constructor() {
     super();
     this.state = {
@@ -131,7 +131,7 @@ class ReportList extends Component {
     return (
       <MuiThemeProvider theme={defaultTheme} >
         <div className="ReportList">
-          <Paper elevation={15} className="ppaaaper" >
+          <Paper elevation={2} className="paper" >
             <List>
               <ListItem
                 button
@@ -162,9 +162,10 @@ class ReportList extends Component {
                 </MenuItem>
               ))}
             </Menu>
-          </Paper>
+          </Paper >
+          <hr />
           <ReportTable bin={this.state.bin} bins={this.state.userBins} />
-          <Paper elevation={1} className="ppaaaper" >
+          <Paper elevation={2} className="ppaaaper" >
             <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
             <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
           </Paper>
