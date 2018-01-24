@@ -58,18 +58,18 @@ export const toggleMETypeFilter = filter => (dispatch, getState) => {
  * @param {string} filter the item to add/remove from the filters
  */
 export const toggleProductFilter = filter => (dispatch, getState) => {
-  // if (filter === 'CLEAR') {
-  //   if (getState().filters.product.length !== 0) {
-  //     dispatch({ type: 'SET_PRODUCT', product: [] });
-  //     dispatch(filterData());
-  //   }
-  // } else if (getState().filters.product.includes(filter)) {
-  //   dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.filter(item => item !== filter) });
-  //   dispatch(filterData());
-  // } else {
-  //   dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.concat(filter) });
-  //   dispatch(filterData());
-  // }
+  if (filter === 'CLEAR') {
+    if (getState().filters.product.length !== 0) {
+      dispatch({ type: 'SET_PRODUCT', product: [] });
+      dispatch(filterData());
+    }
+  } else if (getState().filters.product.includes(filter)) {
+    dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.filter(item => item !== filter) });
+    dispatch(filterData());
+  } else {
+    dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.concat(filter) });
+    dispatch(filterData());
+  }
 };
 
 /**

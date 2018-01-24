@@ -72,9 +72,20 @@ class CustomizedContent extends Component {
     return (x.length === 1) ? `0${x}` : x;
   }
 
+  checkTextLength = () => {
+    if (this.props.name) {
+      const textLength = this.props.name.length;
+      if (textLength * 8.0 > this.props.width) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   render = () => {
     return (!isNaN(this.props.width) && !isNaN(this.props.height)) ? (
-      <g id={this.props.name} >
+      <g id={`${this.props.treeMap}_${this.props.name}`} >
         <defs>
           <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
@@ -91,19 +102,23 @@ class CustomizedContent extends Component {
             stroke: '#fff',
             strokeWidth: 0.5,
             strokeOpacity: 1,
+            overflow: 'hidden',
           }}
         />
-        <text
-          x={this.props.x + this.props.width / 2}
-          y={this.props.y + this.props.height / 2 + 7}
-          textAnchor="middle"
-          style={{ fill: '#FFF', strokeWidth: '0px' }}
-          fontFamily="Roboto"
-          fontWeight="lighter"
-          fontSize={16}
-        >
-          {this.props.name}
-        </text>
+        {(this.checkTextLength())
+          ? (
+            <text
+              x={this.props.x + this.props.width / 2}
+              y={this.props.y + this.props.height / 2 + 7}
+              textAnchor="middle"
+              style={{ fill: '#FFF', strokeWidth: '0px' }}
+              fontFamily="Roboto"
+              fontWeight="lighter"
+              fontSize={16}
+            >
+              {this.props.name}
+            </text>)
+          : null}
       </g>
     ) : null;
   }

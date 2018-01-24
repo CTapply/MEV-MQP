@@ -16,9 +16,14 @@ const styles = {
     'pointer-events': 'none',
     transform: 'translateX(45px)',
   },
-  responsiveContainer: {
+  responsiveContainerMaximized: {
     'margin-left': '-15px',
     'font-size': '10pt',
+  },
+  responsiveContainerMinimized: {
+    'margin-left': '0px',
+    'font-size': '10pt',
+    transform: 'translateY(-3px)',
   },
   maxHeight: {
     height: '100%',
@@ -56,11 +61,13 @@ class ReportedBy extends Component {
   static propTypes = {
     occp_cod: PropTypes.arrayOf(PropTypes.object).isRequired,
     toggleFilter: PropTypes.func.isRequired,
+    minimized: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
       clearFilterChip: PropTypes.string,
       chipAvatar: PropTypes.string,
-      responsiveContainer: PropTypes.string,
+      responsiveContainerMaximized: PropTypes.string,
+      responsiveContainerMinimized: PropTypes.string,
       maxHeight: PropTypes.string,
       noOverflow: PropTypes.string,
     }).isRequired,
@@ -90,7 +97,7 @@ class ReportedBy extends Component {
    */
   resizeTimer = () => {
     clearTimeout(this.state.stillResizingTimer);
-    this.state.stillResizingTimer = setTimeout(this.resizeGraph, 250);
+    this.setState({ stillResizingTimer: setTimeout(this.resizeGraph, 250) });
   }
 
   /**
@@ -116,13 +123,38 @@ class ReportedBy extends Component {
     const container = document.getElementById('occupation-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
     const graphTitle = document.getElementById('occupation-graph-title');
-    const graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
+    let graphTitleHeight;
+    if (graphTitle) {
+      graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
+    }
     this.setState({
       graphHeight: (parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10)) + 10,
     });
   }
 
-  render() {
+  renderMinimized = () => {
+    return (
+      <div id="occupation-container" className={this.props.classes.maxHeight} >
+        <ResponsiveContainer className={this.props.classes.responsiveContainerMinimized} width="100%" height={50} >
+          <BarChart
+            data={this.props.occp_cod}
+          >
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ stroke: '#424242', strokeWidth: 1 }}
+              wrapperStyle={{ padding: '4px', zIndex: 1000 }}
+              demographic="occp_cod"
+            />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
+            <Bar dataKey="UNK" stroke={MEVColors.notSevereStroke} stackId="a" fill="url(#colorNotSerious)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
+  renderMaximized = () => {
     return (
       <div id="occupation-container" className={this.props.classes.maxHeight} >
         <div id="occupation-header" className={this.props.classes.noOverflow} >
@@ -136,7 +168,7 @@ class ReportedBy extends Component {
             Occupation
           </Typography>
         </div>
-        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight} >
+        <ResponsiveContainer className={this.props.classes.responsiveContainerMaximized} width="100%" height={this.state.graphHeight} >
           <BarChart
             data={this.props.occp_cod}
             onClick={this.handleFilterClickToggle}
@@ -157,6 +189,12 @@ class ReportedBy extends Component {
         </ResponsiveContainer>
       </div>
     );
+  }
+
+  render() {
+    return (this.props.minimized)
+      ? this.renderMinimized()
+      : this.renderMaximized();
   }
 }
 

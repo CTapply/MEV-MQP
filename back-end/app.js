@@ -5,6 +5,7 @@ const redis = require('redis')
 const { Client } = require('pg')
 const bodyParser = require('body-parser');
 const os = require('os');
+const fs = require('fs')
 
 // Initialze a dummy cache for systems that can't run REDIS
 let cache = {
@@ -22,7 +23,7 @@ let cache = {
 // Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
-  cache = redis.createClient();  
+  // cache = redis.createClient();  
 }
 
 // We cannot use REDIS if on Windows
@@ -30,12 +31,21 @@ if (os.platform() === 'win32') {
   console.log('on window, not using local cache');
 }
 
-// Connect to the Database on AWS
+// Connect to the Database on Localhost
 const db = new Client({
   host: 'localhost',
     database: 'faers',
     port: 5432,
   });
+
+// Connect to the Database on WPI Server
+// const db = new Client({
+//   user: 'mevuser',
+//   host: 'mev.wpi.edu',
+//   database: 'faers',
+//   password: 'mevmqp',
+//   port: '5432'
+// });
 
 db.connect()
 .catch(err => console.log(err))
@@ -229,28 +239,28 @@ function meTypeBuilder(meType) {
  * @param {Array} product List of things to filter for
  * @return {String} AND statement used for SQL query to add filtering for Product filters
  */
-// function productBuilder(product) {
-//   let productString = ` AND `;
+function productBuilder(product) {
+  let productString = ` AND `;
   
-//   if (product.length === 0) {
-//     return '';
-//   }
+  if (product.length === 0) {
+    return '';
+  }
 
-//   if (product.length === 1) {
-//     return productString + `product = '${product}'`
-//   }
+  if (product.length === 1) {
+    return productString + `product = '${product}'`
+  }
   
-//   if (product.length > 1) {
-//     const productMap = product.map(filter => {
-//       if (filter === 'UNK') {
-//         return `product IS NULL`;
-//       } else {
-//         return `product = '${filter}'`;
-//       }
-//     });
-//     return `${productString}(${productMap.join(' OR ')})`
-//   }
-// }
+  if (product.length > 1) {
+    const productMap = product.map(filter => {
+      if (filter === 'UNK') {
+        return `product IS NULL`;
+      } else {
+        return `product = '${filter}'`;
+      }
+    });
+    return `${productString}(${productMap.join(' OR ')})`
+  }
+}
 
 /**
  * Creates the string of a SQL WHERE statement (Starts with AND) for Stage Filtering
@@ -323,7 +333,7 @@ app.post('/getdemographicdata', (req, res) => {
   query += ageBuilder(req.body.age);
   query += occupationBuilder(req.body.occp_cod);
   query += meTypeBuilder(req.body.meType);
-  // query += productBuilder(req.body.product);
+  query += productBuilder(req.body.product);
   query += stageBuilder(req.body.stage);
   query += causeBuilder(req.body.cause);
 
@@ -350,7 +360,7 @@ app.post('/getreports', (req, res) => {
     query += ageBuilder(req.body.age);
     query += occupationBuilder(req.body.occp_cod);
     query += meTypeBuilder(req.body.meType);
-    // query += productBuilder(req.body.product);
+    query += productBuilder(req.body.product);
     query += stageBuilder(req.body.stage);
     query += causeBuilder(req.body.cause);  
     
@@ -508,7 +518,7 @@ app.post('/getvis', (req, res) => {
   meTypeQuery += ageBuilder(req.body.age);
   meTypeQuery += occupationBuilder(req.body.occp_cod);
   meTypeQuery += meTypeBuilder(req.body.meType);
-  // meTypeQuery += productBuilder(req.body.product);
+  meTypeQuery += productBuilder(req.body.product);
   meTypeQuery += stageBuilder(req.body.stage);
   meTypeQuery += causeBuilder(req.body.cause);
   meTypeQuery += " GROUP BY me_type";
@@ -531,7 +541,7 @@ app.post('/getvis', (req, res) => {
   stageQuery += ageBuilder(req.body.age);
   stageQuery += occupationBuilder(req.body.occp_cod);
   stageQuery += meTypeBuilder(req.body.meType);
-  // stageQuery += productBuilder(req.body.product);
+  stageQuery += productBuilder(req.body.product);
   stageQuery += stageBuilder(req.body.stage);
   stageQuery += causeBuilder(req.body.cause);
   stageQuery += " GROUP BY stage"; 
@@ -552,42 +562,51 @@ app.post('/getvis', (req, res) => {
   causeQuery += ageBuilder(req.body.age);
   causeQuery += occupationBuilder(req.body.occp_cod);
   causeQuery += meTypeBuilder(req.body.meType);
-  // causeQuery += productBuilder(req.body.product);
+  causeQuery += productBuilder(req.body.product);
   causeQuery += stageBuilder(req.body.stage);
   causeQuery += causeBuilder(req.body.cause);
   causeQuery += " GROUP BY cause";
   
-  let productQuery = "SELECT z.drugname as name, count(*)::integer as size "
-  + "FROM (SELECT b.drugname " 
-    + "FROM (SELECT primaryid, init_fda_dt FROM demo " 
+  let productQuery = "SELECT z.drugname as name, count(*)::INTEGER as size, "
+  + `count(CASE WHEN outc_cod @> '{DE}' THEN 1 end)::INTEGER as "DE", `
+  + `count(CASE WHEN outc_cod @> '{CA}' THEN 1 end)::INTEGER as "CA", `
+  + `count(CASE WHEN outc_cod @> '{DS}' THEN 1 end)::INTEGER as "DS", `
+  + `count(CASE WHEN outc_cod @> '{HO}' THEN 1 end)::INTEGER as "HO", `
+  + `count(CASE WHEN outc_cod @> '{LT}' THEN 1 end)::INTEGER as "LT", `
+  + `count(CASE WHEN outc_cod @> '{RI}' THEN 1 end)::INTEGER as "RI", `
+  + `count(CASE WHEN outc_cod @> '{OT}' THEN 1 end)::INTEGER as "OT", `
+  + `count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' THEN 1 end)::INTEGER as "UNK" `
+  + "FROM (SELECT b.drugname, a.outc_cod " 
+    + "FROM (SELECT primaryid, init_fda_dt, outc_cod FROM demo_outcome " 
       + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
       productQuery += sexBuilder(req.body.sex);
       productQuery += locationBuilder(req.body.occr_country);
       productQuery += ageBuilder(req.body.age);
       productQuery += occupationBuilder(req.body.occp_cod);
       productQuery += meTypeBuilder(req.body.meType);
-      // productQuery += productBuilder(req.body.product);
+      productQuery += productBuilder(req.body.product);
       productQuery += stageBuilder(req.body.stage);
       productQuery += causeBuilder(req.body.cause);
       productQuery += ") a "
     + "INNER JOIN (SELECT primaryid::integer as id, drugname FROM drug) b ON a.primaryid = b.id) z "
     + "GROUP BY z.drugname"; 
+    console.log(productQuery)
 
   db.query(meTypeQuery, (err, meTypeData) => {
-    //db.query(productQuery, (err, productData) => {
+    // db.query(productQuery, (err, productData) => {
       db.query(stageQuery, (err, stageData) => {
         db.query(causeQuery, (err, causeData) => {
           returnObject = { 
             meType: meTypeData.rows,
-            product: [],
+            product: [],//productData.rows,
             stage: stageData.rows,
             cause: causeData.rows,
           }
-          // console.log(returnObject);
+          console.log(returnObject);
           res.status(200).send(returnObject);
         })
       })
-    //})
+    // })
   })
 });
 
@@ -621,22 +640,254 @@ app.post('/gettimelinedata', (req, res) => {
   })
 });
 
+function gaussianRand() {
+  var rand = 0;
+
+  for (var i = 0; i < 2; i += 1) {
+    rand += Math.random();
+  }
+
+  return rand / 2;
+}
+
+function gaussianRandom(start, end) {
+  return Math.floor(start + gaussianRand() * (end - start + 1));
+}
+
 app.get('/update-data', (req, res) => {
-  console.log('updating the meType, Stage and Cause columns')
-  let query = "SELECT primaryid FROM demo limit 10"
-  console.log(query)
-  db.query(query, (err, data) => {
-    let query = "UPDATE demo SET me_type='hi', stage='ho', cause='ih' WHERE primaryid=123199731"
-    console.log(query)
-    data.rows.forEach((row) => {
-      console.log(row.primaryid)
-    })
-    console.log('updated the database!');
-    json = JSON.stringify(data.rows);
-    res.status(200).send(data.rows);
-  })
+  fs.readFile("../Causes.txt", "utf8", function (error, causes) {
+    fs.readFile("../Stages.txt", "utf8", function (error, stages) {
+      fs.readFile("../MeTypes.txt", "utf8", function (error, meTypes) {
+        fs.readFile("../DrugNames.txt", "utf8", function (error, drugNames) {
+          fs.readFile("../AdverseReactions.txt", "utf8", function (error, adverseReactions) {
+            const wstream = fs.createWriteStream('myOutput.txt');
+            const meTypesArray = meTypes.split('\n');
+            const drugNamesArray = drugNames.split('\n');
+            const causesArray = causes.split('\n');
+            const stagesArray = stages.split('\n');
+            const adverseReactionsArray = adverseReactions.split('\n');
+            console.log('updating the meType, Stage and Cause columns')
+
+            const drugReactions = {};
+            // db.tx((t) => {
+
+            // })
+
+            let query = `SELECT primaryid FROM demo limit 100000`
+            // console.log(query)
+            db.query(query, (err, allData) => {
+              let meTypeIndex, drugNameIndex, stageIndex, causeIndex, adverseReactionsIndex;
+              allData.rows.forEach((pidRow) => {
+                // Get a random index in a normal distribution
+                meTypeIndex = gaussianRandom(0, meTypesArray.length -1);
+                causeIndex = gaussianRandom(0, causesArray.length -1);
+                stageIndex = gaussianRandom(0, stagesArray.length -1);
+
+                let updateDemoRowQuery = 
+                  `UPDATE demo SET `
+                    + `me_type='${meTypesArray[meTypeIndex]}', `
+                    + `stage='${stagesArray[stageIndex]}', `
+                    + `cause='${causesArray[causeIndex]}' `
+                  + `WHERE primaryid=${pidRow.primaryid};\n`;
+                
+                // console.log(updateDemoRowQuery);
+                wstream.write(updateDemoRowQuery);
+                // db.query(updateDemoRowQuery, (err, updatedDrugRows) => {
+                //   console.log('UPDATED Demo')
+                // })
+                
+                const drugNamesforPID = [];
+                // Generate 1-4 random drugs for this primary id
+                const numberOfDrugsForPID = Math.floor(Math.random() * 4) + 1;
+                for (let i = 0; i < numberOfDrugsForPID; i += 1) {
+                  drugNameIndex = gaussianRandom(0, drugNamesArray.length -1);
+                  drugNamesforPID.push(drugNameIndex);
+                }
+
+                // console.log(drugNamesforPID)
+                // Update the Drugs for this PrimaryID
+                let getDrugRowQuery = 
+                  `SELECT drug_seq FROM drug WHERE primaryid=${pidRow.primaryid}`;
+                // console.log(getDrugRowQuery);
+                db.query(getDrugRowQuery, (err, drugData) => {
+                  drugData.rows.forEach((drugRow, rowIndex) => {
+                    const randomDrug = drugNamesArray[drugNamesforPID[rowIndex % numberOfDrugsForPID]];
+                    let updateDrugRowQuery;
+                    if (drugRow.drug_seq > numberOfDrugsForPID) {
+                      updateDrugRowQuery =
+                        `DELETE FROM drug WHERE primaryid=${pidRow.primaryid} AND drug_seq='${drugRow.drug_seq}';\n`;
+                      // wstream.write(updateDrugRowQuery);
+                      // console.log(updateDrugRowQuery);
+                      db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
+                        // console.log('UPDATED Drug')
+                      })
+                    } else if (rowIndex < numberOfDrugsForPID){
+                      updateDrugRowQuery =
+                        `UPDATE drug SET `
+                          + `drugname='${randomDrug}' `
+                        + `WHERE primaryid=${pidRow.primaryid} `
+                        + `AND drug_seq='${drugRow.drug_seq}';\n`;
+                      // console.log(updateDrugRowQuery);
+
+                      // wstream.write(updateDrugRowQuery);
+                      db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
+                        // console.log('UPDATED Drug')
+                      })
+
+                      // Generate 1-5 random Reactions for this drug if we haven't already
+                      if (!drugReactions[randomDrug]) {
+                        drugReactions[randomDrug] = [];
+                        const numberOfReactionsForDrug = Math.floor(Math.random() * 5) + 1;
+                        for (let i = 0; i < numberOfReactionsForDrug; i += 1) {
+                          adverseReactionsIndex = gaussianRandom(0, adverseReactionsArray.length -1);
+                          drugReactions[randomDrug].push(adverseReactionsIndex);
+                        }
+                      }
+  
+                      // Update the Reactions for this drug and PrimaryID
+                      const deleteReactionsForThisPID =
+                        `DELETE FROM reac WHERE primaryid=${pidRow.primaryid};\n`;
+                      // wstream.write(deleteReactionsForThisPID);
+                      // console.log(deleteReactionsForThisPID)
+                      db.query(deleteReactionsForThisPID, (err, deleteRows) => {
+                        let insertReaction = `INSERT INTO reac (primaryid, caseid, pt, drug_rec_act) VALUES `
+                        for (let i = 0; i < gaussianRandom(1, drugReactions[randomDrug].length); i += 1) {
+                          const randomAdverseReaction = adverseReactionsArray[drugReactions[randomDrug][i]];
+                          insertReaction += `(${pidRow.primaryid}, ${pidRow.primaryid.slice(0,7)}, '${randomAdverseReaction}', ''), `
+                        }
+                        insertReaction = insertReaction.slice(0, insertReaction.length - 2);
+                        insertReaction += `;\n`;
+                        // console.log(insertReaction)
+                        // wstream.write(insertReaction)
+                        db.query(insertReaction, (err, insertRows) => {
+                          console.log('INSERTED')
+                        })
+                      })
+                    }
+                  })
+                })
+              })
+              // console.log('updated the database!');
+              // json = JSON.stringify(allData.rows);
+              res.status(200).send('ok');
+            })
+          });
+        });
+      });
+    });
+  });
 });
+// app.get('/update-data', (req, res) => {
+//   fs.readFile("../Causes.txt", "utf8", function (error, causes) {
+//     fs.readFile("../Stages.txt", "utf8", function (error, stages) {
+//       fs.readFile("../MeTypes.txt", "utf8", function (error, meTypes) {
+//         fs.readFile("../DrugNames.txt", "utf8", function (error, drugNames) {
+//           fs.readFile("../AdverseReactions.txt", "utf8", function (error, adverseReactions) {
+//             const meTypesArray = meTypes.split('\n');
+//             const drugNamesArray = drugNames.split('\n');
+//             const causesArray = causes.split('\n');
+//             const stagesArray = stages.split('\n');
+//             const adverseReactionsArray = adverseReactions.split('\n');
+//             console.log('updating the meType, Stage and Cause columns')
+
+//             const drugReactions = {};
+
+//             let query = `SELECT primaryid FROM demo limit 10000`
+//             // console.log(query)
+//             db.query(query, (err, allData) => {
+//               let meTypeIndex, drugNameIndex, stageIndex, causeIndex, adverseReactionsIndex;
+//               allData.rows.forEach((pidRow) => {
+//                 // Get a random index in a normal distribution
+//                 meTypeIndex = gaussianRandom(0, meTypesArray.length -1);
+//                 causeIndex = gaussianRandom(0, causesArray.length -1);
+//                 stageIndex = gaussianRandom(0, stagesArray.length -1);
+
+//                 let updateDemoRowQuery = 
+//                   `UPDATE demo SET `
+//                     + `me_type='${meTypesArray[meTypeIndex]}', `
+//                     + `stage='${stagesArray[stageIndex]}', `
+//                     + `cause='${causesArray[causeIndex]}' `
+//                   + `WHERE primaryid=${pidRow.primaryid}`;
+                
+//                 // console.log(updateDemoRowQuery);
+
+//                 db.query(updateDemoRowQuery, (err, updatedDrugRows) => {
+//                   console.log('UPDATED Demo')
+//                 })
+                
+//                 const drugNamesforPID = [];
+//                 // Generate 1-4 random drugs for this primary id
+//                 const numberOfDrugsForPID = Math.floor(Math.random() * 4) + 1;
+//                 for (let i = 0; i < numberOfDrugsForPID; i += 1) {
+//                   drugNameIndex = gaussianRandom(0, drugNamesArray.length -1);
+//                   drugNamesforPID.push(drugNameIndex);
+//                 }
+
+//                 // console.log(drugNamesforPID)
+//                 // Update the Drugs for this PrimaryID
+//                 let getDrugRowQuery = 
+//                   `SELECT drug_seq FROM drug WHERE primaryid=${pidRow.primaryid}`;
+//                 // console.log(getDrugRowQuery);
+//                 db.query(getDrugRowQuery, (err, drugData) => {
+//                   drugData.rows.forEach((drugRow, rowIndex) => {
+//                     const randomDrug = drugNamesArray[drugNamesforPID[rowIndex % numberOfDrugsForPID]];
+//                     let updateDrugRowQuery;
+//                     if (drugRow.drug_seq > numberOfDrugsForPID) {
+//                       updateDrugRowQuery =
+//                         `DELETE FROM drug WHERE primaryid=${pidRow.primaryid} AND drug_seq='${drugRow.drug_seq}'`;
+//                       // console.log(updateDrugRowQuery);
+//                     } else if (rowIndex < numberOfDrugsForPID){
+//                       updateDrugRowQuery =
+//                         `UPDATE drug SET `
+//                           + `drugname='${randomDrug}' `
+//                         + `WHERE primaryid=${pidRow.primaryid} `
+//                         + `AND drug_seq='${drugRow.drug_seq}'`;
+//                       // console.log(updateDrugRowQuery);
+
+//                       db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
+//                         console.log('UPDATED Drug')
+//                       })
+
+//                       // Generate 1-5 random Reactions for this drug if we haven't already
+//                       if (!drugReactions[randomDrug]) {
+//                         drugReactions[randomDrug] = [];
+//                         const numberOfReactionsForDrug = Math.floor(Math.random() * 5) + 1;
+//                         for (let i = 0; i < numberOfReactionsForDrug; i += 1) {
+//                           adverseReactionsIndex = gaussianRandom(0, adverseReactionsArray.length -1);
+//                           drugReactions[randomDrug].push(adverseReactionsIndex);
+//                         }
+//                       }
+  
+//                       // Update the Reactions for this drug and PrimaryID
+//                       const deleteReactionsForThisPID =
+//                         `DELETE FROM reac WHERE primaryid=${pidRow.primaryid}`;
+//                       // console.log(deleteReactionsForThisPID)
+//                       db.query(deleteReactionsForThisPID, (err, deleteRows) => {
+//                         let insertReaction = `INSERT INTO reac (primaryid, caseid, pt, drug_rec_act) VALUES `
+//                         for (let i = 0; i < gaussianRandom(1, drugReactions[randomDrug].length); i += 1) {
+//                           const randomAdverseReaction = adverseReactionsArray[drugReactions[randomDrug][i]];
+//                           insertReaction += `(${pidRow.primaryid}, ${pidRow.primaryid.slice(0,7)}, '${randomAdverseReaction}', ''), `
+//                         }
+//                         insertReaction = insertReaction.slice(0, insertReaction.length - 2);
+//                         // console.log(insertReaction)
+//                         db.query(insertReaction, (err, insertRows) => {
+//                           console.log('INSERTED')
+//                         })
+//                       })
+//                     }
+//                   })
+//                 })
+//               })
+//               // console.log('updated the database!');
+//               // json = JSON.stringify(allData.rows);
+//               res.status(200).send('ok');
+//             })
+//           });
+//         });
+//       });
+//     });
+//   });
+// });
 
 app.listen(port);
 console.log('listening on ' + port)
-

@@ -9,7 +9,6 @@ import Avatar from 'material-ui/Avatar';
 import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../../actions/demographicActions';
 import { toggleMETypeFilter, toggleProductFilter, toggleStageFilter, toggleCauseFilter } from '../../actions/visualizationActions';
 import ClearFilterIcon from '../../resources/clearFilterIcon.svg';
-import MEVColors from '../../theme';
 
 const styles = {
   filterPaper: {
@@ -183,7 +182,7 @@ class CurrentlySelectedFilters extends Component {
   renderTooltip = () => {
     return (this.state.mouseOverKey !== '')
       ? (
-        <div id="SelectedFilter-Tooltip" className={this.props.classes.toolTipStyle} style={{ left: `${this.state.mouseX - 120}px`, top: `${this.state.mouseY - 115}px` }} >
+        <div id="SelectedFilter-Tooltip" className={this.props.classes.toolTipStyle} style={{ left: `${this.state.mouseX - 105}px`, top: `${this.state.mouseY - 110}px` }} >
           {(this.state.mouseOverKey !== 'init_fda_dt')
             ? (
               <div>

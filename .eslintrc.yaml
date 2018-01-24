@@ -6,3 +6,6 @@ env:
   jest: true
 plugins:
   - eslint-plugin-promise
+  - eslint-plugin-import
+  - eslint-plugin-jsx-a11y
+  - eslint-plugin-react
