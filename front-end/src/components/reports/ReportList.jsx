@@ -14,7 +14,6 @@ import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
-import TextField from 'material-ui/TextField';
 
 const styles = {};
 
