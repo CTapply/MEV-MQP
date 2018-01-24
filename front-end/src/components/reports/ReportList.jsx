@@ -14,6 +14,7 @@ import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
+import TextField from 'material-ui/TextField';
 
 const styles = {};
 
@@ -41,7 +42,7 @@ class ReportList extends Component {
     createUserBin: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
   }
-
+        
   constructor() {
     super();
     this.state = {

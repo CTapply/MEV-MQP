@@ -23,7 +23,7 @@ export const getVisData = queryParams => (dispatch) => {
       const visData = {
         cause: _.reverse(_.sortBy(allReports.cause, 'size')),
         meType: _.reverse(_.sortBy(allReports.meType, 'size')),
-        product: _.reverse(_.sortBy(allReports.product, 'size')),
+        product: _.reverse(_.sortBy(allReports.product, 'size')).slice(0, 20),
         stage: _.reverse(_.sortBy(allReports.stage, 'size')),
       };
 
@@ -58,18 +58,18 @@ export const toggleMETypeFilter = filter => (dispatch, getState) => {
  * @param {string} filter the item to add/remove from the filters
  */
 export const toggleProductFilter = filter => (dispatch, getState) => {
-  // if (filter === 'CLEAR') {
-  //   if (getState().filters.product.length !== 0) {
-  //     dispatch({ type: 'SET_PRODUCT', product: [] });
-  //     dispatch(filterData());
-  //   }
-  // } else if (getState().filters.product.includes(filter)) {
-  //   dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.filter(item => item !== filter) });
-  //   dispatch(filterData());
-  // } else {
-  //   dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.concat(filter) });
-  //   dispatch(filterData());
-  // }
+  if (filter === 'CLEAR') {
+    if (getState().filters.product.length !== 0) {
+      dispatch({ type: 'SET_PRODUCT', product: [] });
+      dispatch(filterData());
+    }
+  } else if (getState().filters.product.includes(filter)) {
+    dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.filter(item => item !== filter) });
+    dispatch(filterData());
+  } else {
+    dispatch({ type: 'SET_PRODUCT', product: getState().filters.product.concat(filter) });
+    dispatch(filterData());
+  }
 };
 
 /**

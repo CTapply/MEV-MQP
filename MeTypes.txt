@@ -1,0 +1,16 @@
+Dose Omission
+Wrong Dose
+Wrong Strength/Concentration
+Wrong Drug
+Wrong Dosage Form
+Wrong Technique
+Improper Administration
+Wrong Rate
+Wrong Duration
+Accidental Exposure
+Insufficient Storage
+Wrong Time
+Wrong Patient
+Monitoring
+Deteriorated Drug
+Other

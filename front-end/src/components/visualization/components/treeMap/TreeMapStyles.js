@@ -3,6 +3,7 @@ export default {
     height: 'calc(65vh - 52px)',
     margin: 'auto',
     padding: '10px 10px 0px 10px',
+    transition: 'height 200ms ease-in-out',
   },
   treemapVisualization: {
     height: '25%',

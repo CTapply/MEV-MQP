@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { withStyles } from 'material-ui/styles';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 import Typography from 'material-ui/Typography';
 import CustomTooltip from './components/CustomTooltip';
-import BarChartImpl from './components/BarChartImpl';
+// import BarChartImpl from './components/BarChartImpl';
 import ClearFilterIcon from '../../../../../resources/clearFilterIcon.svg';
 import MEVColors from '../../../../../theme';
 
@@ -17,9 +17,16 @@ const styles = {
     'pointer-events': 'none',
     'padding-left': '45px',
   },
-  responsiveContainer: {
+  responsiveContainerMaximized: {
     'margin-left': '-15px',
     'font-size': '10pt',
+    zIndex: 850,
+  },
+  responsiveContainerMinimized: {
+    'margin-left': '0px',
+    'font-size': '10pt',
+    transform: 'translateY(-3px)',
+    zIndex: 850,
   },
   maxHeight: {
     height: '100%',
@@ -52,11 +59,13 @@ class Age extends Component {
   static propTypes = {
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
     toggleFilter: PropTypes.func.isRequired,
+    minimized: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
       labelFont: PropTypes.string,
       clearFilterChip: PropTypes.string,
       chipAvatar: PropTypes.string,
-      responsiveContainer: PropTypes.string,
+      responsiveContainerMaximized: PropTypes.string,
+      responsiveContainerMinimized: PropTypes.string,
       maxHeight: PropTypes.string,
       noOverflow: PropTypes.string,
     }).isRequired,
@@ -86,7 +95,7 @@ class Age extends Component {
    */
   resizeTimer = () => {
     clearTimeout(this.state.stillResizingTimer);
-    this.state.stillResizingTimer = setTimeout(this.resizeGraph, 250);
+    this.setState({ stillResizingTimer: setTimeout(this.resizeGraph, 250) });
   }
 
   /**
@@ -113,13 +122,38 @@ class Age extends Component {
     const container = document.getElementById('age-container');
     const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
     const graphTitle = document.getElementById('age-graph-title');
-    const graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
+    let graphTitleHeight;
+    if (graphTitle) {
+      graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
+    }
     this.setState({
       graphHeight: (parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10)) + 10,
     });
   }
 
-  render() {
+  renderMinimized = () => {
+    return (
+      <div id="age-container" className={this.props.classes.maxHeight} >
+        <ResponsiveContainer className={this.props.classes.responsiveContainerMinimized} width="100%" height={50} >
+          <BarChart
+            data={this.props.age}
+          >
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ stroke: '#424242', strokeWidth: 1 }}
+              wrapperStyle={{ padding: '4px', zIndex: 1000 }}
+              demographic="age"
+            />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
+            <Bar dataKey="UNK" stroke={MEVColors.notSevereStroke} stackId="a" fill="url(#colorNotSerious)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
+  renderMaximized = () => {
     return (
       <div id="age-container" className={this.props.classes.maxHeight} >
         <div id="age-header" className={this.props.classes.noOverflow} >
@@ -133,8 +167,8 @@ class Age extends Component {
             Age
           </Typography>
         </div>
-        <ResponsiveContainer className={this.props.classes.responsiveContainer} width="100%" height={this.state.graphHeight}>
-          <BarChartImpl
+        <ResponsiveContainer className={this.props.classes.responsiveContainerMaximized} width="100%" height={this.state.graphHeight} >
+          <BarChart
             data={this.props.age}
             onClick={this.handleFilterClickToggle}
           >
@@ -150,27 +184,16 @@ class Age extends Component {
             />
             <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
             <Bar dataKey="UNK" stroke={MEVColors.notSevereStroke} stackId="a" fill="url(#colorNotSerious)" />
-            {/* <ReferenceArea
-              x1="0-5"
-              x2="0-5"
-              stroke="red"
-              strokeOpacity={0.3}
-              xAxisId={0}
-            />
-            <ReferenceArea
-              viewBox={{
-                width: 40,
-              }}
-              x1="40-49"
-              x2="50-59"
-              stroke="red"
-              strokeOpacity={0.3}
-              xAxisId={0}
-            /> */}
-          </BarChartImpl>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     );
+  }
+
+  render() {
+    return (this.props.minimized)
+      ? this.renderMinimized()
+      : this.renderMaximized();
   }
 }
 
