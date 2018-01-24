@@ -45,12 +45,14 @@ class TreeMap extends Component {
     // Once the screen has loaded, optimize the size of the TreeMap
     this.resizeGraph();
 
+    // Resize the treemaps when the main-visualization size is changed
     document.getElementById('main-visualization').addEventListener('transitionend', () => {
       this.resizeGraph();
     });
   }
 
   componentWillUnmount() {
+    // Remove the event listener when unmounting
     window.removeEventListener('resize', this.resizeTimer);
   }
 

@@ -23,7 +23,7 @@ export const getVisData = queryParams => (dispatch) => {
       const visData = {
         cause: _.reverse(_.sortBy(allReports.cause, 'size')),
         meType: _.reverse(_.sortBy(allReports.meType, 'size')),
-        product: _.reverse(_.sortBy(allReports.product, 'size')),
+        product: _.reverse(_.sortBy(allReports.product, 'size')).slice(0, 20),
         stage: _.reverse(_.sortBy(allReports.stage, 'size')),
       };
 

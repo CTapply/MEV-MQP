@@ -23,7 +23,7 @@ let cache = {
 // Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
-  // cache = redis.createClient();  
+  cache = redis.createClient();  
 }
 
 // We cannot use REDIS if on Windows
@@ -247,15 +247,15 @@ function productBuilder(product) {
   }
 
   if (product.length === 1) {
-    return productString + `product = '${product}'`
+    return productString + `drugname = '${product}'`
   }
   
   if (product.length > 1) {
     const productMap = product.map(filter => {
       if (filter === 'UNK') {
-        return `product IS NULL`;
+        return `drugname IS NULL`;
       } else {
-        return `product = '${filter}'`;
+        return `drugname = '${filter}'`;
       }
     });
     return `${productString}(${productMap.join(' OR ')})`
@@ -333,7 +333,7 @@ app.post('/getdemographicdata', (req, res) => {
   query += ageBuilder(req.body.age);
   query += occupationBuilder(req.body.occp_cod);
   query += meTypeBuilder(req.body.meType);
-  query += productBuilder(req.body.product);
+  // query += productBuilder(req.body.product);
   query += stageBuilder(req.body.stage);
   query += causeBuilder(req.body.cause);
 
@@ -360,7 +360,7 @@ app.post('/getreports', (req, res) => {
     query += ageBuilder(req.body.age);
     query += occupationBuilder(req.body.occp_cod);
     query += meTypeBuilder(req.body.meType);
-    query += productBuilder(req.body.product);
+    // query += productBuilder(req.body.product);
     query += stageBuilder(req.body.stage);
     query += causeBuilder(req.body.cause);  
     
@@ -518,7 +518,7 @@ app.post('/getvis', (req, res) => {
   meTypeQuery += ageBuilder(req.body.age);
   meTypeQuery += occupationBuilder(req.body.occp_cod);
   meTypeQuery += meTypeBuilder(req.body.meType);
-  meTypeQuery += productBuilder(req.body.product);
+  // meTypeQuery += productBuilder(req.body.product);
   meTypeQuery += stageBuilder(req.body.stage);
   meTypeQuery += causeBuilder(req.body.cause);
   meTypeQuery += " GROUP BY me_type";
@@ -541,7 +541,7 @@ app.post('/getvis', (req, res) => {
   stageQuery += ageBuilder(req.body.age);
   stageQuery += occupationBuilder(req.body.occp_cod);
   stageQuery += meTypeBuilder(req.body.meType);
-  stageQuery += productBuilder(req.body.product);
+  // stageQuery += productBuilder(req.body.product);
   stageQuery += stageBuilder(req.body.stage);
   stageQuery += causeBuilder(req.body.cause);
   stageQuery += " GROUP BY stage"; 
@@ -562,7 +562,7 @@ app.post('/getvis', (req, res) => {
   causeQuery += ageBuilder(req.body.age);
   causeQuery += occupationBuilder(req.body.occp_cod);
   causeQuery += meTypeBuilder(req.body.meType);
-  causeQuery += productBuilder(req.body.product);
+  // causeQuery += productBuilder(req.body.product);
   causeQuery += stageBuilder(req.body.stage);
   causeQuery += causeBuilder(req.body.cause);
   causeQuery += " GROUP BY cause";
@@ -584,7 +584,7 @@ app.post('/getvis', (req, res) => {
       productQuery += ageBuilder(req.body.age);
       productQuery += occupationBuilder(req.body.occp_cod);
       productQuery += meTypeBuilder(req.body.meType);
-      productQuery += productBuilder(req.body.product);
+      // productQuery += productBuilder(req.body.product);
       productQuery += stageBuilder(req.body.stage);
       productQuery += causeBuilder(req.body.cause);
       productQuery += ") a "
@@ -593,12 +593,12 @@ app.post('/getvis', (req, res) => {
     console.log(productQuery)
 
   db.query(meTypeQuery, (err, meTypeData) => {
-    // db.query(productQuery, (err, productData) => {
+    db.query(productQuery, (err, productData) => {
       db.query(stageQuery, (err, stageData) => {
         db.query(causeQuery, (err, causeData) => {
           returnObject = { 
             meType: meTypeData.rows,
-            product: [],//productData.rows,
+            product: productData.rows,
             stage: stageData.rows,
             cause: causeData.rows,
           }
@@ -606,7 +606,7 @@ app.post('/getvis', (req, res) => {
           res.status(200).send(returnObject);
         })
       })
-    // })
+    })
   })
 });
 

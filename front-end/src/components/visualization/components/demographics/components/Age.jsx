@@ -126,7 +126,6 @@ class Age extends Component {
     if (graphTitle) {
       graphTitleHeight = window.getComputedStyle(graphTitle, null).getPropertyValue('height');
     }
-    console.log(`graphHeight: ${parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10) + 10}`);
     this.setState({
       graphHeight: (parseInt(containerHeight, 10) - parseInt(graphTitleHeight, 10)) + 10,
     });

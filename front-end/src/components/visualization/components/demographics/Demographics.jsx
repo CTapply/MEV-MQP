@@ -38,8 +38,27 @@ class Demographics extends Component {
     }).isRequired,
   }
 
-  asd = () => 123;
+  componentDidMount() {
+    // Add event listener so clean up the hiding animation, but still show the whole tooltip
+    document.getElementById('DemographicsGrid').addEventListener('transitionend', this.toggleOverflow);
+  }
+  componentWillUnmount() {
+    // Remove event listener on unmount
+    document.getElementById('DemographicsGrid').removeEventListener('transitionend', this.toggleOverflow);
+  }
 
+  /**
+   * Toggles the overflow style on the DemographicsGrid if the Demographics panel is minimized
+   */
+  toggleOverflow = () => {
+    if (!this.props.minimized) {
+      document.getElementById('DemographicsGrid').setAttribute('style', 'overflow: visible');
+    }
+  }
+
+  /**
+   * Toggles the size of the Dempgraphic panel to minimize it if desired
+   */
   toggleSize = () => {
     if (!this.props.minimized) {
       this.props.toggleMinimized(true);
@@ -48,6 +67,7 @@ class Demographics extends Component {
     } else {
       this.props.toggleMinimized(false);
       document.getElementById('DemographicsGrid').setAttribute('style', 'height: 20vh;');
+      document.getElementById('DemographicsGrid').setAttribute('style', 'overflow: hidden');
       document.getElementById('MinimizeButton').setAttribute('style', 'top: calc(20% + 25px);');
     }
   }
