@@ -11,7 +11,7 @@ import { Area, CartesianGrid, XAxis, ResponsiveContainer, ReferenceArea } from '
 import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
 import styles from './TimelineMinimizedStyles';
-import GoToReportsIcon from '../../../../../resources/goToReportsIcon2.svg';
+import GoToReportsIcon from '../../../../../resources/goToReportsIcon.svg';
 import MEVColors from '../../../../../theme';
 import '../Timeline.css';
 

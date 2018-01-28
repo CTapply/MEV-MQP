@@ -12,7 +12,7 @@ import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
 import CustomTooltip from './components/CustomTooltip';
 import styles from './TimelineMaximizedStyles';
-import GoToReportsIcon from '../../../../../resources/goToReportsIcon2.svg';
+import GoToReportsIcon from '../../../../../resources/goToReportsIcon.svg';
 import MEVColors from '../../../../../theme';
 import '../Timeline.css';
 

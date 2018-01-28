@@ -166,8 +166,10 @@ export const getDemographicData = queryParams => (dispatch) => {
           .map(countryRange => ({ country: countryRange, ...reducedData.country[countryRange] })), 'count')).slice(0, 10),
         occp_cod: _.reverse(_.sortBy(Object.keys(reducedData.occp_cod)
           .map(occpRange => ({ occp_cod: occpRange, ...reducedData.occp_cod[occpRange] })), 'count')),
+        totalCount: Object.keys(reducedData.sex).reduce((acc, gender) => (
+          acc + reducedData.sex[gender].count
+        ), 0),
       };
-      console.log('Updated Demographics');
       dispatch({ type: 'UPDATE_DEMOGRAPHICS', demographics });
     })
     .catch((err) => {

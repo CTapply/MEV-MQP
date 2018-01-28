@@ -5,7 +5,7 @@ export default {
     margin: '0px',
     width: '100%',
     'background-color': MEVColors.navBar,
-    zIndex: 100,
+    zIndex: 500,
     border: 'none',
   },
   drawerClass: {

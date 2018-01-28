@@ -3,6 +3,7 @@ const initialDemographicState = {
   age: [],
   location: [],
   occp_cod: [],
+  totalCount: 0,
   demographicsMinimized: false,
 };
 

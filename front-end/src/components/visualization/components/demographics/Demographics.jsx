@@ -45,13 +45,9 @@ class Demographics extends Component {
    */
   toggleSize = () => {
     if (this.props.minimized) {
-      console.log('Maximize Demographics');
       this.props.setDemographicsMinimizedToggle(false);
-      // this.resizePanel();
     } else {
-      console.log('Minimize Demographics');
       this.props.setDemographicsMinimizedToggle(true);
-      // this.resizePanel();
     }
   }
 
