@@ -14,10 +14,10 @@ const styles = {
   filterPaper: {
     padding: '0px',
     display: 'inline-block',
-    width: '100%',
+    width: '100px',
     height: '100%',
     margin: '4px',
-    transform: 'translateY(4px)',
+    transform: 'translateY(-8px)',
   },
   clearFilterChip: {
     'font-size': '9pt',
@@ -216,7 +216,7 @@ class CurrentlySelectedFilters extends Component {
   renderFilterBox = () => Object.keys(this.props.filters).map(key =>
     ((this.props.filters[key].length !== 0)
       ? (
-        <Paper className={this.props.classes.filterPaper} style={{ width: '100px' }} elevation={4} key={key} name={key} >
+        <Paper className={this.props.classes.filterPaper} elevation={4} key={key} name={key} >
           {(key !== 'init_fda_dt')
             ? (
               <Chip
@@ -238,7 +238,7 @@ class CurrentlySelectedFilters extends Component {
 
   render() {
     return (
-      <div id="selected-filters-box" >
+      <div id="selected-filters-box" style={{ display: 'inline-block' }}>
         {this.renderFilterBox()}
         {this.renderTooltip()}
       </div>

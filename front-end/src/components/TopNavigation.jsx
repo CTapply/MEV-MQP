@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
+import Paper from 'material-ui/Paper';
 import { Link } from 'react-router-dom';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import List, {
-  ListItem,
-  ListItemText,
-} from 'material-ui/List';
+import List, { ListItem, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import { setUserInfo } from '../actions/userActions';
 import CurrentlySelectedFilters from './components/CurrentlySelectedFilters';
@@ -18,6 +16,7 @@ import styles from './TopNavigationStyles';
 class TopNavigation extends Component {
   static propTypes = {
     setUserInfo: PropTypes.func.isRequired,
+    totalCount: PropTypes.number.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -38,6 +37,8 @@ class TopNavigation extends Component {
     });
   };
 
+  formatNumberWithCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
   render = () => (
     <div className={this.props.classes.topNavigationContainer}>
       <nav className={`${this.props.classes.topNavigationContainer} navbar navbar-default`}>
@@ -45,7 +46,7 @@ class TopNavigation extends Component {
           <div className="pull-left">
             <div>
               <Button onClick={this.toggleDrawer('left', true)} className={this.props.classes.buttonClass}><i className="material-icons">menu</i></Button>
-              <Drawer open={this.state.left} onRequestClose={this.toggleDrawer('left', false)} SlideProps={{ className: this.props.classes.drawerClass }}>
+              <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)} SlideProps={{ className: this.props.classes.drawerClass }}>
                 <div
                   tabIndex={0}
                   role="button"
@@ -63,7 +64,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
                                 Login
                               </Typography>
                             }
@@ -76,7 +77,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
                                 Logout
                               </Typography>
                             }
@@ -90,7 +91,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
                             Visualizations
                             </Typography>
                           }
@@ -102,7 +103,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography type="line-item" style={{ lineItem: { 'font-size': '16px' } }}>
+                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
                             About
                             </Typography>
                           }
@@ -114,7 +115,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography type="line-item" style={{ lineItem: { 'font-size': '16px', color: '#fff' } }}>
+                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
                             Reports
                             </Typography>
                           }
@@ -133,6 +134,14 @@ class TopNavigation extends Component {
             </a>
           </div>
           <div className={this.props.classes.SelectedFilters} >
+            <Paper className={this.props.classes.TotalCountBox} elevation={4} >
+              <Typography type="body1" align="center" style={{ lineHeight: '1.4rem' }} >
+                Report Count
+              </Typography>
+              <Typography type="subheading" align="center" style={{ lineHeight: '1.4rem' }} >
+                {this.formatNumberWithCommas(this.props.totalCount)}
+              </Typography>
+            </Paper>
             <CurrentlySelectedFilters />
           </div>
         </div>
@@ -143,6 +152,7 @@ class TopNavigation extends Component {
 
 const mapStateToProps = state => ({
   isLoggedIn: state.user.isLoggedIn,
+  totalCount: state.demographic.totalCount,
 });
 
 export default connect(

@@ -38,6 +38,21 @@ export default {
     transform: 'translateY(1px)',
     marginLeft: '100px',
     marginRight: '100px',
-    // height: '35px',
+  },
+  PrimaryColorBar: {
+    'background-color': '#E51E56',
+  },
+  PrimaryColor: {
+    'background-color': '#EA8F8C',
+  },
+  Root: {
+    height: '5px',
+  },
+  TotalCountBox: {
+    padding: '0px',
+    display: 'inline-block',
+    width: '100px',
+    height: '37px',
+    margin: '4px',
   },
 };
