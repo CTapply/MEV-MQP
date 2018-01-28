@@ -30,3 +30,6 @@ export const setSelectedDate = selectedDates => (dispatch) => {
   dispatch({ type: 'SET_DATE_RANGE', init_fda_dt: { start: selectedDates.startDate, end: selectedDates.endDate } });
   dispatch(filterData());
 };
+
+export const setTimelineMinimizedToggle = toggle =>
+  dispatch => dispatch({ type: 'TOGGLE_TIMELINE_MINIMIZED', timelineMinimized: toggle });

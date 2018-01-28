@@ -6,11 +6,12 @@ import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
-import { Area, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, ReferenceArea } from 'recharts';
+import MaterialTooltip from 'material-ui/Tooltip';
+import { Area, CartesianGrid, XAxis, ResponsiveContainer, ReferenceArea } from 'recharts';
 import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
-import CustomTooltip from './components/CustomTooltip';
 import styles from './TimelineMinimizedStyles';
+import GoToReportsIcon from '../../../../../resources/goToReportsIcon2.svg';
 import MEVColors from '../../../../../theme';
 import '../Timeline.css';
 
@@ -36,8 +37,13 @@ class TimelineMinimized extends Component {
       gridContainer: PropTypes.string,
       timelineChartWrapperMinimized: PropTypes.string,
       timelineChartMinimized: PropTypes.string,
-      calendarWrapperMinimized: PropTypes.string,
       nonSetDateButton: PropTypes.string,
+      reportsButtonWrapperMaximized: PropTypes.string,
+      setDateButton: PropTypes.string,
+      unselectedSetDateButton: PropTypes.string,
+      goToReportsButton: PropTypes.string,
+      reportsButtonSVG: PropTypes.string,
+      tooltipStyle: PropTypes.string,
     }).isRequired,
   }
 
@@ -153,13 +159,6 @@ class TimelineMinimized extends Component {
         spacing={8}
         className={this.props.classes.gridContainer}
       >
-        <Paper elevation={4} className={this.props.classes.calendarWrapperMinimized} >
-          <Button raised color="primary" id="setDateBtn" style={{ display: 'none' }} >Set Date!</Button>
-          <Link to="/report">
-            <Button raised className="cal-button" color="primary" style={{ marginTop: '3px', marginLeft: '-1px' }} >Reports</Button>
-          </Link>
-          <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="03/16/2017 - 03/31/2017" id="dateRangePicker" style={{ display: 'none' }} />
-        </Paper>
         <Paper
           elevation={4}
           className={this.props.classes.timelineChartWrapperMinimized}
@@ -169,6 +168,25 @@ class TimelineMinimized extends Component {
               ? this.renderTimeline()
               : this.renderLoading()}
           </div>
+        </Paper>
+        <Paper elevation={4} className={this.props.classes.reportsButtonWrapperMaximized} >
+          <MaterialTooltip
+            title="Go to Reports Listing"
+            placement="top"
+            enterDelay={50}
+            classes={{
+              tooltip: this.props.classes.tooltipStyle,
+              popper: this.props.classes.tooltipStyle,
+              }}
+          >
+            <Link to="/report">
+              <Button raised className={this.props.classes.goToReportsButton} color="primary" >
+                <img className={this.props.classes.reportsButtonSVG} src={GoToReportsIcon} alt="Go to Reports Listing" />
+              </Button>
+            </Link>
+          </MaterialTooltip>
+          <Button raised color="primary" id="setDateBtn" style={{ display: 'none' }} >Set Date!</Button>
+          <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="03/16/2017 - 03/31/2017" id="dateRangePicker" style={{ display: 'none' }} />
         </Paper>
       </Grid>
     );

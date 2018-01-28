@@ -17,10 +17,11 @@ import CustomTooltip from './components/CustomTooltip';
  */
 class TreeMap extends Component {
   static propTypes = {
-    toggleMETypeFilter: PropTypes.func.isRequired,    
-    toggleProductFilter: PropTypes.func.isRequired,    
-    toggleStageFilter: PropTypes.func.isRequired,    
-    toggleCauseFilter: PropTypes.func.isRequired,    
+    toggleMETypeFilter: PropTypes.func.isRequired,
+    toggleProductFilter: PropTypes.func.isRequired,
+    toggleStageFilter: PropTypes.func.isRequired,
+    toggleCauseFilter: PropTypes.func.isRequired,
+    mainVisHeight: PropTypes.string.isRequired,
     classes: PropTypes.shape({
       mainVisualization: PropTypes.string,
       treemapVisualization: PropTypes.string,
@@ -139,7 +140,11 @@ class TreeMap extends Component {
   }
 
   render = () => (
-    <div className={this.props.classes.mainVisualization} id="main-visualization" >
+    <div
+      id="main-visualization"
+      className={this.props.classes.mainVisualization}
+      style={{ height: this.props.mainVisHeight }}
+    >
       <div className={this.props.classes.treemapVisualization} id="firstTreeMap">
         <Chip
           avatar={<Avatar src={ClearFilterIcon} alt="Clear Filters" className={this.props.classes.chipAvatar} />}

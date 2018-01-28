@@ -250,3 +250,6 @@ export const toggleOccupationFilter = filter => (dispatch, getState) => {
     dispatch(filterData());
   }
 };
+
+export const setDemographicsMinimizedToggle = toggle =>
+  dispatch => dispatch({ type: 'TOGGLE_DEMOGRAPHICS_MINIMIZED', demographicsMinimized: toggle });

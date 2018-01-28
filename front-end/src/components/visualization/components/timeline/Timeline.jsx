@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import { getEntireTimeline, setSelectedDate } from '../../../../actions/timelineActions';
+import { setTimelineMinimizedToggle, getEntireTimeline, setSelectedDate } from '../../../../actions/timelineActions';
 import styles from './TimelineStyles';
 import TimelineMaximized from './components/TimelineMaximized';
 import TimelineMinimized from './components/TimelineMinimized';
@@ -16,8 +16,8 @@ class Timeline extends Component {
   static propTypes = {
     getEntireTimeline: PropTypes.func.isRequired,
     setSelectedDate: PropTypes.func.isRequired,
+    setTimelineMinimizedToggle: PropTypes.func.isRequired,
     minimized: PropTypes.bool.isRequired,
-    toggleMinimized: PropTypes.func.isRequired,
     entireTimelineData: PropTypes.arrayOf(
       PropTypes.shape({
         init_fda_dt: PropTypes.string.isRequired,
@@ -28,6 +28,7 @@ class Timeline extends Component {
     classes: PropTypes.shape({
       minimizeButton: PropTypes.string,
       timelineContainer: PropTypes.string,
+      timelineContainerMinimized: PropTypes.string,
     }).isRequired,
   }
 
@@ -103,9 +104,12 @@ class Timeline extends Component {
   /**
    * Sets the currently selected date from the text box into the Redux State
    */
-  updateSelectedDate = () => {
+  updateSelectedDate = setDateBtnClass => () => {
     const dateRange = document.getElementById('dateRangePicker').value;
     const dates = this.getUnformattedDateFromFormattedRange(dateRange);
+
+    // Remove Glow on set date button after it has been clicked
+    document.getElementById('setDateBtn').classList.remove(setDateBtnClass);
 
     // When the date range changes we should update the reference area
     this.setState({
@@ -150,12 +154,10 @@ class Timeline extends Component {
    * Toggles the size of the Timeline
    */
   toggleSize = () => {
-    if (!this.props.minimized) {
-      this.props.toggleMinimized(true);
-      document.getElementById('TimelineContainer').setAttribute('style', 'height: 5vh;');
+    if (this.props.minimized) {
+      this.props.setTimelineMinimizedToggle(false);
     } else {
-      this.props.toggleMinimized(false);
-      document.getElementById('TimelineContainer').setAttribute('style', 'height: 15vh;');
+      this.props.setTimelineMinimizedToggle(true);
     }
   }
 
@@ -172,7 +174,10 @@ class Timeline extends Component {
 
   render() {
     return (
-      <div id="TimelineContainer" className={this.props.classes.timelineContainer} >
+      <div
+        id="TimelineContainer"
+        className={`${this.props.classes.timelineContainer} ${(this.props.minimized) ? this.props.classes.timelineContainerMinimized : ''}`}
+      >
         <Button id="MinimizeButtonTimeline" fab mini color="primary" aria-label="minimize" className={this.props.classes.minimizeButton} onClick={this.toggleSize}>
           {(this.props.minimized) ? '+' : '-'}
         </Button>
@@ -214,5 +219,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { getEntireTimeline, setSelectedDate },
+  { setTimelineMinimizedToggle, getEntireTimeline, setSelectedDate },
 )(withStyles(styles)(Timeline));

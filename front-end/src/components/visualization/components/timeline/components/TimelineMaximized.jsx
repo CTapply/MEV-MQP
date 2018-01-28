@@ -6,11 +6,13 @@ import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import MaterialTooltip from 'material-ui/Tooltip';
 import { Area, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, ReferenceArea } from 'recharts';
 import AreaChartImpl from './components/AreaChartImpl';
 import BrushImpl from './components/BrushImpl';
 import CustomTooltip from './components/CustomTooltip';
 import styles from './TimelineMaximizedStyles';
+import GoToReportsIcon from '../../../../../resources/goToReportsIcon2.svg';
 import MEVColors from '../../../../../theme';
 import '../Timeline.css';
 
@@ -49,8 +51,12 @@ class TimelineMaximized extends Component {
       gridContainer: PropTypes.string,
       timelineChartWrapperMaximized: PropTypes.string,
       timelineChartMaximized: PropTypes.string,
-      calendarWrapperMaximized: PropTypes.string,
-      nonSetDateButton: PropTypes.string,
+      reportsButtonWrapperMaximized: PropTypes.string,
+      setDateButton: PropTypes.string,
+      unselectedSetDateButton: PropTypes.string,
+      goToReportsButton: PropTypes.string,
+      reportsButtonSVG: PropTypes.string,
+      tooltipStyle: PropTypes.string,
     }).isRequired,
   }
 
@@ -64,7 +70,7 @@ class TimelineMaximized extends Component {
       });
 
       // Make the Set Date button Orange since we are no longer selected the range we have filtered for
-      document.getElementById('setDateBtn').classList.add(this.props.classes.nonSetDateButton);
+      document.getElementById('setDateBtn').classList.add(this.props.classes.unselectedSetDateButton);
 
       const dateRange = this.props.formatDateRange(this.props.selectedStartX, this.props.selectedStartX);
       this.props.updateDateRangePickerTextBox(dateRange);
@@ -242,29 +248,46 @@ class TimelineMaximized extends Component {
         spacing={8}
         className={this.props.classes.gridContainer}
       >
-        <Grid item sm={3} md={2}>
-          <Paper elevation={4} className={this.props.classes.calendarWrapperMaximized} >
-            {(this.props.currentlyFilteredDateRange !== this.props.currentlyHighlightedDateRange)
-              ? <Button raised color="primary" onClick={this.props.updateSelectedDate} id="setDateBtn" className={this.props.classes.nonSetDateButton} >Set Date!</Button>
-              : <Button raised color="primary" onClick={this.props.updateSelectedDate} id="setDateBtn" >Set Date!</Button>}
-            <Link to="/report">
-              <Button raised className="cal-button" color="primary">Reports</Button>
-            </Link>
-            <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="03/16/2017 - 03/31/2017" id="dateRangePicker" />
-          </Paper>
-        </Grid>
-        <Grid item sm={9} md={10}>
-          <Paper
-            elevation={4}
-            className={this.props.classes.timelineChartWrapperMaximized}
+        <Paper
+          elevation={4}
+          className={this.props.classes.timelineChartWrapperMaximized}
+        >
+          <Button
+            raised
+            color="primary"
+            className={this.props.classes.setDateButton}
+            onClick={this.props.updateSelectedDate(this.props.classes.unselectedSetDateButton)}
+            id="setDateBtn"
           >
-            <div className={this.props.classes.timelineChartMaximized} id="timeline-chart" >
-              {(this.props.entireTimelineData.length > 1)
-                ? this.renderTimeline()
-                : this.renderLoading()}
-            </div>
-          </Paper>
-        </Grid>
+            Set Date!
+          </Button>
+          <div className={this.props.classes.timelineChartMaximized} id="timeline-chart" >
+            {(this.props.entireTimelineData.length > 1)
+              ? this.renderTimeline()
+              : this.renderLoading()}
+          </div>
+        </Paper>
+        <Paper
+          elevation={4}
+          className={this.props.classes.reportsButtonWrapperMaximized}
+        >
+          <MaterialTooltip
+            title="Go to Reports Listing"
+            placement="top"
+            enterDelay={50}
+            classes={{
+              tooltip: this.props.classes.tooltipStyle,
+              popper: this.props.classes.tooltipStyle,
+              }}
+          >
+            <Link to="/report">
+              <Button raised className={this.props.classes.goToReportsButton} color="primary">
+                <img className={this.props.classes.reportsButtonSVG} src={GoToReportsIcon} alt="Go to Reports Listing" />
+              </Button>
+            </Link>
+          </MaterialTooltip>
+          <TextField className={this.props.classes.dateSelectedTextField} label="Selected Date Range" defaultValue="03/16/2017 - 03/31/2017" id="dateRangePicker" />
+        </Paper>
       </Grid>
     );
   }

@@ -13,20 +13,33 @@ export default {
   timelineChartMinimized: {
     display: 'inline-block',
     width: '100%',
-    height: 'calc(5vh - 1px)',
-  },
-  calendarWrapperMinimized: {
-    height: 'calc(5vh - 4px)',
-    width: '94px',
-    overflow: 'hidden',
-    marginLeft: '4px',
-    padding: '4px',
+    height: 'calc(100% + 3px)',
   },
   timelineChartWrapperMinimized: {
     height: 'calc(100% - 4px)',
-    width: 'calc(100% - 106px)',
+    width: 'calc(100% - 60px)',
     margin: '0px 4px',
     overflow: 'visible',
+  },
+  reportsButtonWrapperMaximized: {
+    height: 'calc(100% - 4px)',
+    width: '50px',
+    overflow: 'hidden',
+    padding: '2px',
+  },
+  goToReportsButton: {
+    height: '100%',
+    width: '100%',
+    padding: '0px',
+    justifyContent: 'left',
+  },
+  reportsButtonSVG: {
+    width: '35%',
+    transform: 'translateX(40%)',
+  },
+  tooltipStyle: {
+    fontSize: '10pt',
+    'pointer-events': 'none',
   },
   '@keyframes pulseShadow': {
     '0%': {

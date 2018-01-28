@@ -5,7 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
-import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../../../../actions/demographicActions';
+import { setDemographicsMinimizedToggle, toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../../../../actions/demographicActions';
 import Sex from './components/Sex';
 import Age from './components/Age';
 import Location from './components/Location';
@@ -17,12 +17,12 @@ import styles from './DemographicsStyles';
  */
 class Demographics extends Component {
   static propTypes = {
+    setDemographicsMinimizedToggle: PropTypes.func.isRequired,
     toggleSexFilter: PropTypes.func.isRequired,
     toggleAgeFilter: PropTypes.func.isRequired,
     toggleLocationFilter: PropTypes.func.isRequired,
     toggleOccupationFilter: PropTypes.func.isRequired,
     minimized: PropTypes.bool.isRequired,
-    toggleMinimized: PropTypes.func.isRequired,
     sex: PropTypes.arrayOf(PropTypes.object).isRequired,
     age: PropTypes.arrayOf(PropTypes.object).isRequired,
     location: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -33,49 +33,36 @@ class Demographics extends Component {
     }).isRequired,
     classes: PropTypes.shape({
       gridContainer: PropTypes.string,
+      gridContainerMinimized: PropTypes.string,
       minimizeButton: PropTypes.string,
+      minimizeButtonMinimized: PropTypes.string,
       maxHeight: PropTypes.string,
     }).isRequired,
-  }
-
-  componentDidMount() {
-    // Add event listener so clean up the hiding animation, but still show the whole tooltip
-    document.getElementById('DemographicsGrid').addEventListener('transitionend', this.toggleOverflow);
-  }
-  componentWillUnmount() {
-    // Remove event listener on unmount
-    document.getElementById('DemographicsGrid').removeEventListener('transitionend', this.toggleOverflow);
-  }
-
-  /**
-   * Toggles the overflow style on the DemographicsGrid if the Demographics panel is minimized
-   */
-  toggleOverflow = () => {
-    if (!this.props.minimized) {
-      document.getElementById('DemographicsGrid').setAttribute('style', 'height: 20vh; overflow: visible;');
-    } else {
-      document.getElementById('DemographicsGrid').setAttribute('style', 'height: 5vh; overflow: visible;');
-    }
   }
 
   /**
    * Toggles the size of the Dempgraphic panel to minimize it if desired
    */
   toggleSize = () => {
-    if (!this.props.minimized) {
-      this.props.toggleMinimized(true);
-      document.getElementById('DemographicsGrid').setAttribute('style', 'height: 5vh; overflow: hidden;');
-      document.getElementById('MinimizeButton').setAttribute('style', 'top: calc(5% + 25px);');
+    if (this.props.minimized) {
+      console.log('Maximize Demographics');
+      this.props.setDemographicsMinimizedToggle(false);
+      // this.resizePanel();
     } else {
-      this.props.toggleMinimized(false);
-      document.getElementById('DemographicsGrid').setAttribute('style', 'height: 20vh; overflow: hidden;');
-      document.getElementById('MinimizeButton').setAttribute('style', 'top: calc(20% + 25px);');
+      console.log('Minimize Demographics');
+      this.props.setDemographicsMinimizedToggle(true);
+      // this.resizePanel();
     }
   }
 
   render() {
     return (
-      <Grid id="DemographicsGrid" container spacing={8} className={this.props.classes.gridContainer} >
+      <Grid
+        id="DemographicsGrid"
+        container
+        spacing={8}
+        className={`${this.props.classes.gridContainer} ${(this.props.minimized) ? this.props.classes.gridContainerMinimized : ''}`}
+      >
         <Grid item xs={2}>
           <Paper className={this.props.classes.maxHeight} elevation={4} >
             <Sex
@@ -112,7 +99,15 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Button id="MinimizeButton" fab mini color="primary" aria-label="minimize" className={this.props.classes.minimizeButton} onClick={this.toggleSize}>
+        <Button
+          id="MinimizeButton"
+          fab
+          mini
+          color="primary"
+          aria-label="minimize"
+          className={`${this.props.classes.minimizeButton} ${(this.props.minimized) ? this.props.classes.minimizeButtonMinimized : ''}`}
+          onClick={this.toggleSize}
+        >
           {(this.props.minimized) ? '+' : '-'}
         </Button>
       </Grid>
@@ -139,5 +134,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter },
+  { setDemographicsMinimizedToggle, toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter },
 )(withStyles(styles)(Demographics));

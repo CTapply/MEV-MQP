@@ -4,6 +4,7 @@ const initialTimelineState = {
     serious: 0,
     not_serious: 0,
   }],
+  timelineMinimized: false,
 };
 
 /**
@@ -14,6 +15,8 @@ export default (state = initialTimelineState, action = {}) => {
   switch (action.type) {
     case 'SET_ENTIRE_TIMELINE':
       return Object.assign({}, state, { entireTimelineData: action.entireTimelineData });
+    case 'TOGGLE_TIMELINE_MINIMIZED':
+      return Object.assign({}, state, { timelineMinimized: action.timelineMinimized });
     default: return state;
   }
 };

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import TreeMap from './components/treeMap/TreeMap';
@@ -29,47 +30,22 @@ const styles = theme => ({});
  */
 class App extends Component {
   static propTypes = {
+    timelineMinimized: PropTypes.bool.isRequired,
+    demographicsMinimized: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      demographicsMinimized: false,
-      timelineMinimized: false,
-    };
-  }
-
-  toggleDemographicsMinimized = (toggle) => {
-    if (toggle) {
-      if (this.state.timelineMinimized) {
-        document.getElementById('main-visualization').setAttribute('style', 'height: calc(90vh - 52px)');
-      } else {
-        document.getElementById('main-visualization').setAttribute('style', 'height: calc(80vh - 52px)');
+  calculateTreeMapHeight = () => {
+    if (this.props.demographicsMinimized) {
+      if (this.props.timelineMinimized) {
+        return 'calc(90vh - 52px)';
       }
-    } else if (this.state.timelineMinimized) {
-      document.getElementById('main-visualization').setAttribute('style', 'height: calc(75vh - 52px)');
-    } else {
-      document.getElementById('main-visualization').setAttribute('style', 'height: calc(65vh - 52px)');
+      return 'calc(80vh - 52px)';
+    } else if (this.props.timelineMinimized) {
+      return 'calc(75vh - 52px)';
     }
-    this.setState({ demographicsMinimized: toggle });
-  }
-
-  toggleTimelineMinimized = (toggle) => {
-    if (toggle) {
-      if (this.state.demographicsMinimized) {
-        document.getElementById('main-visualization').setAttribute('style', 'height: calc(90vh - 52px)');
-      } else {
-        document.getElementById('main-visualization').setAttribute('style', 'height: calc(75vh - 52px)');
-      }
-    } else if (this.state.demographicsMinimized) {
-      document.getElementById('main-visualization').setAttribute('style', 'height: calc(80vh - 52px)');
-    } else {
-      document.getElementById('main-visualization').setAttribute('style', 'height: calc(65vh - 52px)');
-    }
-    this.setState({ timelineMinimized: toggle });
+    return 'calc(65vh - 52px)';
   }
 
   render() {
@@ -77,13 +53,13 @@ class App extends Component {
       <MuiThemeProvider theme={defaultTheme} >
         <div className="App">
           <Demographics
-            toggleMinimized={this.toggleDemographicsMinimized}
-            minimized={this.state.demographicsMinimized}
+            minimized={this.props.demographicsMinimized}
           />
-          <TreeMap />
+          <TreeMap
+            mainVisHeight={this.calculateTreeMapHeight()}
+          />
           <Timeline
-            toggleMinimized={this.toggleTimelineMinimized}
-            minimized={this.state.timelineMinimized}
+            minimized={this.props.timelineMinimized}
           />
         </div>
       </MuiThemeProvider>
@@ -91,4 +67,18 @@ class App extends Component {
   }
 }
 
-export default withStyles(styles)(App);
+const mapStateToProps = state => ({
+  timelineMinimized: state.timeline.timelineMinimized,
+  demographicsMinimized: state.demographic.demographicsMinimized,
+});
+
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
+export default connect(
+  mapStateToProps,
+  null,
+)(withStyles(styles)(App));

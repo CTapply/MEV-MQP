@@ -2,6 +2,7 @@ export default {
   dateSelectedTextField: {
     width: '100%',
     'font-size': '0.8em',
+    display: 'none',
   },
   gridContainer: {
     padding: '0px 2px',
@@ -11,18 +12,47 @@ export default {
     overflow: 'hidden',
   },
   timelineChartWrapperMaximized: {
-    height: 'calc(100%)',
+    height: 'calc(100% - 4px)',
+    width: 'calc(100% - 84px)',
     overflow: 'hidden',
+    marginRight: '4px',
   },
   timelineChartMaximized: {
     display: 'inline-block',
-    width: '100%',
     height: 'calc(15vh + 8px)',
+    width: '100%',
   },
-  calendarWrapperMaximized: {
-    height: 'calc(15vh - 8px)',
+  reportsButtonWrapperMaximized: {
+    height: 'calc(15vh - 4px)',
+    width: '80px',
     overflow: 'hidden',
-    padding: '8px',
+    padding: '2px',
+  },
+  goToReportsButton: {
+    height: '100%',
+    width: '100%',
+  },
+  reportsButtonSVG: {
+    width: '80%',
+    // transform: 'translateX(5%)',
+  },
+  tooltipStyle: {
+    fontSize: '10pt',
+    'pointer-events': 'none',
+  },
+  setDateButton: {
+    position: 'absolute',
+    zIndex: 800,
+    transform: 'translate(3px, 3px)',
+    visibility: 'hidden',
+  },
+  unselectedSetDateButton: {
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+    'animation-duration': '1s',
+    'animation-name': 'pulseShadow',
+    'animation-iteration-count': 'infinite',
+    'animation-direction': 'alternate',
+    visibility: 'visible',
   },
   '@keyframes pulseShadow': {
     '0%': {
@@ -31,12 +61,5 @@ export default {
     '100%': {
       boxShadow: '0 3px 30px 10px rgba(255, 105, 135, .4)',
     },
-  },
-  nonSetDateButton: {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    'animation-duration': '1s',
-    'animation-name': 'pulseShadow',
-    'animation-iteration-count': 'infinite',
-    'animation-direction': 'alternate',
   },
 };
