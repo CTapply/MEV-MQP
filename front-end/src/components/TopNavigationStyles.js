@@ -39,15 +39,6 @@ export default {
     marginLeft: '100px',
     marginRight: '100px',
   },
-  PrimaryColorBar: {
-    'background-color': '#E51E56',
-  },
-  PrimaryColor: {
-    'background-color': '#EA8F8C',
-  },
-  Root: {
-    height: '5px',
-  },
   TotalCountBox: {
     padding: '0px',
     display: 'inline-block',
