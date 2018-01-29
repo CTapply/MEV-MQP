@@ -159,6 +159,7 @@ class ReportedBy extends Component {
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="occp_cod"
+              isAnimationActive={false}
             />
             <CartesianGrid strokeDasharray="3 3" />
             <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
@@ -197,6 +198,7 @@ class ReportedBy extends Component {
               cursor={{ stroke: '#424242', strokeWidth: 1 }}
               wrapperStyle={{ padding: '4px', zIndex: 1000 }}
               demographic="occp_cod"
+              isAnimationActive={false}
             />
             <Bar dataKey="serious" stroke={MEVColors.severeStroke} stackId="a" fill="url(#colorSevere)" />
             <Bar dataKey="UNK" stroke={MEVColors.notSevereStroke} stackId="a" fill="url(#colorNotSerious)" />
