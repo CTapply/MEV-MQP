@@ -251,10 +251,7 @@ class ReportTable extends React.PureComponent {
         <VirtualTable />
         <TableColumnResizing columnWidths={this.columnWidths} />
         <TableHeaderRow showSortingControls />
-        <SelectionState />
-        <IntegratedSelection />
         <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-        <TableSelection showSelectAll />
         <TableRowDetail
           contentComponent={this.detailRowContent}
         />
