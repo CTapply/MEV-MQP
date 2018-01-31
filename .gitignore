@@ -2,6 +2,7 @@
 
 # data
 database/data
+back-end/sqlFiles
 
 # redis
 back-end/redis
