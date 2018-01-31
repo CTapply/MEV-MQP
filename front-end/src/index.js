@@ -19,6 +19,7 @@ import About from './components/portal/About';
 import ReportList from './components/reports/ReportList';
 import NarrativeAnnotator from './components/editor/NarrativeAnnotator';
 import TopNavigation from './components/TopNavigation';
+import CaseSummary from './components/cases/CaseSummary';
 
 import './index.css';
 
@@ -57,6 +58,7 @@ ReactDOM.render(
           <Route path="/login" component={Login} />
           <Route path="/about" component={About} />
           <Route path="/pdf/:id?" component={NarrativeAnnotator} />
+          <Route path="/case/:id?" component={CaseSummary} />
         </div>
       </ConnectedRouter>
     </Provider>
