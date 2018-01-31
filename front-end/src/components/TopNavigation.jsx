@@ -86,6 +86,18 @@ class TopNavigation extends Component {
                       </Link>
                     )
                     }
+                    <Link to="/dashboard" className={this.props.classes.listLink}>
+                      <ListItem button >
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            Dashboard
+                            </Typography>
+                          }
+                        />
+                      </ListItem>
+                    </Link>
                     <Link to="/" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText

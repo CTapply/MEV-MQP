@@ -119,14 +119,7 @@ class ReportList extends Component {
       this.setState({ open: true, value: 'Invalid Case Name' });
     }
   }
-
-  /**
-   * Sets the currently open bin
-   */
-  handleBinClick = bin => () => {
-    this.setState({ bin: bin.name });
-  }
-
+  
   render() {
     return (
       <MuiThemeProvider theme={defaultTheme} >

@@ -16,6 +16,7 @@ import reducers from './reducers/index';
 import App from './components/visualization/App';
 import Login from './components/portal/Login';
 import About from './components/portal/About';
+import Dashboard from './components/portal/Dashboard';
 import ReportList from './components/reports/ReportList';
 import NarrativeAnnotator from './components/editor/NarrativeAnnotator';
 import TopNavigation from './components/TopNavigation';
@@ -57,6 +58,7 @@ ReactDOM.render(
           <Route path="/report" component={ReportList} />
           <Route path="/login" component={Login} />
           <Route path="/about" component={About} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/pdf/:id?" component={NarrativeAnnotator} />
           <Route path="/case/:id?" component={CaseSummary} />
         </div>
