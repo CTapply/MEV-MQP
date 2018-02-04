@@ -6,16 +6,25 @@ import Button from 'material-ui/Button';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import TextField from 'material-ui/TextField';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import AppBar from 'material-ui/AppBar';
+import Typography from 'material-ui/Typography';
+import Modal from 'material-ui/Modal';
+import Tabs, { Tab } from 'material-ui/Tabs';
 import Snackbar from 'material-ui/Snackbar';
+import MaterialTooltip from 'material-ui/Tooltip';
 import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
+import CaseIcon from './components/CaseIcon';
+import NewCaseIcon from './components/NewCaseIcon';
+import TrashIcon from './components/TrashIcon';
+import AllReportsIcon from './components/AllReportsIcon';
+import GoToVisualizationIcon from '../../resources/goToVisualizationIcon.svg';
+import ViewCaseSummary from '../../resources/caseSummary.svg';
+import styles from './ReportListStyles';
 
-const styles = {};
 
 const defaultTheme = createMuiTheme({
   palette: {
@@ -40,6 +49,14 @@ class ReportList extends Component {
     getUserBins: PropTypes.func.isRequired,
     createUserBin: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
+    classes: PropTypes.shape({
+      newCaseArea: PropTypes.string,
+      goToVisualizationSVG: PropTypes.string,
+      caseSummarySVG: PropTypes.string,
+      tooltipStyle: PropTypes.string,
+      ReportList: PropTypes.string,
+      newCaseModal: PropTypes.string,
+    }).isRequired,
   }
 
   constructor() {
@@ -47,14 +64,14 @@ class ReportList extends Component {
     this.state = {
       bin: 'all reports',
       userBins: [],
-      anchorEl: null,
-      selectedIndex: 0,
-      open: false,
-      value: '',
+      newCaseModalOpen: false,
+      snackbarOpen: false,
+      snackbarMessage: '',
+      currentTab: 0,
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.getBins();
   }
 
@@ -74,103 +91,176 @@ class ReportList extends Component {
   toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
   /**
-   * Handler for drop down menu click
-   */
-  handleClickListItem = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  }
-
-  /**
    * Handler for drop down menu item click
    */
-  handleMenuItemClick = (event, index) => {
-    this.setState({
-      selectedIndex: index,
-      bin: this.state.userBins[index].toLowerCase(),
-      anchorEl: null,
-    });
-  };
-
-  /**
-   * Handler for drop down menu closing
-   */
-  handleClose = () => {
-    this.setState({ anchorEl: null });
+  handleMenuItemClick = (event, currentTab) => {
+    // If the Current tab is the New Case tab, open the Modal
+    if (currentTab === 2) {
+      this.setState({
+        currentTab,
+        newCaseModalOpen: true,
+      });
+    } else {
+      this.setState({
+        currentTab,
+        bin: event.currentTarget.getAttribute('name').toLowerCase(),
+      });
+    }
   };
 
   /**
    * Handler for invalid case name input during case creation
    */
   handleInvalidCase = () => {
-    this.setState({ open: false });
+    this.setState({ snackbarOpen: false });
+  };
+
+  /**
+   * Handler for Opening the New Case Modal
+   */
+  handleNewCaseOpen = () => {
+    this.setState({ newCaseModalOpen: true });
+  };
+
+  /**
+   * Handler for Closing the New Case Modal
+   */
+  handleNewCaseClose = () => {
+    this.setState({
+      newCaseModalOpen: false,
+      // Set back to the All Reports Tab
+      currentTab: 0,
+      bin: 'all reports',
+    });
   };
 
   /**
    * Checks name validity of new bin and shows an error or sends a backend fetch request
    */
   handleNewCaseClick = () => {
-    const binName = document.getElementById('newBinCreator').value.toLowerCase().trim();
+    const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
     if (binName !== '' && !this.state.userBins.map(bin => bin.toLowerCase()).includes(binName)) {
       this.setState({ userBins: this.state.userBins.concat(this.toTitleCase(binName)) });
       this.props.createUserBin(this.props.userID, binName);
-      document.getElementById('newBinCreator').value = '';
-      this.setState({ open: true, value: `Case ${this.toTitleCase(binName)} Created!` });
+      document.getElementById('newCaseName').value = '';
+      this.setState({ snackbarOpen: true, snackbarMessage: `Case ${this.toTitleCase(binName)} Created!` });
+      this.handleNewCaseClose();
     } else {
-      this.setState({ open: true, value: 'Invalid Case Name' });
+      this.setState({ snackbarOpen: true, snackbarMessage: 'Invalid Case Name' });
     }
   }
-  
+
   render() {
     return (
       <MuiThemeProvider theme={defaultTheme} >
-        <div className="ReportList">
-          <Paper elevation={2} className="paper" >
-            <List>
-              <ListItem
-                button
-                aria-haspopup="true"
-                aria-controls="lock-menu"
-                aria-label="Select a Case"
-                onClick={this.handleClickListItem}
-              >
-                <ListItemText
-                  primary={this.state.userBins[this.state.selectedIndex]}
-                  secondary="Select a Case"
-                />
-              </ListItem>
-            </List>
-            <Menu
-              id="lock-menu"
-              anchorEl={this.state.anchorEl}
-              open={Boolean(this.state.anchorEl)}
-              onClose={this.handleClose}
+        <div className={this.props.classes.ReportList} >
+          {/* ====== Top Bar with Tabs for each Case ====== */}
+          <AppBar position="static" color="default">
+            <Tabs
+              value={this.state.currentTab}
+              onChange={this.handleMenuItemClick}
+              indicatorColor="primary"
+              textColor="primary"
+              scrollable
+              scrollButtons="auto"
+              centered
             >
-              {this.state.userBins.map((option, index) => (
-                <MenuItem
-                  key={option}
-                  selected={index === this.state.selectedIndex}
-                  onClick={event => this.handleMenuItemClick(event, index)}
-                >
-                  {option}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Paper >
-          <hr />
+              <Tab icon={<AllReportsIcon />} label="All Reports" key="All Reports" name="All Reports" />
+              <Tab icon={<TrashIcon />} label="Trash" key="Trash" name="Trash" />
+              <Tab icon={<NewCaseIcon />} label="New Case" name="New Case" />
+              {this.state.userBins.map((bin) => {
+                switch (bin) {
+                  case 'Trash':
+                  case 'All Reports':
+                  return null;
+                  default:
+                    return (<Tab icon={<CaseIcon />} label={bin} key={bin} name={bin} />);
+                }
+              })}
+            </Tabs>
+          </AppBar>
+
+          {/* ====== Table for Viewing the Reports ====== */}
           <ReportTable bin={this.state.bin} bins={this.state.userBins} />
-          <Paper elevation={2} className="ppaaaper" >
-            <TextField label="Create New Case" placeholder="New" id="newBinCreator" style={{ margin: 12 }} />
-            <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} className="cal-button" color="primary">Create Case!</Button>
-          </Paper>
-          <Link href="/" to="/" > <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go Back</Button></Link>
+
+          {/* ====== Modal for Creating a New Case ====== */}
+          <Modal
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            open={this.state.newCaseModalOpen}
+            onClose={this.handleNewCaseClose}
+          >
+            <Paper elevation={8} className={this.props.classes.newCaseModal} >
+              <Typography type="title" id="modal-title">
+                Create a Case
+              </Typography>
+              <hr />
+              <TextField
+                label="Case Name"
+                placeholder="Advil"
+                id="newCaseName"
+                style={{ margin: 12, width: '100%' }}
+              />
+              <TextField
+                multiline
+                rowsMax="4"
+                label="Case Description"
+                placeholder="This case contains reports about Advil"
+                id="newCaseDesc"
+                style={{ margin: 12, width: '100%' }}
+              />
+              <hr />
+              <Button raised onClick={this.handleNewCaseClick} style={{ margin: 12 }} color="primary">Create Case</Button>
+            </Paper>
+          </Modal>
+
+          {/* ====== Floating Action Button for Going back to Main Visualization ====== */}
+          <div style={{ position: 'absolute', left: '20px', bottom: '20px' }} >
+            <MaterialTooltip
+              title="Go Back To Visualization"
+              placement="top"
+              enterDelay={50}
+              classes={{
+                tooltip: this.props.classes.tooltipStyle,
+                popper: this.props.classes.tooltipStyle,
+                }}
+            >
+              <Link href="/" to="/" >
+                <Button fab style={{ margin: 12 }} color="primary">
+                  <img src={GoToVisualizationIcon} className={this.props.classes.goToVisualizationSVG} alt="Go Back To Visualization" />
+                </Button>
+              </Link>
+            </MaterialTooltip>
+          </div>
+
+          {/* ====== Floating Action Button for Opening Case Summary ====== */}
+          <div style={{ position: 'absolute', right: '20px', bottom: '20px' }} >
+            <MaterialTooltip
+              title="Open Case Summary"
+              placement="top"
+              enterDelay={50}
+              classes={{
+                tooltip: this.props.classes.tooltipStyle,
+                popper: this.props.classes.tooltipStyle,
+                }}
+            >
+              <Link href="/" to="/" >
+                <Button fab style={{ margin: 12 }} color="primary">
+                  <img src={ViewCaseSummary} className={this.props.classes.caseSummarySVG} alt="Open Case Summary" />
+                </Button>
+              </Link>
+            </MaterialTooltip>
+          </div>
+
+          {/* ====== Snackbar for Notificaitons to the User ====== */}
           <Snackbar
-            open={this.state.open}
+            open={this.state.snackbarOpen}
             onClose={this.handleInvalidCase}
             transition={Fade}
             SnackbarContentProps={{
               'aria-describedby': 'message-id',
             }}
-            message={<span id="message-id">{this.state.value}</span>}
+            message={<span id="message-id">{this.state.snackbarMessage}</span>}
           />
         </div>
       </MuiThemeProvider>

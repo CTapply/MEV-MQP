@@ -7,8 +7,7 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import MaterialTooltip from 'material-ui/Tooltip';
-import { Area, CartesianGrid, XAxis, ResponsiveContainer, ReferenceArea } from 'recharts';
-import AreaChartImpl from './components/AreaChartImpl';
+import { Area, AreaChart, CartesianGrid, XAxis, ResponsiveContainer, ReferenceArea } from 'recharts';
 import BrushImpl from './components/BrushImpl';
 import styles from './TimelineMinimizedStyles';
 import GoToReportsIcon from '../../../../../resources/goToReportsIcon.svg';
@@ -63,7 +62,7 @@ class TimelineMinimized extends Component {
 
   renderLoading = () => (
     <ResponsiveContainer width="100%" height="100%" >
-      <AreaChartImpl
+      <AreaChart
         data={this.loadingData()}
         margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
       >
@@ -83,13 +82,13 @@ class TimelineMinimized extends Component {
           minTickGap={15}
         />
         <CartesianGrid strokeDasharray="3 3" />
-      </AreaChartImpl>
+      </AreaChart>
     </ResponsiveContainer>
   )
 
   renderTimeline = () => (
     <ResponsiveContainer width="100%" height="100%" >
-      <AreaChartImpl
+      <AreaChart
         data={this.props.entireTimelineData}
         margin={{ top: 2, right: 2, left: 2, bottom: -25 }}
       >
@@ -147,7 +146,7 @@ class TimelineMinimized extends Component {
           getmouseZoomLocation={this.props.getmouseZoomLocation}
           getUnformattedDateFromFormattedRange={this.props.getUnformattedDateFromFormattedRange}
         />
-      </AreaChartImpl>
+      </AreaChart>
     </ResponsiveContainer>
   )
 

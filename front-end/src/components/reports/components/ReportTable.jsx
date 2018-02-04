@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
-  RowDetailState, SortingState, IntegratedSorting, IntegratedSelection, SelectionState,
+  RowDetailState, SortingState, IntegratedSorting,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
@@ -11,19 +11,18 @@ import {
   TableHeaderRow,
   DragDropProvider,
   TableColumnReordering,
-  TableSelection,
   TableRowDetail,
   TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 import _ from 'lodash';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Menu, { MenuItem } from 'material-ui/Menu';
 import { moveReport, getCaseReports } from '../../../actions/reportActions';
-
-const styles = {};
+import CaseIcon from './CaseIcon';
+import styles from './ReportTableStyles';
+import './ReportTable.css';
 
 /**
  * This is the component for the Report Table
@@ -46,30 +45,55 @@ class ReportTable extends React.PureComponent {
     }).isRequired,
     bin: PropTypes.string.isRequired,
     userID: PropTypes.number.isRequired,
+    classes: PropTypes.shape({
+      tableContainer: PropTypes.string,
+      moveToCaseDetailsContainer: PropTypes.string,
+      caseGridList: PropTypes.string,
+      sendToCaseContainer: PropTypes.string,
+    }).isRequired,
   }
 
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-      anchorEl: null,
-      selectedIndex: 0,
       expandedRows: [],
-    };
+      tableHeight: 0,
+      stillResizingTimer: '',
 
-    this.changeExpandedDetails = (expandedRows) => {
-      this.setState({ expandedRows });
+      /**
+       * Default widths for the columns of the table
+       */
+      widths: {
+        init_fda_dt: 85,
+        primaryid: 90,
+        caseid: 80,
+        caseversion: 95,
+        age_year: 50,
+        sex: 50,
+        wt_lb: 65,
+        drugname: 200,
+        me_type: 180,
+        outc_cod: 85,
+      },
     };
   }
 
   /**
    * Sends fetch request to retrieve list of reports to be shown in table
    */
-  componentDidMount() {
+  componentWillMount() {
     this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
       .then(bins => this.setState({
         data: bins,
       }));
+  }
+
+  componentDidMount() {
+    this.resizeTable();
+
+    // Listen for window resize, but wait till they have stopped to do the size calculations.
+    window.addEventListener('resize', this.resizeTimer);
   }
 
   /**
@@ -84,6 +108,18 @@ class ReportTable extends React.PureComponent {
           this.changeExpandedDetails([]);
         });
     }
+  }
+
+  componentWillUnmount() {
+    // Remove the event listeners when unmounting
+    window.removeEventListener('resize', this.resizeTimer);
+  }
+
+  /**
+   * Updates the column widths
+   */
+  onColumnWidthsChange = (widths) => {
+    this.setState({ widths });
   }
 
   /**
@@ -133,20 +169,20 @@ class ReportTable extends React.PureComponent {
   ];
 
   /**
-   * Default widths for the columns of the table
+   * Sets what rows are expanded in the table
    */
-  columnWidths = {
-    init_fda_dt: 80,
-    primaryid: 80,
-    caseid: 80,
-    caseversion: 50,
-    age_year: 50,
-    sex: 50,
-    wt_lb: 50,
-    drugname: 100,
-    me_type: 100,
-    outc_cod: 75,
+  changeExpandedDetails = (expandedRows) => {
+    this.setState({ expandedRows });
   };
+
+  /**
+   * After 250ms of not resizing, we will then resize the graph (this improves performance)
+   */
+  resizeTimer = () => {
+    clearTimeout(this.state.stillResizingTimer);
+    this.setState({ stillResizingTimer: setTimeout(this.resizeTable, 100) });
+  }
+
 
   /**
    * Sends a backend request to move a report from one bin to another
@@ -165,26 +201,16 @@ class ReportTable extends React.PureComponent {
   };
 
   /**
-   * Handler for drop down menu click
+   * Calculate the size of the table
    */
-  handleClickListItem = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
+  resizeTable = () => {
+    const container = document.getElementById('table-container');
+    const containerHeight = window.getComputedStyle(container, null).getPropertyValue('height');
+    this.setState({
+      tableHeight: parseInt(containerHeight || 800, 10),
+      stillResizingTimer: '',
+    });
   }
-
-  /**
-   * Handler for drop down menu item click
-   */
-  handleMenuItemClick = (event, index, primaryid) => {
-    this.setState({ selectedIndex: 0, anchorEl: null });
-    this.handleMoveReport(primaryid, this.props.bins[index].toLowerCase());
-  };
-
-  /**
-   * Handler for drop down menu closing
-   */
-  handleClose = () => {
-    this.setState({ anchorEl: null });
-  };
 
   /**
    * Defines the html content inside each expandable dropdown area for each row
@@ -192,70 +218,74 @@ class ReportTable extends React.PureComponent {
    */
   detailRowContent = row => (
     <div>
-      <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
-        <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button>
-      </Link>
-      <List>
-        <ListItem
-          button
-          aria-haspopup="true"
-          aria-controls="lock-menu"
-          aria-label="Move to Bin"
-          onClick={this.handleClickListItem}
-        >
-          <ListItemText
-            primary={this.props.bins[this.state.selectedIndex]}
-            secondary="Move to Bin"
-          />
-        </ListItem>
-      </List>
-      <Menu
-        id="lock-menu"
-        anchorEl={this.state.anchorEl}
-        open={Boolean(this.state.anchorEl)}
-        onClose={this.handleClose}
-      >
-        {this.props.bins.map((option, index) => (
-          <MenuItem
-            key={option}
-            selected={index === this.state.selectedIndex}
-            onClick={(event) => {
-              this.handleMenuItemClick(event, index, row.row.primaryid);
-            }}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>)
+      <Paper elevation={6} style={{ backgroundColor: '#fefefe', width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)' }} >
+        <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
+          <Button raised style={{ margin: 4 }} className="cal-button" color="primary">Go to report text</Button>
+        </Link>
+      </Paper>
+      <div className={this.props.classes.sendToCaseContainer}>
+        <Typography style={{ position: 'absolute', fontSize: '14px', transform: 'translateX(3px) translateY(3px)' }} type="button">
+          Send Report to:
+        </Typography>
+        <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
+          {this.props.bins.map((binName, index) => (
+            <Button
+              flat="true"
+              key={binName}
+              className={this.props.classes.caseGridList}
+              onClick={() => {
+                this.handleMoveReport(row.row.primaryid, this.props.bins[index].toLowerCase());
+              }}
+            >
+              <div>
+                <CaseIcon width={45} height={45} />
+                <Typography style={{ display: 'block' }} type="subheading">
+                  {binName}
+                </Typography>
+              </div>
+            </Button>
+          ))}
+        </Paper>
+      </div>
+    </div>
+  )
 
   render() {
     return (
-      <Grid
-        id="test2"
-        rows={this.state.data}
-        columns={this.columns}
-        getRowId={row => row.primaryid}
-      >
-        <RowDetailState
-          expandedRows={this.state.expandedRows}
-          onExpandedRowsChange={this.changeExpandedDetails}
-        />
-        <DragDropProvider />
-        <SortingState
-          defaultSorting={[
-            { columnName: 'Event Date', direction: 'asc' },
-          ]}
-        />
-        <IntegratedSorting />
-        <VirtualTable />
-        <TableColumnResizing columnWidths={this.columnWidths} />
-        <TableHeaderRow showSortingControls />
-        <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-        <TableRowDetail
-          contentComponent={this.detailRowContent}
-        />
-      </Grid>
+      <Paper id="table-container" className={this.props.classes.tableContainer} elevation={4}>
+        {(this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
+          ? (
+            <Grid
+              rows={this.state.data}
+              columns={this.columns}
+              getRowId={row => row.primaryid}
+            >
+              <RowDetailState
+                expandedRows={this.state.expandedRows}
+                onExpandedRowsChange={this.changeExpandedDetails}
+              />
+              <DragDropProvider />
+              <SortingState
+                defaultSorting={[
+                  { columnName: 'Event Date', direction: 'asc' },
+                ]}
+              />
+              <IntegratedSorting />
+              <VirtualTable height={this.state.tableHeight} />
+              <TableColumnResizing
+                columnWidths={this.state.widths}
+                onColumnWidthsChange={this.onColumnWidthsChange}
+              />
+              <TableHeaderRow showSortingControls />
+              <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
+              <TableRowDetail
+                contentComponent={this.detailRowContent}
+              />
+            </Grid>
+            )
+          : null
+        }
+      </Paper>
     );
   }
 }

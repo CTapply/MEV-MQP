@@ -83,24 +83,29 @@ class CustomizedContent extends Component {
     return false;
   }
 
+  /**
+   * Changes the first letter of any word in a string to be capital
+   */
+  toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
   render = () => {
     return (!isNaN(this.props.width) && !isNaN(this.props.height)) ? (
       <g id={`${this.props.treeMap}_${this.props.name}`} >
-        <defs>
+        {/* <defs>
           <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
             <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
           </linearGradient>
-        </defs>
+        </defs> */}
         <rect
           x={this.props.x}
           y={this.props.y}
           width={this.props.width}
           height={this.props.height}
           style={{
-            fill: `url(#${this.props.size})`,
+            fill: `#${this.getFillColor().lightColor}`,
             stroke: '#fff',
-            strokeWidth: 0.5,
+            strokeWidth: 1,
             strokeOpacity: 1,
             overflow: 'hidden',
           }}
@@ -116,7 +121,7 @@ class CustomizedContent extends Component {
               fontWeight="lighter"
               fontSize={16}
             >
-              {this.props.name}
+              {this.toTitleCase(this.props.name)}
             </text>)
           : null}
       </g>

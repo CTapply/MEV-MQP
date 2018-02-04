@@ -59,7 +59,7 @@ class Demographics extends Component {
         spacing={8}
         className={`${this.props.classes.gridContainer} ${(this.props.minimized) ? this.props.classes.gridContainerMinimized : ''}`}
       >
-        <Grid item xs={2}>
+        <Grid item xs={2} className={this.props.classes.maxHeight} >
           <Paper className={this.props.classes.maxHeight} elevation={4} >
             <Sex
               sex={this.props.sex}
@@ -68,7 +68,7 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={4} className={this.props.classes.maxHeight} >
           <Paper className={this.props.classes.maxHeight} elevation={4}>
             <Age
               age={this.props.age}
@@ -77,7 +77,7 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={this.props.classes.maxHeight} >
           <Paper className={this.props.classes.maxHeight} elevation={4}>
             <Location
               location={this.props.location}
@@ -86,7 +86,7 @@ class Demographics extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={this.props.classes.maxHeight} >
           <Paper className={this.props.classes.maxHeight} elevation={4}>
             <ReportedBy
               occp_cod={this.props.occp_cod}

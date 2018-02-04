@@ -33,8 +33,8 @@ export default {
   // notSevereLight: '#fee8c8',
   // notSevereDark: '#fee8c8',
   // notSevereStroke: '#fee8c8',
-  // // middleOfGradient: '#7CD5A4', // Green
-  // middleOfGradient: '', // Red
+  // // middleOfGradient: '#7CD5A4',
+  // middleOfGradient: '',
   // // middleOfGradient: '',
   // severeLight: '#e34a33',
   // severeDark: '#e34a33',
