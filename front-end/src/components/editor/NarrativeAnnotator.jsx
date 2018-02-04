@@ -128,15 +128,35 @@ class NarrativeAnnotator extends Component {
   };
 
   handleChange = (value) => {
-    const greenRe = /background-color: green/;
-    const redRe = /background-color: red/;
-    const blueRe = /background-color: blue/;
+    const greenRe = /background-color: chartreuse/;
+    const blueRe = /background-color: cadetblue/;
+    const orangeRe = /background-color: darkorange/;
+    const yellowRe = /background-color: gold/;
+    const pinkRe = /background-color: lightpink/;
+    const purpleRe = /background-color: orchid/;
+    const silverRe = /background-color: silver/;
+    const cyanRe = /background-color: cyan/;
     const newTags = {};
     if (greenRe.exec(value)) {
       newTags.greenTag = 't';
     }
-    if (redRe.exec(value)) {
+    if (cyanRe.exec(value)) {
+      newTags.cyanTag = 't';
+    }
+    if (orangeRe.exec(value)) {
       newTags.redTag = 't';
+    }
+    if (yellowRe.exec(value)) {
+      newTags.yellowTag = 't';
+    }
+    if (pinkRe.exec(value)) {
+      newTags.pinkTag = 't';
+    }
+    if (purpleRe.exec(value)) {
+      newTags.purpleTag = 't';
+    }
+    if (silverRe.exec(value)) {
+      newTags.silverTag = 't';
     }
     if (blueRe.exec(value)) {
       newTags.blueTag = 't';
@@ -153,7 +173,7 @@ class NarrativeAnnotator extends Component {
       toolbar: [
         [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline', 'strike'],
-        [{ color: [] }, { background: ['white', 'red', 'green', 'blue'] }],
+        [{ color: [] }, { background: ['chartreuse', 'cyan', 'darkorange', 'gold', 'lightpink', 'orchid', 'silver', 'cadetblue'] }],
         ['clean'],
       ],
       history: {

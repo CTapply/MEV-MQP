@@ -1,15 +1,16 @@
 import green from 'material-ui/colors/green';
+import grey from 'material-ui/colors/grey';
 
 export default {
   pdfView: {
-    width: '100vw',
-    height: '100vh',
+    width: '75vw',
+    height: '75vh',
     margin: 'auto',
     padding: '10px',
   },
   dialog: {
     width: '100%',
-    padding: '0px 20px 0px 20px',
+    padding: '0px 2000px 0px 20px',
   },
   editorWindow: {
     height: '77vh',
@@ -26,9 +27,9 @@ export default {
     position: 'relative',
   },
   buttonSuccess: {
-    backgroundColor: green[500],
+    backgroundColor: grey[400],
     '&:hover': {
-      backgroundColor: green[700],
+      backgroundColor: grey[500],
     },
   },
   buttonProgress: {

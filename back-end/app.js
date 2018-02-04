@@ -4,6 +4,7 @@ var express = require('express')
 const redis = require('redis')
 const { Client } = require('pg')
 const bodyParser = require('body-parser');
+const Promise = require('bluebird');
 const os = require('os');
 const fs = require('fs')
 
@@ -614,7 +615,6 @@ app.post('/getvis', (req, res) => {
             stage: stageData.rows,
             cause: causeData.rows,
           }
-          console.log(returnObject);
           res.status(200).send(returnObject);
         })
       })
@@ -666,237 +666,145 @@ function gaussianRandom(start, end) {
   return Math.floor(start + gaussianRand() * (end - start + 1));
 }
 
-app.get('/update-data', (req, res) => {
-  fs.readFile("../Causes.txt", "utf8", function (error, causes) {
-    fs.readFile("../Stages.txt", "utf8", function (error, stages) {
-      fs.readFile("../MeTypes.txt", "utf8", function (error, meTypes) {
-        fs.readFile("../DrugNames.txt", "utf8", function (error, drugNames) {
-          fs.readFile("../AdverseReactions.txt", "utf8", function (error, adverseReactions) {
-            const wstream = fs.createWriteStream('myOutput.txt');
-            const meTypesArray = meTypes.split('\n');
-            const drugNamesArray = drugNames.split('\n');
-            const causesArray = causes.split('\n');
-            const stagesArray = stages.split('\n');
-            const adverseReactionsArray = adverseReactions.split('\n');
-            console.log('updating the meType, Stage and Cause columns')
+function writeSQL(dataRows, drugReactions, meTypesArray, drugNamesArray, causesArray, stagesArray, adverseReactionsArray, fileNum) {
+  const wstream = fs.createWriteStream(`./sqlfiles/output${fileNum}.txt`);
+  return new Promise((resolve1, reject) => {
+    let meTypeIndex, drugNameIndex, stageIndex, causeIndex, adverseReactionsIndex;
+    let promises = [];
+    dataRows.forEach((pidRow) => {
+      // Get a random index in a normal distribution
+      meTypeIndex = gaussianRandom(0, meTypesArray.length -1);
+      causeIndex = gaussianRandom(0, causesArray.length -1);
+      stageIndex = gaussianRandom(0, stagesArray.length -1);
 
-            const drugReactions = {};
+      let updateDemoRowQuery = 
+        `UPDATE demo SET `
+          + `me_type='${meTypesArray[meTypeIndex]}', `
+          + `stage='${stagesArray[stageIndex]}', `
+          + `cause='${causesArray[causeIndex]}' `
+        + `WHERE primaryid=${pidRow.primaryid};\n`;
+      
+      // console.log(updateDemoRowQuery);
+      wstream.write(updateDemoRowQuery);
+      
+      const drugNamesforPID = [];
+      // Generate 1-4 random drugs for this primary id
+      const numberOfDrugsForPID = Math.floor(Math.random() * 4) + 1;
+      for (let i = 0; i < numberOfDrugsForPID; i += 1) {
+        drugNameIndex = gaussianRandom(0, drugNamesArray.length -1);
+        drugNamesforPID.push(drugNameIndex);
+      }
 
-            let query = `SELECT primaryid FROM demo limit 100000`
-            // console.log(query)
-            db.query(query, (err, allData) => {
-              let meTypeIndex, drugNameIndex, stageIndex, causeIndex, adverseReactionsIndex;
-              allData.rows.forEach((pidRow) => {
-                // Get a random index in a normal distribution
-                meTypeIndex = gaussianRandom(0, meTypesArray.length -1);
-                causeIndex = gaussianRandom(0, causesArray.length -1);
-                stageIndex = gaussianRandom(0, stagesArray.length -1);
+      // Update the Drugs for this PrimaryID
+      let getDrugRowQuery = 
+        `SELECT drug_seq FROM drug WHERE primaryid=${pidRow.primaryid}`;
 
-                let updateDemoRowQuery = 
-                  `UPDATE demo SET `
-                    + `me_type='${meTypesArray[meTypeIndex]}', `
-                    + `stage='${stagesArray[stageIndex]}', `
-                    + `cause='${causesArray[causeIndex]}' `
-                  + `WHERE primaryid=${pidRow.primaryid};\n`;
-                
-                // console.log(updateDemoRowQuery);
-                wstream.write(updateDemoRowQuery);
-                // db.query(updateDemoRowQuery, (err, updatedDrugRows) => {
-                //   console.log('UPDATED Demo')
-                // })
-                
-                const drugNamesforPID = [];
-                // Generate 1-4 random drugs for this primary id
-                const numberOfDrugsForPID = Math.floor(Math.random() * 4) + 1;
-                for (let i = 0; i < numberOfDrugsForPID; i += 1) {
-                  drugNameIndex = gaussianRandom(0, drugNamesArray.length -1);
-                  drugNamesforPID.push(drugNameIndex);
+      promises.push(new Promise((resolve2, reject) => {
+        db.query(getDrugRowQuery, (err, drugData) => {
+          drugData.rows.forEach((drugRow, rowIndex) => {
+            const randomDrug = drugNamesArray[drugNamesforPID[rowIndex % numberOfDrugsForPID]];
+            let updateDrugRowQuery;
+            if (drugRow.drug_seq > numberOfDrugsForPID) {
+              updateDrugRowQuery =
+                `DELETE FROM drug WHERE primaryid=${pidRow.primaryid} AND drug_seq='${drugRow.drug_seq}';\n`;
+              wstream.write(updateDrugRowQuery);
+            } else if (rowIndex < numberOfDrugsForPID){
+              updateDrugRowQuery =
+                `UPDATE drug SET `
+                  + `drugname='${randomDrug}' `
+                + `WHERE primaryid=${pidRow.primaryid} `
+                + `AND drug_seq='${drugRow.drug_seq}';\n`;
+
+              wstream.write(updateDrugRowQuery);
+
+              // Generate 1-5 random Reactions for this drug if we haven't already
+              if (!drugReactions[randomDrug]) {
+                drugReactions[randomDrug] = [];
+                const numberOfReactionsForDrug = Math.floor(Math.random() * 5) + 1;
+                for (let i = 0; i < numberOfReactionsForDrug; i += 1) {
+                  adverseReactionsIndex = gaussianRandom(0, adverseReactionsArray.length -1);
+                  drugReactions[randomDrug].push(adverseReactionsIndex);
                 }
+              }
 
-                // console.log(drugNamesforPID)
-                // Update the Drugs for this PrimaryID
-                let getDrugRowQuery = 
-                  `SELECT drug_seq FROM drug WHERE primaryid=${pidRow.primaryid}`;
-                // console.log(getDrugRowQuery);
-                db.query(getDrugRowQuery, (err, drugData) => {
-                  drugData.rows.forEach((drugRow, rowIndex) => {
-                    const randomDrug = drugNamesArray[drugNamesforPID[rowIndex % numberOfDrugsForPID]];
-                    let updateDrugRowQuery;
-                    if (drugRow.drug_seq > numberOfDrugsForPID) {
-                      updateDrugRowQuery =
-                        `DELETE FROM drug WHERE primaryid=${pidRow.primaryid} AND drug_seq='${drugRow.drug_seq}';\n`;
-                      wstream.write(updateDrugRowQuery);
-                      // console.log(updateDrugRowQuery);
-                      // db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
-                      //   // console.log('UPDATED Drug')
-                      // })
-                    } else if (rowIndex < numberOfDrugsForPID){
-                      updateDrugRowQuery =
-                        `UPDATE drug SET `
-                          + `drugname='${randomDrug}' `
-                        + `WHERE primaryid=${pidRow.primaryid} `
-                        + `AND drug_seq='${drugRow.drug_seq}';\n`;
-                      // console.log(updateDrugRowQuery);
+              // Update the Reactions for this drug and PrimaryID
+              const deleteReactionsForThisPID =
+                `DELETE FROM reac WHERE primaryid=${pidRow.primaryid};\n`;
+              wstream.write(deleteReactionsForThisPID);
 
-                      wstream.write(updateDrugRowQuery);
-                      // db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
-                      //   // console.log('UPDATED Drug')
-                      // })
+              let insertReaction = `INSERT INTO reac (primaryid, caseid, pt, drug_rec_act) VALUES `
+              for (let i = 0; i < gaussianRandom(1, drugReactions[randomDrug].length); i += 1) {
+                const randomAdverseReaction = adverseReactionsArray[drugReactions[randomDrug][i]];
+                insertReaction += `(${pidRow.primaryid}, ${pidRow.primaryid.slice(0,7)}, '${randomAdverseReaction}', ''), `
+              }
+              insertReaction = insertReaction.slice(0, insertReaction.length - 2);
+              insertReaction += `;\n`;
 
-                      // Generate 1-5 random Reactions for this drug if we haven't already
-                      if (!drugReactions[randomDrug]) {
-                        drugReactions[randomDrug] = [];
-                        const numberOfReactionsForDrug = Math.floor(Math.random() * 5) + 1;
-                        for (let i = 0; i < numberOfReactionsForDrug; i += 1) {
-                          adverseReactionsIndex = gaussianRandom(0, adverseReactionsArray.length -1);
-                          drugReactions[randomDrug].push(adverseReactionsIndex);
-                        }
-                      }
-  
-                      // Update the Reactions for this drug and PrimaryID
-                      const deleteReactionsForThisPID =
-                        `DELETE FROM reac WHERE primaryid=${pidRow.primaryid};\n`;
-                      wstream.write(deleteReactionsForThisPID);
-                      // console.log(deleteReactionsForThisPID)
-                      db.query(deleteReactionsForThisPID, (err, deleteRows) => {
-                        let insertReaction = `INSERT INTO reac (primaryid, caseid, pt, drug_rec_act) VALUES `
-                        for (let i = 0; i < gaussianRandom(1, drugReactions[randomDrug].length); i += 1) {
-                          const randomAdverseReaction = adverseReactionsArray[drugReactions[randomDrug][i]];
-                          insertReaction += `(${pidRow.primaryid}, ${pidRow.primaryid.slice(0,7)}, '${randomAdverseReaction}', ''), `
-                        }
-                        insertReaction = insertReaction.slice(0, insertReaction.length - 2);
-                        insertReaction += `;\n`;
-                        // console.log(insertReaction)
-                        wstream.write(insertReaction)
-                        // db.query(insertReaction, (err, insertRows) => {
-                        //   console.log('INSERTED')
-                        // })
-                      })
-                    }
-                  })
-                })
-              })
-              // console.log('updated the database!');
-              // json = JSON.stringify(allData.rows);
-              res.status(200).send('ok');
-            })
-          });
-        });
-      });
-    });
-  });
+              wstream.write(insertReaction)
+            }
+          })
+          resolve2('DONE ALL INSERT')
+        })
+      }))
+    })
+    Promise.all(promises).then(() => {
+      console.log(`Done with Chunk`)
+      wstream.end();
+      resolve1('DONE ALL')
+    })
+  })
+}
+
+app.get('/update-data', (req, res) => {
+  // fs.readFile("../Causes.txt", "utf8", function (error, causes) {
+  //   fs.readFile("../Stages.txt", "utf8", function (error, stages) {
+  //     fs.readFile("../MeTypes.txt", "utf8", function (error, meTypes) {
+  //       fs.readFile("../DrugNames.txt", "utf8", function (error, drugNames) {
+  //         fs.readFile("../AdverseReactions.txt", "utf8", function (error, adverseReactions) {
+  //           const meTypesArray = meTypes.split('\n');
+  //           const drugNamesArray = drugNames.split('\n');
+  //           const causesArray = causes.split('\n');
+  //           const stagesArray = stages.split('\n');
+  //           const adverseReactionsArray = adverseReactions.split('\n');
+  //           console.log('updating the meType, Stage and Cause columns')
+
+  //           const drugReactions = {};
+
+  //           let promiseChain = Promise.resolve();
+  //           let promises = [];
+
+  //           let query = `SELECT primaryid FROM demo`
+
+  //           let dataChunk;
+  //           const chunkSize = 100000;
+  //           let dataChunkStart = 0;
+  //           let dataChunkEnd = chunkSize;
+            
+  //           db.query(query, (err, allData) => {
+  //             let i = 1;
+  //             while ((dataChunk = allData.rows.slice(dataChunkStart, dataChunkEnd)).length !== 0) {
+  //               console.log('Adding .then in while')
+  //               const asd = dataChunk;
+  //               const fileNum = i;
+  //               promiseChain = promiseChain.then(() => {
+  //                 return writeSQL(asd, drugReactions, meTypesArray, drugNamesArray, causesArray, stagesArray, adverseReactionsArray, fileNum);
+  //               });
+  //               i += 1;
+  //               dataChunkStart += chunkSize;
+  //               dataChunkEnd += chunkSize;
+  //             }
+  //             console.log('Adding last .then')
+  //             promiseChain.then(() => {
+  //               console.log('Done!')
+  //               res.status(200).send('ok');
+  //             })
+  //           })
+  //         });
+  //       });
+  //     });
+  //   });
+  // });
 });
-// app.get('/update-data', (req, res) => {
-//   fs.readFile("../Causes.txt", "utf8", function (error, causes) {
-//     fs.readFile("../Stages.txt", "utf8", function (error, stages) {
-//       fs.readFile("../MeTypes.txt", "utf8", function (error, meTypes) {
-//         fs.readFile("../DrugNames.txt", "utf8", function (error, drugNames) {
-//           fs.readFile("../AdverseReactions.txt", "utf8", function (error, adverseReactions) {
-//             const meTypesArray = meTypes.split('\n');
-//             const drugNamesArray = drugNames.split('\n');
-//             const causesArray = causes.split('\n');
-//             const stagesArray = stages.split('\n');
-//             const adverseReactionsArray = adverseReactions.split('\n');
-//             console.log('updating the meType, Stage and Cause columns')
-
-//             const drugReactions = {};
-
-//             let query = `SELECT primaryid FROM demo limit 10000`
-//             // console.log(query)
-//             db.query(query, (err, allData) => {
-//               let meTypeIndex, drugNameIndex, stageIndex, causeIndex, adverseReactionsIndex;
-//               allData.rows.forEach((pidRow) => {
-//                 // Get a random index in a normal distribution
-//                 meTypeIndex = gaussianRandom(0, meTypesArray.length -1);
-//                 causeIndex = gaussianRandom(0, causesArray.length -1);
-//                 stageIndex = gaussianRandom(0, stagesArray.length -1);
-
-//                 let updateDemoRowQuery = 
-//                   `UPDATE demo SET `
-//                     + `me_type='${meTypesArray[meTypeIndex]}', `
-//                     + `stage='${stagesArray[stageIndex]}', `
-//                     + `cause='${causesArray[causeIndex]}' `
-//                   + `WHERE primaryid=${pidRow.primaryid}`;
-                
-//                 // console.log(updateDemoRowQuery);
-
-//                 db.query(updateDemoRowQuery, (err, updatedDrugRows) => {
-//                   console.log('UPDATED Demo')
-//                 })
-                
-//                 const drugNamesforPID = [];
-//                 // Generate 1-4 random drugs for this primary id
-//                 const numberOfDrugsForPID = Math.floor(Math.random() * 4) + 1;
-//                 for (let i = 0; i < numberOfDrugsForPID; i += 1) {
-//                   drugNameIndex = gaussianRandom(0, drugNamesArray.length -1);
-//                   drugNamesforPID.push(drugNameIndex);
-//                 }
-
-//                 // console.log(drugNamesforPID)
-//                 // Update the Drugs for this PrimaryID
-//                 let getDrugRowQuery = 
-//                   `SELECT drug_seq FROM drug WHERE primaryid=${pidRow.primaryid}`;
-//                 // console.log(getDrugRowQuery);
-//                 db.query(getDrugRowQuery, (err, drugData) => {
-//                   drugData.rows.forEach((drugRow, rowIndex) => {
-//                     const randomDrug = drugNamesArray[drugNamesforPID[rowIndex % numberOfDrugsForPID]];
-//                     let updateDrugRowQuery;
-//                     if (drugRow.drug_seq > numberOfDrugsForPID) {
-//                       updateDrugRowQuery =
-//                         `DELETE FROM drug WHERE primaryid=${pidRow.primaryid} AND drug_seq='${drugRow.drug_seq}'`;
-//                       // console.log(updateDrugRowQuery);
-//                     } else if (rowIndex < numberOfDrugsForPID){
-//                       updateDrugRowQuery =
-//                         `UPDATE drug SET `
-//                           + `drugname='${randomDrug}' `
-//                         + `WHERE primaryid=${pidRow.primaryid} `
-//                         + `AND drug_seq='${drugRow.drug_seq}'`;
-//                       // console.log(updateDrugRowQuery);
-
-//                       db.query(updateDrugRowQuery, (err, updatedDrugRows) => {
-//                         console.log('UPDATED Drug')
-//                       })
-
-//                       // Generate 1-5 random Reactions for this drug if we haven't already
-//                       if (!drugReactions[randomDrug]) {
-//                         drugReactions[randomDrug] = [];
-//                         const numberOfReactionsForDrug = Math.floor(Math.random() * 5) + 1;
-//                         for (let i = 0; i < numberOfReactionsForDrug; i += 1) {
-//                           adverseReactionsIndex = gaussianRandom(0, adverseReactionsArray.length -1);
-//                           drugReactions[randomDrug].push(adverseReactionsIndex);
-//                         }
-//                       }
-  
-//                       // Update the Reactions for this drug and PrimaryID
-//                       const deleteReactionsForThisPID =
-//                         `DELETE FROM reac WHERE primaryid=${pidRow.primaryid}`;
-//                       // console.log(deleteReactionsForThisPID)
-//                       db.query(deleteReactionsForThisPID, (err, deleteRows) => {
-//                         let insertReaction = `INSERT INTO reac (primaryid, caseid, pt, drug_rec_act) VALUES `
-//                         for (let i = 0; i < gaussianRandom(1, drugReactions[randomDrug].length); i += 1) {
-//                           const randomAdverseReaction = adverseReactionsArray[drugReactions[randomDrug][i]];
-//                           insertReaction += `(${pidRow.primaryid}, ${pidRow.primaryid.slice(0,7)}, '${randomAdverseReaction}', ''), `
-//                         }
-//                         insertReaction = insertReaction.slice(0, insertReaction.length - 2);
-//                         // console.log(insertReaction)
-//                         db.query(insertReaction, (err, insertRows) => {
-//                           console.log('INSERTED')
-//                         })
-//                       })
-//                     }
-//                   })
-//                 })
-//               })
-//               // console.log('updated the database!');
-//               // json = JSON.stringify(allData.rows);
-//               res.status(200).send('ok');
-//             })
-//           });
-//         });
-//       });
-//     });
-//   });
-// });
 
 app.listen(port);
 console.log('listening on ' + port)
