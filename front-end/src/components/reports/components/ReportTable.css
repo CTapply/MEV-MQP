@@ -1,5 +1,5 @@
 /* This sets the background of the Expanded Details Row */
 td[class*='TableDetailCell-'] {
-  background: repeating-linear-gradient( -55deg, #fafafa 0px, #fafafa 30px, rgb(227, 244, 255) 30px, rgb(227, 244, 255) 50px);
+  background: repeating-linear-gradient( -55deg, #fafafa 0px, #fafafa 30px, #f1f1f1 30px, #f1f1f1 50px);
   padding: 8px 24px;
 }

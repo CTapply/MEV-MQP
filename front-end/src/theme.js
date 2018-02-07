@@ -25,7 +25,7 @@ export default {
   // severeDark: '#AB1D2A',
   // severeStroke: '#991A26',
 
-  // // NORMAL Yellow and Purple
+  // NORMAL Yellow and Purple
   // navBar: '#930B27',
   // navBarSlide: '#7F0A22',
   // buttonLight: '#6D6CC7',
@@ -41,15 +41,54 @@ export default {
   // severeStroke: '#e34a33',
 
   // Green, Yellow and Blue
-  navBar: '#034C59',
-  navBarSlide: '#045E6E',
-  buttonLight: '#034C59',
-  buttonHover: '#045E6E',
-  notSevereLight: '#096142',
-  notSevereDark: '#085439',
-  notSevereStroke: '#085439',
+  // navBar: '#034C59',
+  // navBarSlide: '#045E6E',
+  // buttonLight: '#034C59',
+  // buttonHover: '#045E6E',
+  // notSevereLight: '#096142',
+  // notSevereDark: '#085439',
+  // notSevereStroke: '#085439',
+  // middleOfGradient: '',
+  // severeLight: '#EE9D31',
+  // severeDark: '#E5972F',
+  // severeStroke: '#CC872A',
+
+  // Green, Yellow and Blue
+  // navBar: '#167D26',
+  // navBarSlide: '#178228',
+  // buttonLight: '#136E22',
+  // buttonHover: '#167D26',
+  // notSevereLight: '#178228',
+  // notSevereDark: '#167D26',
+  // notSevereStroke: '#136E22',
+  // middleOfGradient: '',
+  // severeLight: '#DE6A1D',
+  // severeDark: '#CF631B',
+  // severeStroke: '#BD5B18',
+
+  // Blue and Blue and Blue
+  // navBar: '#033F73',
+  // navBarSlide: '#0458A1',
+  // buttonLight: '#033F73',
+  // buttonHover: '#0458A1',
+  // notSevereLight: '#A3D3FF',
+  // notSevereDark: '#9BC9F2',
+  // notSevereStroke: '#84ABCF',
+  // middleOfGradient: '',
+  // severeLight: '#045AA5',
+  // severeDark: '#04569E',
+  // severeStroke: '#034885',
+
+  // Blue and Brown
+  navBar: '#0458A1',
+  navBarSlide: '#1E8DED',
+  buttonLight: '#0458A1',
+  buttonHover: '#1E8DED',
+  notSevereLight: '#0458A1',
+  notSevereDark: '#02427A',
+  notSevereStroke: '#012E54',
   middleOfGradient: '',
-  severeLight: '#EE9D31',
-  severeDark: '#E5972F',
-  severeStroke: '#CC872A',
+  severeLight: '#915900',
+  severeDark: '#7F4E00',
+  severeStroke: '#543400',
 };

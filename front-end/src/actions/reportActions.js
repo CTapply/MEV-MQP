@@ -14,7 +14,7 @@ export const getUserBins = userID => () => {
   };
   return fetch('http://localhost:3001/getuserbins', fetchData)
     .then(response => response.json())
-    .then(bins => bins.rows)
+    .then(bins => (bins.rows || []))
     .catch((err) => {
       console.error.bind(err);
     });

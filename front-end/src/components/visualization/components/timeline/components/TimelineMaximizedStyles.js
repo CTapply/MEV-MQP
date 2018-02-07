@@ -26,7 +26,7 @@ export default {
     height: 'calc(15vh - 4px)',
     width: '80px',
     overflow: 'hidden',
-    padding: '2px',
+    padding: '0px',
   },
   goToReportsButton: {
     height: '100%',
@@ -34,7 +34,6 @@ export default {
   },
   reportsButtonSVG: {
     width: '80%',
-    // transform: 'translateX(5%)',
   },
   tooltipStyle: {
     fontSize: '10pt',

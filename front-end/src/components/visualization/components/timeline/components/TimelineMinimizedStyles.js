@@ -25,7 +25,7 @@ export default {
     height: 'calc(100% - 4px)',
     width: '50px',
     overflow: 'hidden',
-    padding: '2px',
+    padding: '0px',
   },
   goToReportsButton: {
     height: '100%',

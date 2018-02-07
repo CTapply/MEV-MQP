@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CaseLogo = props => (
-<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" style={{ 'fillRule':'evenodd', 'clipRule':'evenodd', 'strokeLinejoin':'round', 'strokeMiterlimit':'1.41421', 'width': `${props.width || 30}px`, 'height': `${props.height || 30}px` }}>
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" style={{ 'fillRule':'evenodd', 'clipRule':'evenodd', 'strokeLinejoin':'round', 'strokeMiterlimit':'1.41421', 'width': `${props.width || 30}px`, 'height': `${props.height || 30}px`, ...props.style }}>
     <g id="Layer1">
         <g transform="matrix(-1.54167,0,0,1.54167,52.4167,-3.08336)">
             <path d="M6.5,37.5L6.5,2.5L24.793,2.5L33.5,11.207L33.5,37.5L6.5,37.5Z" style={{ "fill" :"white", 'fillRule':'nonzero' }}/>

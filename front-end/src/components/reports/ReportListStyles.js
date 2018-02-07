@@ -36,4 +36,31 @@ export default {
     padding: '20px',
     width: '600px',
   },
+  closedSummaryTableContainer: {
+    display: 'inline-block',
+    width: '100%',
+    height: '100%',
+    transition: 'width 200ms ease-in-out',
+  },
+  closedSummaryContainer: {
+    display: 'inline-block',
+    float: 'right',
+    width: '0%',
+    height: '100%',
+    transition: 'width 200ms ease-in-out',
+    overflow: 'hidden',
+  },
+  openSummaryTableContainer: {
+    display: 'inline-block',
+    width: '60%',
+    height: '100%',
+    transition: 'width 200ms ease-in-out',
+  },
+  openSummaryContainer: {
+    display: 'inline-block',
+    float: 'right',
+    width: '40%',
+    height: '100%',
+    transition: 'width 200ms ease-in-out',
+  },
 };

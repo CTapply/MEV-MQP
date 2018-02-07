@@ -15,6 +15,7 @@ import MaterialTooltip from 'material-ui/Tooltip';
 import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
+import CaseSummary from './components/CaseSummary';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
 import CaseIcon from './components/CaseIcon';
@@ -56,6 +57,10 @@ class ReportList extends Component {
       tooltipStyle: PropTypes.string,
       ReportList: PropTypes.string,
       newCaseModal: PropTypes.string,
+      closedSummaryTableContainer: PropTypes.string,
+      closedSummaryContainer: PropTypes.string,
+      openSummaryTableContainer: PropTypes.string,
+      openSummaryContainer: PropTypes.string,
     }).isRequired,
   }
 
@@ -68,6 +73,7 @@ class ReportList extends Component {
       snackbarOpen: false,
       snackbarMessage: '',
       currentTab: 0,
+      summaryOpen: false,
     };
   }
 
@@ -120,6 +126,13 @@ class ReportList extends Component {
    */
   handleNewCaseOpen = () => {
     this.setState({ newCaseModalOpen: true });
+  };
+
+  /**
+   * Handler for Opening the New Case Modal
+   */
+  handleViewCaseSummary = () => {
+    this.setState({ summaryOpen: !this.state.summaryOpen });
   };
 
   /**
@@ -181,7 +194,21 @@ class ReportList extends Component {
           </AppBar>
 
           {/* ====== Table for Viewing the Reports ====== */}
-          <ReportTable bin={this.state.bin} bins={this.state.userBins} />
+          <div className={(this.state.summaryOpen) ? this.props.classes.openSummaryTableContainer : this.props.classes.closedSummaryTableContainer} >
+            <ReportTable
+              bin={this.state.bin}
+              bins={this.state.userBins}
+              summaryOpen={this.state.summaryOpen}
+            />
+          </div>
+
+          {/* ====== SideBar for Viewing the Case Summary ====== */}
+          <div id="summary-sidebar" className={(this.state.summaryOpen) ? this.props.classes.openSummaryContainer : this.props.classes.closedSummaryContainer} >
+            <CaseSummary
+              bins={this.state.userBins}
+              summaryOpen={this.state.summaryOpen}
+            />
+          </div>
 
           {/* ====== Modal for Creating a New Case ====== */}
           <Modal
@@ -244,11 +271,9 @@ class ReportList extends Component {
                 popper: this.props.classes.tooltipStyle,
                 }}
             >
-              <Link href="/" to="/" >
-                <Button fab style={{ margin: 12 }} color="primary">
-                  <img src={ViewCaseSummary} className={this.props.classes.caseSummarySVG} alt="Open Case Summary" />
-                </Button>
-              </Link>
+              <Button fab style={{ margin: 12 }} color="primary" onClick={this.handleViewCaseSummary} >
+                <img src={ViewCaseSummary} className={this.props.classes.caseSummarySVG} alt="Open Case Summary" />
+              </Button>
             </MaterialTooltip>
           </div>
 
