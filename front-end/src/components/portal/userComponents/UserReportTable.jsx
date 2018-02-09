@@ -18,6 +18,8 @@ import {
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
+import CaseIcon from '../../reports/components/CaseIcon';
 import _ from 'lodash';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Menu, { MenuItem } from 'material-ui/Menu';
@@ -169,42 +171,42 @@ class UserReportTable extends React.PureComponent {
    */
   detailRowContent = row => (
     <div>
-      <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
-        <Button raised style={{ margin: 12 }} className="cal-button" color="primary">Go to report text</Button>
-      </Link>
-      <List>
-        <ListItem
-          button
-          aria-haspopup="true"
-          aria-controls="lock-menu"
-          aria-label="Move to Bin"
-          onClick={this.handleClickListItem}
-        >
-          <ListItemText
-            primary={this.props.bins[this.state.selectedIndex]}
-            secondary="Move to Bin"
-          />
-        </ListItem>
-      </List>
-      <Menu
-        id="lock-menu"
-        anchorEl={this.state.anchorEl}
-        open={Boolean(this.state.anchorEl)}
-        onClose={this.handleClose}
+      <Paper
+        elevation={6}
+        style={{
+          backgroundColor: '#fefefe', width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)', marginTop: '10px', marginBottom: '5px',
+        }}
       >
-        {this.props.bins.map((option, index) => (
-          <MenuItem
-            key={option}
-            selected={index === this.state.selectedIndex}
-            onClick={(event) => {
-              this.handleMenuItemClick(event, index, row.row.primaryid);
-            }}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>)
+        <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
+          <Button raised className="cal-button" color="primary">Go to report text</Button>
+        </Link>
+      </Paper>
+      <div className={this.props.classes.sendToCaseContainer}>
+        <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
+          <Typography type="button" style={{ padding: '15px' }}>
+          Send Report to:
+          </Typography>
+          {this.props.bins.map((binName, index) => (
+            <Button
+              flat="true"
+              key={binName}
+              className={this.props.classes.caseGridList}
+              onClick={() => {
+                this.handleMoveReport(row.row.primaryid, this.props.bins[index].toLowerCase());
+              }}
+            >
+              <div>
+                <CaseIcon width={45} height={45} />
+                <Typography style={{ display: 'block' }} type="subheading">
+                  {binName}
+                </Typography>
+              </div>
+            </Button>
+          ))}
+        </Paper>
+      </div>
+    </div>
+  )
 
   render() {
     return (

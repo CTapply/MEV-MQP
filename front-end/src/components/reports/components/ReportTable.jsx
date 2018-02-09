@@ -277,7 +277,6 @@ class ReportTable extends React.PureComponent {
     }
   }
 
-
   /**
    * Defines the html content inside each expandable dropdown area for each row
    * of the table
