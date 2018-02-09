@@ -83,6 +83,22 @@ class ReportTable extends React.PureComponent {
         me_type: 180,
         outc_cod: 85,
       },
+
+      /**
+       * Custom Sorting Functions
+       */
+      customSorting: [
+        { columnName: 'init_fda_dt', compare: this.sortNumbers },
+        { columnName: 'primaryid', compare: this.sortNumbers },
+        { columnName: 'caseid', compare: this.sortNumbers },
+        { columnName: 'caseversion', compare: this.sortNumbers },
+        { columnName: 'age_year', compare: this.sortNumbers },
+        { columnName: 'sex', compare: this.sortText },
+        { columnName: 'wt_lb', compare: this.sortNumbers },
+        { columnName: 'drugname', compare: this.sortText },
+        { columnName: 'me_type', compare: this.sortText },
+        { columnName: 'outc_cod', compare: this.sortText },
+      ],
     };
   }
 
@@ -189,6 +205,16 @@ class ReportTable extends React.PureComponent {
     clearTimeout(this.state.stillResizingTimer);
     this.setState({ stillResizingTimer: setTimeout(this.resizeTable, 100) });
   }
+
+  /**
+   * Compare functions for strings sorting
+   */
+  sortText = (a, b) => ((a < b) ? -1 : 1)
+
+  /**
+   * Compare functions for number sorting
+   */
+  sortNumbers = (a, b) => ((Number(a) < Number(b)) ? -1 : 1)
 
 
   /**
@@ -321,7 +347,9 @@ class ReportTable extends React.PureComponent {
                   { columnName: 'Event Date', direction: 'asc' },
                 ]}
               />
-              <IntegratedSorting />
+              <IntegratedSorting
+                columnExtensions={this.state.customSorting}
+              />
               <VirtualTable height={this.state.tableHeight} />
               <TableColumnResizing
                 columnWidths={this.state.widths}

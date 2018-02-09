@@ -63,6 +63,16 @@ class App extends Component {
   }
 
   stopClick = (e) => {
+    const parentGroupID = e.target.getAttribute('parentgroupid');
+    const closestGroupTag = e.target.closest(`g#${parentGroupID}`);
+    if (closestGroupTag) {
+      const prevStyles = closestGroupTag.getAttribute('style');
+      if (!prevStyles) {
+        closestGroupTag.setAttribute('style', 'filter: url(#selectedShadow)');
+      } else {
+        closestGroupTag.setAttribute('style', '');
+      }
+    }
     e.preventDefault();
   }
 

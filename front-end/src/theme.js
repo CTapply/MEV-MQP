@@ -12,7 +12,7 @@ export default {
   // severeDark: '#FFF600',
   // severeStroke: '#FF9B1D',
 
-  // NORMAL Red and Blue
+  // Red and Blue
   // navBar: '#DA2536',
   // navBarSlide: '#AB1D2A',
   // buttonLight: '#3D8EF5',
@@ -25,22 +25,37 @@ export default {
   // severeDark: '#AB1D2A',
   // severeStroke: '#991A26',
 
-  // NORMAL Yellow and Purple
+  // Salmon
   // navBar: '#930B27',
   // navBarSlide: '#7F0A22',
-  // buttonLight: '#6D6CC7',
-  // buttonHover: '#514DBA',
+  // buttonLight: '#930B27',
+  // buttonHover: '#AB0D2D',
   // notSevereLight: '#fee8c8',
-  // notSevereDark: '#fee8c8',
-  // notSevereStroke: '#fee8c8',
+  // notSevereDark: '#F7E2C3',
+  // notSevereStroke: '#F7E2C3',
   // // middleOfGradient: '#7CD5A4',
   // middleOfGradient: '',
   // // middleOfGradient: '',
   // severeLight: '#e34a33',
-  // severeDark: '#e34a33',
-  // severeStroke: '#e34a33',
+  // severeDark: '#DB4731',
+  // severeStroke: '#D44530',
 
-  // Green, Yellow and Blue
+  // Valentines
+  // navBar: '#930B27',
+  // navBarSlide: '#7F0A22',
+  // buttonLight: '#930B27',
+  // buttonHover: '#AB0D2D',
+  // notSevereLight: '#FECCC8',
+  // notSevereDark: '#FECCC8',
+  // notSevereStroke: '#FECCC8',
+  // // middleOfGradient: '#7CD5A4',
+  // middleOfGradient: '',
+  // // middleOfGradient: '',
+  // severeLight: '#C7004D',
+  // severeDark: '#C7004D',
+  // severeStroke: '#C7004D',
+
+  // Green, Gold
   // navBar: '#034C59',
   // navBarSlide: '#045E6E',
   // buttonLight: '#034C59',
@@ -53,7 +68,7 @@ export default {
   // severeDark: '#E5972F',
   // severeStroke: '#CC872A',
 
-  // Green, Yellow and Blue
+  // Green, Orange
   // navBar: '#167D26',
   // navBarSlide: '#178228',
   // buttonLight: '#136E22',
@@ -79,16 +94,29 @@ export default {
   // severeDark: '#04569E',
   // severeStroke: '#034885',
 
-  // Blue and Brown
-  navBar: '#0458A1',
-  navBarSlide: '#1E8DED',
-  buttonLight: '#0458A1',
-  buttonHover: '#1E8DED',
-  notSevereLight: '#0458A1',
-  notSevereDark: '#02427A',
-  notSevereStroke: '#012E54',
+  // Brown and Light Brown
+  navBar: '#7A4B00',
+  navBarSlide: '#AB7B46',
+  buttonLight: '#7A4B00',
+  buttonHover: '#AB7B46',
+  notSevereLight: '#C9A961',
+  notSevereDark: '#C4A55F',
+  notSevereStroke: '#B59858',
   middleOfGradient: '',
-  severeLight: '#915900',
-  severeDark: '#7F4E00',
-  severeStroke: '#543400',
+  severeLight: '#7A4B00',
+  severeDark: '#704500',
+  severeStroke: '#633D00',
+
+  // Blue and Brown
+  // navBar: '#0458A1',
+  // navBarSlide: '#1E8DED',
+  // buttonLight: '#0458A1',
+  // buttonHover: '#1E8DED',
+  // notSevereLight: '#0458A1',
+  // notSevereDark: '#02427A',
+  // notSevereStroke: '#012E54',
+  // middleOfGradient: '',
+  // severeLight: '#915900',
+  // severeDark: '#7F4E00',
+  // severeStroke: '#543400',
 };

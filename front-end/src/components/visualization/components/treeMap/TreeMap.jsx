@@ -167,6 +167,17 @@ class TreeMap extends Component {
               isAnimationActive={false}
               animationDuration={0}
             >
+              <defs>
+                <filter id="selectedShadow" filterUnits="userSpaceOnUse">
+                  <feColorMatrix
+                    type="matrix"
+                    values="0 1 0 0 0
+                            0 1 0 0 0
+                            0 1 0 0 0
+                            0 1 0 1 0 "
+                  />
+                </filter>
+              </defs>
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: '#424242', strokeWidth: 1 }}
