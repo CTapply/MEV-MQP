@@ -1,25 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import { CircularProgress } from 'material-ui/Progress';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import IconButton from 'material-ui/IconButton';
+import CloseIcon from 'material-ui-icons/Close';
 import _ from 'lodash';
-import Dialog, {
-  DialogActions,
-  DialogTitle,
-} from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
+import { getReportNarrativeFromID } from '../../actions/reportActions';
 import styles from './NarrativeAnnotatorStyles';
+import './NarrativeAnnotator.css';
 
 class NarrativeAnnotator extends Component {
   static propTypes = {
+    getReportNarrativeFromID: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       pdfView: PropTypes.string,
-      dialog: PropTypes.string,
       editorWindow: PropTypes.string,
+      paperWindow: PropTypes.string,
+      root: PropTypes.string,
+      wrapper: PropTypes.string,
+      buttonSuccess: PropTypes.string,
+      buttonProgress: PropTypes.string,
     }).isRequired,
     match: PropTypes.shape({
       params: PropTypes.shape({
@@ -36,8 +42,8 @@ class NarrativeAnnotator extends Component {
     super(props);
     this.state = {
       loading: true,
-      open: false,
-      error: '',
+      snackbarOpen: false,
+      snackbarMessage: '',
       current: {
         reportText: '',
         tags: [],
@@ -49,8 +55,11 @@ class NarrativeAnnotator extends Component {
     };
   }
 
+  componentWillMount() {
+    this.getTextFromID(Number(this.props.match.params.id, 10));
+  }
+
   componentDidMount() {
-    this.processID(Number(this.props.match.params.id, 10));
     window.addEventListener('beforeunload', this.onUnload);
     this.autosave = setInterval(() => this.saveWork(), 10000);
   }
@@ -60,22 +69,54 @@ class NarrativeAnnotator extends Component {
     clearInterval(this.autosave);
   }
 
-  onUnload = () => this.saveWork()
+  onUnload = () => this.saveWork();
+
+  getTextFromID = (id) => {
+    if (isNaN(id)) {
+      this.setState({
+        saving: true,
+        success: false,
+        loading: false,
+        snackbarOpen: true,
+        snackbarMessage: 'No Valid ID found in the URL',
+      });
+    } else {
+      this.props.getReportNarrativeFromID(id)
+        .then((rows) => {
+          if (rows.length > 0) {
+            this.setState({
+              saving: false,
+              success: true,
+              loading: false,
+              current: {
+                reportText: rows[0].report_text,
+                tags: rows[0].tags,
+              },
+              saved: {
+                reportText: rows[0].report_text,
+                tags: rows[0].tags,
+              },
+            });
+          } else {
+            this.setState({
+              saving: true,
+              success: false,
+              loading: false,
+              snackbarOpen: true,
+              snackbarMessage: `ID ${id} not found in DB`,
+            });
+          }
+        });
+    }
+  }
 
   saveWork = () => {
     if (!this.state.saving && !_.isEqual(this.state.current, this.state.saved)) {
-      console.log('saving!');
       this.setState({
         success: false,
         saving: true,
-      }, () => {
-        setTimeout(() => {
-          this.setState({
-            saving: false,
-            success: true,
-          });
-        }, 2000);
       });
+
       const fetchData = {
         method: 'PUT',
         mode: 'cors',
@@ -85,47 +126,21 @@ class NarrativeAnnotator extends Component {
         body: JSON.stringify({
           text: this.state.current.reportText,
           tags: this.state.current.tags,
-          primaryid: Number(this.props.match.params.id, 10) }),
+          primaryid: Number(this.props.match.params.id, 10),
+        }),
       };
-      console.log('done!');
-      fetch('http://localhost:3001/savereporttext', fetchData);
-      this.setState({ saved: this.state.current });
+
+      fetch('http://localhost:3001/savereporttext', fetchData)
+        .then(() => {
+          this.setState({
+            saved: this.state.current,
+            success: true,
+            saving: false,
+          });
+        })
+        .catch(err => console.log(err));
     }
   }
-
-  processID = (id) => {
-    if (isNaN(id)) {
-      this.setState({ saving: true, success: false, loading: false, open: true, error: 'No ID found in URL' });
-    } else {
-      const fetchData = {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ primaryid: id }),
-      };
-      fetch('http://localhost:3001/getreporttext', fetchData)
-        .then(response => response.json())
-        .then((report) => {
-          if (report.rows.length > 0) {
-            this.setState({
-              saving: false,
-              success: true,
-              loading: false,
-              current: {
-                reportText: report.rows[0].report_text,
-                tags: report.rows[0].tags },
-              saved: {
-                reportText: report.rows[0].report_text,
-                tags: report.rows[0].tags },
-            });
-          } else {
-            this.setState({ saving: true, success: false, loading: false, open: true, error: `ID ${id} not found in DB` });
-          }
-        });
-    }
-  };
 
   handleChange = (value) => {
     const greenRe = /background-color: chartreuse/;
@@ -165,82 +180,92 @@ class NarrativeAnnotator extends Component {
   }
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({ snackbarOpen: false });
+  };
+
+  modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ color: [] }, { background: ['chartreuse', 'cyan', 'darkorange', 'gold', 'lightpink', 'orchid', 'silver', 'cadetblue'] }],
+      ['clean'],
+    ],
+    history: {
+      delay: 500,
+      maxStack: 500,
+      userOnly: true,
+    },
   };
 
   render() {
-    const modules = { modules: {
-      toolbar: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ color: [] }, { background: ['chartreuse', 'cyan', 'darkorange', 'gold', 'lightpink', 'orchid', 'silver', 'cadetblue'] }],
-        ['clean'],
-      ],
-      history: {
-        delay: 500,
-        maxStack: 500,
-        userOnly: true,
-      },
-    } };
-
-    const buttonClassname = classNames({
-      [this.props.classes.buttonSuccess]: this.state.success,
-    });
-
     return (
       <div className={this.props.classes.pdfView}>
-        <Dialog
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          style={{
-            height: '40vh',
-            maxWidth: 'none',
-          }}
-        >
-          <DialogTitle>
-            <div className={this.props.classes.dialog}>
-              <h4>{this.state.error}</h4>
-            </div>
-          </DialogTitle>
-          <DialogActions>
-            <Button
-              onClick={this.handleClose}
-              color={'primary'}
-            >
-                Close
-            </Button>
-          </DialogActions>
-        </Dialog>
         <h1>PDF View</h1>
+
+        {/* ====== Quil editor for Annotating the Report Text ====== */}
         <Paper elevation={4} className={this.props.classes.paperWindow}>
-          {this.state.loading ? null : <ReactQuill
-            className={this.props.classes.editorWindow}
-            readOnly={this.state.error !== ''}
-            value={this.state.current.reportText}
-            onChange={this.handleChange}
-            modules={modules.modules}
-          /> }
+          {
+            (!this.state.loading)
+              ? <ReactQuill
+                value={this.state.current.reportText}
+                onChange={this.handleChange}
+                modules={this.modules}
+                theme="snow"
+              />
+              : null
+          }
         </Paper>
+
+        {/* ====== Save Button Area ====== */}
         <div className={this.props.classes.wrapper}>
           <Button
             raised
             color="primary"
-            className={buttonClassname}
+            className={(this.state.success) ? this.props.classes.buttonSuccess : ''}
             disabled={this.state.saving}
             onClick={this.saveWork}
           >
             Save
           </Button>
-          {this.state.saving && this.state.error === '' &&
+          {this.state.saving &&
             <CircularProgress
               size={24}
               className={this.props.classes.buttonProgress}
             />}
         </div>
+
+        {/* ====== Snackbar for Notificaitons to the User ====== */}
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={this.state.snackbarOpen}
+          transitionDuration={500}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id" style={{ color: 'tomato', fontSize: '14px' }} >{this.state.snackbarMessage}</span>}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              onClick={this.handleClose}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
+        />
       </div>
     );
   }
 }
 
-export default withStyles(styles)(NarrativeAnnotator);
+getReportNarrativeFromID
+
+export default connect(
+  null,
+  { getReportNarrativeFromID },
+)(withStyles(styles)(NarrativeAnnotator));
 

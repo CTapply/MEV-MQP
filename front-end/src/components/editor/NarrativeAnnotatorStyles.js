@@ -3,20 +3,13 @@ import grey from 'material-ui/colors/grey';
 
 export default {
   pdfView: {
-    width: '75vw',
-    height: '75vh',
+    width: '75%',
+    height: '75%',
     margin: 'auto',
     padding: '10px',
   },
-  dialog: {
-    width: '100%',
-    padding: '0px 2000px 0px 20px',
-  },
-  editorWindow: {
-    height: '77vh',
-  },
   paperWindow: {
-    height: 'calc(77vh + 45px)',
+    height: 'calc(77% + 44px)',
   },
   root: {
     display: 'flex',

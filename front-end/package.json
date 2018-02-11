@@ -15,7 +15,6 @@
     "@devexpress/dx-react-grid": "1.0.0-beta.3",
     "@devexpress/dx-react-grid-material-ui": "1.0.0-beta.3",
     "bluebird": "3.5.0",
-    "classnames": "2.2.5",
     "d3": "4.12.0",
     "d3-scale": "1.0.7",
     "history": "4.7.2",

@@ -15,7 +15,7 @@ import MaterialTooltip from 'material-ui/Tooltip';
 import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
-import CaseSummary from './components/CaseSummary';
+import CaseSummaryListing from './components/CaseSummaryListing';
 import MEVColors from '../../theme';
 import { getUserBins, createUserBin } from '../../actions/reportActions';
 import CaseIcon from './components/CaseIcon';
@@ -204,7 +204,7 @@ class ReportList extends Component {
 
           {/* ====== SideBar for Viewing the Case Summary ====== */}
           <div id="summary-sidebar" className={(this.state.summaryOpen) ? this.props.classes.openSummaryContainer : this.props.classes.closedSummaryContainer} >
-            <CaseSummary
+            <CaseSummaryListing
               bins={this.state.userBins}
               summaryOpen={this.state.summaryOpen}
             />
@@ -279,9 +279,13 @@ class ReportList extends Component {
 
           {/* ====== Snackbar for Notificaitons to the User ====== */}
           <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
             open={this.state.snackbarOpen}
             onClose={this.handleInvalidCase}
-            transition={Fade}
+            transitionDuration={1000}
             SnackbarContentProps={{
               'aria-describedby': 'message-id',
             }}

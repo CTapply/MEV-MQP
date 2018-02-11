@@ -19,12 +19,13 @@ import ExpansionPanel, {
   ExpansionPanelDetails,
 } from 'material-ui/ExpansionPanel';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import Divider from 'material-ui/Divider';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import _ from 'lodash';
-import { moveReport, getCaseReports } from '../../../actions/reportActions';
+import { moveReport, getCaseReports, getReportNarrativeFromID } from '../../../actions/reportActions';
 import ClearFilterIcon from './RemoveFromCaseIcon';
 import CaseIcon from './CaseIcon';
 import TrashIcon from './TrashIcon';
@@ -38,6 +39,7 @@ class ReportTable extends React.PureComponent {
   static propTypes = {
     getCaseReports: PropTypes.func.isRequired,
     moveReport: PropTypes.func.isRequired,
+    getReportNarrativeFromID: PropTypes.func.isRequired,
     bins: PropTypes.arrayOf(PropTypes.string).isRequired,
     filters: PropTypes.shape({
       init_fda_dt: PropTypes.object,
@@ -144,6 +146,20 @@ class ReportTable extends React.PureComponent {
   onColumnWidthsChange = (widths) => {
     this.setState({ widths });
   }
+
+  /**
+   * Gets the report narrative for a given primaryid
+   */
+  getReportNarrative = (primaryid) => {
+    this.props.getReportNarrativeFromID(primaryid)
+      .then((rows) => {
+        console.log(rows[0].report_text);
+        if (rows.length > 0) {
+          return `${rows[0].report_text}`;
+        }
+        return 'Unable to Retrieve Narrative';
+      });
+  };
 
   /**
    * Names and values for the columns of the table
@@ -314,12 +330,11 @@ class ReportTable extends React.PureComponent {
       <div style={{ marginTop: '10px' }}>
         <ExpansionPanel elevation={6}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography type="subheading">Quickly Annotate Narrative</Typography>
+            <Typography type="subheading">Preview Narrative</Typography>
           </ExpansionPanelSummary>
+          <Divider light />
           <ExpansionPanelDetails>
-            <Typography>
-              Put Quill here!
-            </Typography>
+            <div style={{ fontSize: '14px' }} dangerouslySetInnerHTML={{ __html: row.row.report_text }} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </div>
@@ -382,5 +397,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { moveReport, getCaseReports },
+  { moveReport, getCaseReports, getReportNarrativeFromID },
 )(withStyles(styles)(ReportTable));

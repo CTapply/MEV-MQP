@@ -17,12 +17,12 @@ import { moveReport, getCaseReports } from '../../../actions/reportActions';
 import CaseIcon from './CaseIcon';
 import TrashIcon from './TrashIcon';
 import AllReportsIcon from './AllReportsIcon';
-import styles from './CaseSummaryStyles';
+import styles from './CaseSummaryListingStyles';
 
 /**
- * This is the component for the Report Table
+ * This is the component for the Case Summary Listing Planel
  */
-class CaseSummary extends React.PureComponent {
+class CaseSummaryListing extends React.PureComponent {
   static propTypes = {
     bins: PropTypes.arrayOf(PropTypes.string).isRequired,
     classes: PropTypes.shape({
@@ -123,4 +123,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { moveReport, getCaseReports },
-)(withStyles(styles)(CaseSummary));
+)(withStyles(styles)(CaseSummaryListing));

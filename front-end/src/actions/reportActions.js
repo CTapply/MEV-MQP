@@ -81,3 +81,23 @@ export const getCaseReports = (filters, bin, userID) => () => {
     .then(response => response.json())
     .then(reports => reports.rows);
 };
+
+/**
+ * Queries the Database with a primaryid to get
+ * that report's narrative text
+ */
+export const getReportNarrativeFromID = primaryid => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ primaryid }),
+  };
+
+  return fetch('http://localhost:3001/getreporttext', fetchData)
+    .then(response => response.json())
+    .then(report => report.rows)
+    .catch(err => console.log('Failed to retrieve report text', err));
+};

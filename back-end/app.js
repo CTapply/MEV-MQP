@@ -459,7 +459,7 @@ app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
   'SELECT report_text, tags '
-+ 'FROM demo '
++ 'FROM reports '
 + 'WHERE primaryid = ' + req.body.primaryid;
   db.query(query, (err, data) => {
     res.status(200).send(data);
@@ -501,10 +501,11 @@ app.put('/savereporttext', (req, res) => {
   console.log('got a save report text request');
   tags = JSON.stringify(req.body.tags) === '{}' ? 'null' : '\'' + JSON.stringify(req.body.tags) + '\'';
   let query =
-  'UPDATE demo '
+  'UPDATE reports '
 + 'SET report_text = $$' + req.body.text + '$$, tags = (' + tags + ') '
 + 'WHERE primaryid = ' + req.body.primaryid;
   db.query(query, (err, data) => {
+    console.log(err)
     res.status(200).send();
   });
 });
