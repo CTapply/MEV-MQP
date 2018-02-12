@@ -5,6 +5,7 @@ import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles
 import { blue, green, red } from 'material-ui/colors';
 import TreeMap from './components/treeMap/TreeMap';
 import Demographics from './components/demographics/Demographics';
+import { setCurrentlySelecting } from '../../actions/filterActions';
 import Timeline from './components/timeline/Timeline';
 import MEVColors from '../../theme';
 
@@ -30,10 +31,49 @@ const styles = theme => ({});
  */
 class App extends Component {
   static propTypes = {
+    setCurrentlySelecting: PropTypes.func.isRequired,
     timelineMinimized: PropTypes.bool.isRequired,
     demographicsMinimized: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.setSelectingBool);
+    window.addEventListener('keyup', this.removeSelectingBool);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.setSelectingBool);
+    window.removeEventListener('keyup', this.removeSelectingBool);
+  }
+
+  setSelectingBool = (e) => {
+    if (e.keyCode === 16) {
+      window.addEventListener('mousedown', this.stopClick);
+      this.props.setCurrentlySelecting(true);
+    }
+  }
+
+  removeSelectingBool = (e) => {
+    if (e.keyCode === 16) {
+      window.removeEventListener('mousedown', this.stopClick);
+      this.props.setCurrentlySelecting(false);
+    }
+  }
+
+  stopClick = (e) => {
+    const parentGroupID = e.target.getAttribute('parentgroupid');
+    const closestGroupTag = e.target.closest(`g#${parentGroupID}`);
+    if (closestGroupTag) {
+      const prevStyles = closestGroupTag.getAttribute('style');
+      if (!prevStyles) {
+        closestGroupTag.setAttribute('style', 'filter: url(#selectedShadow)');
+      } else {
+        closestGroupTag.setAttribute('style', '');
+      }
+    }
+    e.preventDefault();
   }
 
   calculateTreeMapHeight = () => {
@@ -47,6 +87,7 @@ class App extends Component {
     }
     return 'calc(65vh - 52px)';
   }
+
 
   render() {
     return (
@@ -80,5 +121,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  null,
+  { setCurrentlySelecting },
 )(withStyles(styles)(App));

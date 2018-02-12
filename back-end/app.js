@@ -248,7 +248,7 @@ function productBuilder(product) {
   }
 
   if (product.length === 1) {
-    return productString + `drugname = '${product}'`
+    return productString + `drugname @> '{${product}}'`
   }
   
   if (product.length > 1) {
@@ -256,7 +256,7 @@ function productBuilder(product) {
       if (filter === 'UNK') {
         return `drugname IS NULL`;
       } else {
-        return `drugname = '${filter}'`;
+        return `drugname @> '{${filter}}'`;
       }
     });
     return `${productString}(${productMap.join(' OR ')})`
@@ -326,7 +326,7 @@ app.post('/getdemographicdata', (req, res) => {
   console.log('got a request with body:\n ', req.body)
   let query = 
   `SELECT sex, age_year as age, occr_country, init_fda_dt, occp_cod, outc_cod `
-+ `FROM demo_outcome `
++ `FROM reports `
 + `WHERE (init_fda_dt BETWEEN ${req.body.init_fda_dt.start} AND ${req.body.init_fda_dt.end})`;
 
   query += sexBuilder(req.body.sex);
@@ -334,7 +334,7 @@ app.post('/getdemographicdata', (req, res) => {
   query += ageBuilder(req.body.age);
   query += occupationBuilder(req.body.occp_cod);
   query += meTypeBuilder(req.body.meType);
-  // query += productBuilder(req.body.product);
+  query += productBuilder(req.body.product);
   query += stageBuilder(req.body.stage);
   query += causeBuilder(req.body.cause);
 
@@ -358,7 +358,7 @@ app.post('/getreports', (req, res) => {
     query += ageBuilder(req.body.age);
     query += occupationBuilder(req.body.occp_cod);
     query += meTypeBuilder(req.body.meType);
-    // query += productBuilder(req.body.product);
+    query += productBuilder(req.body.product);
     query += stageBuilder(req.body.stage);
     query += causeBuilder(req.body.cause);  
     
@@ -377,7 +377,7 @@ app.post('/getreports', (req, res) => {
     query += ageBuilder(req.body.age);
     query += occupationBuilder(req.body.occp_cod);
     query += meTypeBuilder(req.body.meType);
-    // query += productBuilder(req.body.product);
+    query += productBuilder(req.body.product);
     query += stageBuilder(req.body.stage);
     query += causeBuilder(req.body.cause);
 
@@ -426,7 +426,7 @@ app.post('/binreport', (req, res) => {
     } else if (req.body.fromBin !== 'all reports' && req.body.toBin === 'all reports') {
       console.log(fromQuery);
       db.query(fromQuery, (err, fromData) => {
-          res.status(200).send();
+          res.status(200).send(fromData);
       });
     }
   });
@@ -435,31 +435,51 @@ app.post('/binreport', (req, res) => {
 app.post('/createuserbin', (req, res) => {
   console.log('got a request to create new bin with body:\n', req.body);
   let query =
-  'INSERT INTO cases (name, user_id, primaryid) '
-+ `VALUES ('${req.body.binName}',${req.body.userID}, -1)`;
+  'INSERT INTO cases (name, user_id, primaryid, description) '
++ `VALUES ('${req.body.binName}',${req.body.userID}, -1, '${req.body.binDesc}')`;
   console.log(query);
   db.query(query, (err, data) => {
-    res.status(200).send();
+    let findCaseIDQuery =
+      'SELECT DISTINCT name, case_id '
+    + 'FROM cases '
+    + `WHERE user_id = ${req.body.userID} `
+    + `AND name ='${req.body.binName}'`;
+    db.query(findCaseIDQuery, (err, caseData) => {
+      res.status(200).send(caseData);
+    });
   });
 })
 
-app.post('/getuserbins', (req, res) => {
-  console.log('got a request to get bins with body:\n', req.body);
+app.post('/getusercases', (req, res) => {
+  console.log('got a request to get cases with body:\n', req.body);
   let query =
-  'SELECT DISTINCT name '
+  'SELECT DISTINCT name, case_id, description, active '
 + 'FROM cases '
-+ `WHERE user_id = ${req.body.userID}`;
++ `WHERE user_id = ${req.body.userID} AND primaryid = -1`;
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send(data);
   });
 })
 
+app.post('/getusertrash', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM cases '
++ 'WHERE user_id = ' + req.body.userID + ' '
++ `AND name = 'trash'`;
+  console.log(query)
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
   'SELECT report_text, tags '
-+ 'FROM demo '
++ 'FROM reports '
 + 'WHERE primaryid = ' + req.body.primaryid;
   db.query(query, (err, data) => {
     res.status(200).send(data);
@@ -497,14 +517,27 @@ app.put('/makeusertrash', (req, res) => {
   });
 });
 
+app.put('/archivecase', (req, res) => {
+  console.log('got an archive request');
+  let query =
+  'UPDATE cases '
++ `SET active = '${req.body.active}' `
++ `WHERE name = '${req.body.name}' AND user_id = '${req.body.userID}' AND primaryid = -1`
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
 app.put('/savereporttext', (req, res) => {
   console.log('got a save report text request');
   tags = JSON.stringify(req.body.tags) === '{}' ? 'null' : '\'' + JSON.stringify(req.body.tags) + '\'';
   let query =
-  'UPDATE demo '
+  'UPDATE reports '
 + 'SET report_text = $$' + req.body.text + '$$, tags = (' + tags + ') '
 + 'WHERE primaryid = ' + req.body.primaryid;
   db.query(query, (err, data) => {
+    console.log(err)
     res.status(200).send();
   });
 });
@@ -524,14 +557,14 @@ app.post('/getvis', (req, res) => {
     + `count(CASE WHEN outc_cod @> '{RI}' THEN 1 end)::INTEGER as "RI", `
     + `count(CASE WHEN outc_cod @> '{OT}' THEN 1 end)::INTEGER as "OT", `
     + `count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' THEN 1 end)::INTEGER as "UNK" `
-  + `FROM demo_outcome `
+  + `FROM reports `
   + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
   meTypeQuery += sexBuilder(req.body.sex);
   meTypeQuery += locationBuilder(req.body.occr_country);
   meTypeQuery += ageBuilder(req.body.age);
   meTypeQuery += occupationBuilder(req.body.occp_cod);
   meTypeQuery += meTypeBuilder(req.body.meType);
-  // meTypeQuery += productBuilder(req.body.product);
+  meTypeQuery += productBuilder(req.body.product);
   meTypeQuery += stageBuilder(req.body.stage);
   meTypeQuery += causeBuilder(req.body.cause);
   meTypeQuery += " GROUP BY me_type";
@@ -547,14 +580,14 @@ app.post('/getvis', (req, res) => {
   + `count(CASE WHEN outc_cod @> '{RI}' THEN 1 end)::INTEGER as "RI", `
   + `count(CASE WHEN outc_cod @> '{OT}' THEN 1 end)::INTEGER as "OT", `
   + `count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' THEN 1 end)::INTEGER as "UNK" `
-+ `FROM demo_outcome `
++ `FROM reports `
   + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
   stageQuery += sexBuilder(req.body.sex);
   stageQuery += locationBuilder(req.body.occr_country);
   stageQuery += ageBuilder(req.body.age);
   stageQuery += occupationBuilder(req.body.occp_cod);
   stageQuery += meTypeBuilder(req.body.meType);
-  // stageQuery += productBuilder(req.body.product);
+  stageQuery += productBuilder(req.body.product);
   stageQuery += stageBuilder(req.body.stage);
   stageQuery += causeBuilder(req.body.cause);
   stageQuery += " GROUP BY stage"; 
@@ -568,19 +601,19 @@ app.post('/getvis', (req, res) => {
   + `count(CASE WHEN outc_cod @> '{RI}' THEN 1 end)::INTEGER as "RI", `
   + `count(CASE WHEN outc_cod @> '{OT}' THEN 1 end)::INTEGER as "OT", `
   + `count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' THEN 1 end)::INTEGER as "UNK" `
-+ `FROM demo_outcome `
++ `FROM reports `
   + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
   causeQuery += sexBuilder(req.body.sex);
   causeQuery += locationBuilder(req.body.occr_country);
   causeQuery += ageBuilder(req.body.age);
   causeQuery += occupationBuilder(req.body.occp_cod);
   causeQuery += meTypeBuilder(req.body.meType);
-  // causeQuery += productBuilder(req.body.product);
+  causeQuery += productBuilder(req.body.product);
   causeQuery += stageBuilder(req.body.stage);
   causeQuery += causeBuilder(req.body.cause);
   causeQuery += " GROUP BY cause";
   
-  let productQuery = "SELECT z.drugname as name, count(*)::INTEGER as size, "
+  let productQuery = "SELECT unnest(drugname) as name, count(*)::INTEGER as size, "
   + `count(CASE WHEN outc_cod @> '{DE}' THEN 1 end)::INTEGER as "DE", `
   + `count(CASE WHEN outc_cod @> '{CA}' THEN 1 end)::INTEGER as "CA", `
   + `count(CASE WHEN outc_cod @> '{DS}' THEN 1 end)::INTEGER as "DS", `
@@ -589,21 +622,18 @@ app.post('/getvis', (req, res) => {
   + `count(CASE WHEN outc_cod @> '{RI}' THEN 1 end)::INTEGER as "RI", `
   + `count(CASE WHEN outc_cod @> '{OT}' THEN 1 end)::INTEGER as "OT", `
   + `count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' THEN 1 end)::INTEGER as "UNK" `
-  + "FROM (SELECT b.drugname, a.outc_cod " 
-    + "FROM (SELECT primaryid, init_fda_dt, outc_cod FROM demo_outcome " 
-      + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
-      productQuery += sexBuilder(req.body.sex);
-      productQuery += locationBuilder(req.body.occr_country);
-      productQuery += ageBuilder(req.body.age);
-      productQuery += occupationBuilder(req.body.occp_cod);
-      productQuery += meTypeBuilder(req.body.meType);
-      // productQuery += productBuilder(req.body.product);
-      productQuery += stageBuilder(req.body.stage);
-      productQuery += causeBuilder(req.body.cause);
-      productQuery += ") a "
-    + "INNER JOIN (SELECT primaryid::integer as id, drugname FROM drug) b ON a.primaryid = b.id) z "
-    + "GROUP BY z.drugname"; 
-    console.log(productQuery)
+  + `FROM reports `
+    + "WHERE init_fda_dt BETWEEN " + req.body.init_fda_dt.start + " AND " + req.body.init_fda_dt.end
+    productQuery += sexBuilder(req.body.sex);
+    productQuery += locationBuilder(req.body.occr_country);
+    productQuery += ageBuilder(req.body.age);
+    productQuery += occupationBuilder(req.body.occp_cod);
+    productQuery += meTypeBuilder(req.body.meType);
+    productQuery += productBuilder(req.body.product);
+    productQuery += stageBuilder(req.body.stage);
+    productQuery += causeBuilder(req.body.cause);
+    productQuery += " GROUP BY unnest(drugname)"; 
+  console.log(productQuery)
 
   db.query(meTypeQuery, (err, meTypeData) => {
     db.query(productQuery, (err, productData) => {
@@ -637,7 +667,7 @@ app.post('/gettimelinedata', (req, res) => {
           "SELECT init_fda_dt, "
           + "count(CASE WHEN outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' then 1 end)::INTEGER as serious, "
           + "count(CASE WHEN NOT outc_cod && '{DE, CA, DS, HO, LT, RI, OT}' then 1 end)::INTEGER as not_serious "
-          + "FROM demo_outcome "
+          + "FROM reports "
           + "GROUP BY init_fda_dt "
           + "ORDER BY init_fda_dt"
         console.log(query)

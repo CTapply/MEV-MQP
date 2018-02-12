@@ -13,14 +13,14 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Snackbar from 'material-ui/Snackbar';
 import MaterialTooltip from 'material-ui/Tooltip';
 import Paper from 'material-ui/Paper';
-import Fade from 'material-ui/transitions/Fade';
 import ReportTable from './components/ReportTable';
+import CaseSummaryListing from './components/CaseSummaryListing';
 import MEVColors from '../../theme';
-import { getUserBins, createUserBin } from '../../actions/reportActions';
-import CaseIcon from './components/CaseIcon';
-import NewCaseIcon from './components/NewCaseIcon';
-import TrashIcon from './components/TrashIcon';
-import AllReportsIcon from './components/AllReportsIcon';
+import { getUserCases, createUserBin } from '../../actions/reportActions';
+import CaseIcon from '../../resources/CaseIcon';
+import NewCaseIcon from '../../resources/NewCaseIcon';
+import TrashIcon from '../../resources/TrashIcon';
+import AllReportsIcon from '../../resources/AllReportsIcon';
 import GoToVisualizationIcon from '../../resources/goToVisualizationIcon.svg';
 import ViewCaseSummary from '../../resources/caseSummary.svg';
 import styles from './ReportListStyles';
@@ -46,7 +46,7 @@ const defaultTheme = createMuiTheme({
  */
 class ReportList extends Component {
   static propTypes = {
-    getUserBins: PropTypes.func.isRequired,
+    getUserCases: PropTypes.func.isRequired,
     createUserBin: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
     classes: PropTypes.shape({
@@ -56,6 +56,10 @@ class ReportList extends Component {
       tooltipStyle: PropTypes.string,
       ReportList: PropTypes.string,
       newCaseModal: PropTypes.string,
+      closedSummaryTableContainer: PropTypes.string,
+      closedSummaryContainer: PropTypes.string,
+      openSummaryTableContainer: PropTypes.string,
+      openSummaryContainer: PropTypes.string,
     }).isRequired,
   }
 
@@ -68,6 +72,7 @@ class ReportList extends Component {
       snackbarOpen: false,
       snackbarMessage: '',
       currentTab: 0,
+      summaryOpen: false,
     };
   }
 
@@ -79,10 +84,17 @@ class ReportList extends Component {
    * Retrieves the names of the bins the user has created
    */
   getBins = () => {
-    this.props.getUserBins(this.props.userID)
-      .then(bins => this.setState({
-        userBins: ['All Reports'].concat(bins.map(bin => this.toTitleCase(bin.name))),
-      }));
+    this.props.getUserCases(this.props.userID)
+      .then((bins) => {
+        if (bins) {
+          this.setState({
+            userBins: [{ name: 'All Reports', case_id: -1 }].concat(
+              bins.filter(bin => bin.active)
+                .map(bin => ({ name: this.toTitleCase(bin.name), case_id: bin.case_id }))
+            ),
+          });
+        }
+      });
   }
 
   /**
@@ -91,9 +103,9 @@ class ReportList extends Component {
   toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
   /**
-   * Handler for drop down menu item click
+   * Handler for Tab bar clicks
    */
-  handleMenuItemClick = (event, currentTab) => {
+  handleTabClick = (event, currentTab) => {
     // If the Current tab is the New Case tab, open the Modal
     if (currentTab === 2) {
       this.setState({
@@ -123,6 +135,13 @@ class ReportList extends Component {
   };
 
   /**
+   * Handler for Opening the New Case Modal
+   */
+  handleViewCaseSummary = () => {
+    this.setState({ summaryOpen: !this.state.summaryOpen });
+  };
+
+  /**
    * Handler for Closing the New Case Modal
    */
   handleNewCaseClose = () => {
@@ -139,12 +158,21 @@ class ReportList extends Component {
    */
   handleNewCaseClick = () => {
     const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
-    if (binName !== '' && !this.state.userBins.map(bin => bin.toLowerCase()).includes(binName)) {
-      this.setState({ userBins: this.state.userBins.concat(this.toTitleCase(binName)) });
-      this.props.createUserBin(this.props.userID, binName);
-      document.getElementById('newCaseName').value = '';
-      this.setState({ snackbarOpen: true, snackbarMessage: `Case ${this.toTitleCase(binName)} Created!` });
-      this.handleNewCaseClose();
+    const binDesc = document.getElementById('newCaseDesc').value.trim();
+    if (binName !== '' && !this.state.userBins.filter(bin => bin.name.toLowerCase()).includes(binName).length) {
+      this.props.createUserBin(this.props.userID, binName, binDesc)
+        .then((newCaseID) => {
+          this.setState({
+            snackbarOpen: true,
+            snackbarMessage: `Case ${this.toTitleCase(binName)} Created!`,
+            userBins: this.state.userBins.concat({
+              name: this.toTitleCase(binName), case_id: newCaseID,
+            }),
+          });
+          document.getElementById('newCaseName').value = '';
+          document.getElementById('newCaseDesc').value = '';
+          this.handleNewCaseClose();
+        });
     } else {
       this.setState({ snackbarOpen: true, snackbarMessage: 'Invalid Case Name' });
     }
@@ -158,30 +186,48 @@ class ReportList extends Component {
           <AppBar position="static" color="default">
             <Tabs
               value={this.state.currentTab}
-              onChange={this.handleMenuItemClick}
+              onChange={this.handleTabClick}
               indicatorColor="primary"
               textColor="primary"
               scrollable
               scrollButtons="auto"
               centered
             >
+              {console.log(this.state.userBins)}
               <Tab icon={<AllReportsIcon />} label="All Reports" key="All Reports" name="All Reports" />
               <Tab icon={<TrashIcon />} label="Trash" key="Trash" name="Trash" />
               <Tab icon={<NewCaseIcon />} label="New Case" name="New Case" />
               {this.state.userBins.map((bin) => {
-                switch (bin) {
+                switch (bin.name) {
                   case 'Trash':
                   case 'All Reports':
                   return null;
                   default:
-                    return (<Tab icon={<CaseIcon />} label={bin} key={bin} name={bin} />);
+                    return (
+                      <Tab icon={<CaseIcon />} label={bin.name} key={bin.case_id} name={bin.name} />
+                    );
                 }
               })}
             </Tabs>
           </AppBar>
 
           {/* ====== Table for Viewing the Reports ====== */}
-          <ReportTable bin={this.state.bin} bins={this.state.userBins} />
+          <div className={(this.state.summaryOpen) ? this.props.classes.openSummaryTableContainer : this.props.classes.closedSummaryTableContainer} >
+            <ReportTable
+              bin={this.state.bin}
+              bins={this.state.userBins}
+              summaryOpen={this.state.summaryOpen}
+            />
+          </div>
+
+          {/* ====== SideBar for Viewing the Case Summary ====== */}
+          <div id="summary-sidebar" className={(this.state.summaryOpen) ? this.props.classes.openSummaryContainer : this.props.classes.closedSummaryContainer} >
+            <CaseSummaryListing
+              bins={this.state.userBins}
+              userID={this.props.userID}
+              summaryOpen={this.state.summaryOpen}
+            />
+          </div>
 
           {/* ====== Modal for Creating a New Case ====== */}
           <Modal
@@ -244,19 +290,21 @@ class ReportList extends Component {
                 popper: this.props.classes.tooltipStyle,
                 }}
             >
-              <Link href="/" to="/" >
-                <Button fab style={{ margin: 12 }} color="primary">
-                  <img src={ViewCaseSummary} className={this.props.classes.caseSummarySVG} alt="Open Case Summary" />
-                </Button>
-              </Link>
+              <Button fab style={{ margin: 12 }} color="primary" onClick={this.handleViewCaseSummary} >
+                <img src={ViewCaseSummary} className={this.props.classes.caseSummarySVG} alt="Open Case Summary" />
+              </Button>
             </MaterialTooltip>
           </div>
 
           {/* ====== Snackbar for Notificaitons to the User ====== */}
           <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
             open={this.state.snackbarOpen}
             onClose={this.handleInvalidCase}
-            transition={Fade}
+            transitionDuration={1000}
             SnackbarContentProps={{
               'aria-describedby': 'message-id',
             }}
@@ -280,5 +328,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { getUserBins, createUserBin },
+  { getUserCases, createUserBin },
 )(withStyles(styles)(ReportList));

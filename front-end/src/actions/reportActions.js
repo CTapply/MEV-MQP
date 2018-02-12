@@ -1,7 +1,7 @@
 /**
  * Queries the Database with the current userID to retrieve that user's bin names
  */
-export const getUserBins = userID => () => {
+export const getUserCases = userID => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -12,9 +12,9 @@ export const getUserBins = userID => () => {
       userID,
     }),
   };
-  return fetch('http://localhost:3001/getuserbins', fetchData)
+  return fetch('http://localhost:3001/getusercases', fetchData)
     .then(response => response.json())
-    .then(bins => bins.rows)
+    .then(bins => (bins.rows || []))
     .catch((err) => {
       console.error.bind(err);
     });
@@ -24,7 +24,7 @@ export const getUserBins = userID => () => {
  * Queries the Database with the current userID and a bin name to create
  * that bin in the database
  */
-export const createUserBin = (userID, binName) => () => {
+export const createUserBin = (userID, binName, binDesc) => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -34,9 +34,17 @@ export const createUserBin = (userID, binName) => () => {
     body: JSON.stringify({
       userID,
       binName,
+      binDesc,
     }),
   };
-  fetch('http://localhost:3001/createuserbin', fetchData);
+  return fetch('http://localhost:3001/createuserbin', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows[0].case_id;
+      }
+      return -1;
+    });
 };
 
 /**
@@ -80,4 +88,41 @@ export const getCaseReports = (filters, bin, userID) => () => {
   return fetch('http://localhost:3001/getreports', fetchData)
     .then(response => response.json())
     .then(reports => reports.rows);
+};
+
+/**
+ * Queries the Database with a primaryid to get
+ * that report's narrative text
+ */
+export const getReportNarrativeFromID = primaryid => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ primaryid }),
+  };
+
+  return fetch('http://localhost:3001/getreporttext', fetchData)
+    .then(response => response.json())
+    .then(report => report.rows)
+    .catch(err => console.log('Failed to retrieve report text', err));
+};
+
+export const archiveCase = (name, active, userID) => () => {
+  const fetchData = {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name,
+      active,
+      userID,
+    }),
+  };
+
+  fetch('http://localhost:3001/archivecase', fetchData);
 };

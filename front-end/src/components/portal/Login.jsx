@@ -65,6 +65,7 @@ class Login extends Component {
         this.sendFormData();
       });
   }
+
   handleSubmit = (event) => {
     event.preventDefault();
     if (this.state.email !== '') {
@@ -73,11 +74,13 @@ class Login extends Component {
       this.setState({ type: 'danger', message: 'Please enter a value!' });
     }
   }
+
   handleChange = (event) => {
     this.setState({
       email: event.target.value,
     });
   }
+
   sendFormData = () => {
     const fetchData = {
       method: 'POST',
@@ -92,70 +95,73 @@ class Login extends Component {
       .then((user) => {
         if (user.rows.length > 0) {
           this.props.setUserInfo(true, user.rows[0].email, user.rows[0].user_id);
-          if (this.props.checkUserTrash(this.props.userID)) {
-            console.log('user trash found');
-          } else {
-            this.props.makeUserTrash(this.props.userID);
-          }
-          this.props.history.push('/');
+          this.props.checkUserTrash(user.rows[0].user_id)
+            .then((trashFound) => {
+              if (trashFound) {
+                console.log('user trash found');
+              } else {
+                this.props.makeUserTrash(user.rows[0].user_id);
+              }
+              this.props.history.push('/');
+            });
         } else {
           this.setState({
             type: 'danger',
             message: 'You have not successfully logged in, but well add you as a user!',
             logged_in: true,
           });
-          setTimeout(() => {
-          }, 10000);
+
           this.saveUser();
           console.log('userid', this.props.userID);
         }
       });
   }
-  asd = () => 123;
 
   render() {
     let result = (<div />);
-    if (this.logged_in) {
-      result = (<MuiThemeProvider theme={defaultTheme} >
-        <div className="About container">
-          <div className="row">
-            <div className="col-sm-12">
-              <h2>Login Page</h2>
-              <p>You are already logged in!</p>
-              <div id="status" className={`alert alert-${this.state.type}`}>
-                {this.state.message}
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </MuiThemeProvider>);
-    } else {
-      result = (<MuiThemeProvider theme={defaultTheme} >
-        <div className="About container">
-          <div className="row">
-            <div className="col-sm-12">
-              <h2>Login Page</h2>
-              <form className="form-horizontal" action="" onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="inputEmail3" className="col-sm-2 control-label">Email</label>
-                  <div className="col-sm-6">
-                    <input type="email" className="form-control" id="inputEmail3" value={this.state.value} onChange={this.handleChange} placeholder="Email" />
-                  </div>
-                  <div className="col-sm-4">
-                    <button type="submit" className="btn btn-default">Sign in</button>
-                  </div>
-
+    if (this.state.logged_in) {
+      result = (
+        <MuiThemeProvider theme={defaultTheme} >
+          <div className="About container">
+            <div className="row">
+              <div className="col-sm-12">
+                <h2>Login Page</h2>
+                <p>You are already logged in!</p>
+                <div id="status" className={`alert alert-${this.state.type}`}>
+                  {this.state.message}
                 </div>
-              </form>
-              <div id="status" className={`alert alert-${this.state.type}`}>
-                {this.state.message}
               </div>
             </div>
-          </div>
 
-        </div>
-      </MuiThemeProvider>);
+          </div>
+        </MuiThemeProvider>);
+    } else {
+      result = (
+        <MuiThemeProvider theme={defaultTheme} >
+          <div className="About container">
+            <div className="row">
+              <div className="col-sm-12">
+                <h2>Login Page</h2>
+                <form className="form-horizontal" action="" onSubmit={this.handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="inputEmail3" className="col-sm-2 control-label">Email</label>
+                    <div className="col-sm-6">
+                      <input type="email" className="form-control" id="inputEmail3" value={this.state.value} onChange={this.handleChange} placeholder="Email" />
+                    </div>
+                    <div className="col-sm-4">
+                      <button type="submit" className="btn btn-default">Sign in</button>
+                    </div>
+
+                  </div>
+                </form>
+                <div id="status" className={`alert alert-${this.state.type}`}>
+                  {this.state.message}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </MuiThemeProvider>);
     }
     return (result);
   }

@@ -89,25 +89,27 @@ class CustomizedContent extends Component {
   toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
   render = () => {
-    return (!isNaN(this.props.width) && !isNaN(this.props.height)) ? (
-      <g id={`${this.props.treeMap}_${this.props.name}`} >
-        {/* <defs>
+    return (!isNaN(this.props.width) && !isNaN(this.props.height) && this.props.name) ? (
+      <g id={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`} >
+        <defs>
           <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
             <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
           </linearGradient>
-        </defs> */}
+        </defs>
         <rect
           x={this.props.x}
           y={this.props.y}
           width={this.props.width}
           height={this.props.height}
+          parentgroupid={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`}
           style={{
-            fill: `#${this.getFillColor().lightColor}`,
+            // fill: `#${this.getFillColor().lightColor}`,
+            fill: `url(#${this.props.size})`,
             stroke: '#fff',
             strokeWidth: 1,
             strokeOpacity: 1,
-            overflow: 'hidden',
+            overflow: 'visible',
           }}
         />
         {(this.checkTextLength())
@@ -115,6 +117,7 @@ class CustomizedContent extends Component {
             <text
               x={this.props.x + this.props.width / 2}
               y={this.props.y + this.props.height / 2 + 7}
+              parentgroupid={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`}
               textAnchor="middle"
               style={{ fill: '#FFF', strokeWidth: '0px' }}
               fontFamily="Roboto"

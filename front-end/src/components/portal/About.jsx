@@ -22,7 +22,7 @@ const defaultTheme = createMuiTheme({
 const styles = theme => ({});
 
 /**
- * This is the component for the App
+ * This is the component for the About Page
  */
 class About extends Component {
   static propTypes = {
