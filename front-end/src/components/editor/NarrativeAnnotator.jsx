@@ -244,7 +244,7 @@ class NarrativeAnnotator extends Component {
         <div className="col-sm-4">
         <h1>Legend</h1>
         <Paper elevation={4} className={`${this.props.classes.legend}`}>
-          <img src={legendImage} className='img-responsive' />
+          <img src={legendImage} className="img-responsive" />
         </Paper>
         </div>
         </div>
