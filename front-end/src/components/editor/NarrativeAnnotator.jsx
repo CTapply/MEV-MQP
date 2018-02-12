@@ -13,6 +13,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
 import styles from './NarrativeAnnotatorStyles';
+import legendImage from './images/legend.png';
 
 class NarrativeAnnotator extends Component {
   static propTypes = {
@@ -188,7 +189,9 @@ class NarrativeAnnotator extends Component {
     });
 
     return (
-      <div className={this.props.classes.pdfView}>
+      <div className={`${this.props.classes.pdfView} container`}>
+      <div className="row">
+      <div className="col-sm-8">
         <Dialog
           open={this.state.open}
           onRequestClose={this.handleClose}
@@ -236,6 +239,14 @@ class NarrativeAnnotator extends Component {
               size={24}
               className={this.props.classes.buttonProgress}
             />}
+        </div>
+        </div>
+        <div className="col-sm-4">
+        <h1>Legend</h1>
+        <Paper elevation={4} className={`${this.props.classes.legend}`}>
+          <img src={legendImage} />
+        </Paper>
+        </div>
         </div>
       </div>
     );
