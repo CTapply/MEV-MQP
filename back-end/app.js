@@ -24,7 +24,7 @@ let cache = {
 // Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
-  cache = redis.createClient();  
+  // cache = redis.createClient();  
 }
 
 // We cannot use REDIS if on Windows
@@ -426,7 +426,7 @@ app.post('/binreport', (req, res) => {
     } else if (req.body.fromBin !== 'all reports' && req.body.toBin === 'all reports') {
       console.log(fromQuery);
       db.query(fromQuery, (err, fromData) => {
-          res.status(200).send();
+          res.status(200).send(fromData);
       });
     }
   });
@@ -439,14 +439,21 @@ app.post('/createuserbin', (req, res) => {
 + `VALUES ('${req.body.binName}',${req.body.userID}, -1)`;
   console.log(query);
   db.query(query, (err, data) => {
-    res.status(200).send();
+    let findCaseIDQuery =
+      'SELECT DISTINCT name, case_id '
+    + 'FROM cases '
+    + `WHERE user_id = ${req.body.userID} `
+    + `AND name ='${req.body.binName}'`;
+    db.query(findCaseIDQuery, (err, caseData) => {
+      res.status(200).send(caseData);
+    });
   });
 })
 
-app.post('/getuserbins', (req, res) => {
-  console.log('got a request to get bins with body:\n', req.body);
+app.post('/getusercases', (req, res) => {
+  console.log('got a request to get cases with body:\n', req.body);
   let query =
-  'SELECT DISTINCT name '
+  'SELECT DISTINCT name, case_id '
 + 'FROM cases '
 + `WHERE user_id = ${req.body.userID}`;
   console.log(query);
@@ -454,6 +461,19 @@ app.post('/getuserbins', (req, res) => {
     res.status(200).send(data);
   });
 })
+
+app.post('/getusertrash', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM cases '
++ 'WHERE user_id = ' + req.body.userID + ' '
++ `AND name = 'trash'`;
+  console.log(query)
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
 
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)

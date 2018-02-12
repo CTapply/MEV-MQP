@@ -1,7 +1,7 @@
 /**
  * Queries the Database with the current userID to retrieve that user's bin names
  */
-export const getUserBins = userID => () => {
+export const getUserCases = userID => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -12,7 +12,7 @@ export const getUserBins = userID => () => {
       userID,
     }),
   };
-  return fetch('http://localhost:3001/getuserbins', fetchData)
+  return fetch('http://localhost:3001/getusercases', fetchData)
     .then(response => response.json())
     .then(bins => (bins.rows || []))
     .catch((err) => {
@@ -36,7 +36,14 @@ export const createUserBin = (userID, binName) => () => {
       binName,
     }),
   };
-  fetch('http://localhost:3001/createuserbin', fetchData);
+  return fetch('http://localhost:3001/createuserbin', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows[0].case_id;
+      }
+      return -1;
+    });
 };
 
 /**

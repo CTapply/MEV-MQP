@@ -262,8 +262,6 @@ class NarrativeAnnotator extends Component {
   }
 }
 
-getReportNarrativeFromID
-
 export default connect(
   null,
   { getReportNarrativeFromID },

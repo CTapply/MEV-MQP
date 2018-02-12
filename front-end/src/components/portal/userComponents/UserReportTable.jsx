@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 import {
-  RowDetailState, SortingState, IntegratedSorting, IntegratedSelection, SelectionState,
+  RowDetailState, SortingState, IntegratedSorting,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
@@ -11,7 +12,6 @@ import {
   TableHeaderRow,
   DragDropProvider,
   TableColumnReordering,
-  TableSelection,
   TableRowDetail,
   TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -19,10 +19,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
-import CaseIcon from '../../reports/components/CaseIcon';
-import _ from 'lodash';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import CaseIcon from '../../../resources/CaseIcon';
 import { moveReport, getCaseReports } from '../../../actions/reportActions';
 
 const styles = {};
@@ -54,8 +51,6 @@ class UserReportTable extends React.PureComponent {
     super(props);
     this.state = {
       data: [],
-      anchorEl: null,
-      selectedIndex: 0,
       expandedRows: [],
     };
 
@@ -141,28 +136,6 @@ class UserReportTable extends React.PureComponent {
       newExpandedRows.splice(this.state.expandedRows.indexOf(primaryid.toString()), 1);
       this.changeExpandedDetails(newExpandedRows);
     }
-  };
-
-  /**
-   * Handler for drop down menu click
-   */
-  handleClickListItem = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  }
-
-  /**
-   * Handler for drop down menu item click
-   */
-  handleMenuItemClick = (event, index, primaryid) => {
-    this.setState({ selectedIndex: 0, anchorEl: null });
-    this.handleMoveReport(primaryid, this.props.bins[index].toLowerCase());
-  };
-
-  /**
-   * Handler for drop down menu closing
-   */
-  handleClose = () => {
-    this.setState({ anchorEl: null });
   };
 
   /**

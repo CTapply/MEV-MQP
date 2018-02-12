@@ -26,9 +26,9 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import _ from 'lodash';
 import { moveReport, getCaseReports, getReportNarrativeFromID } from '../../../actions/reportActions';
-import ClearFilterIcon from './RemoveFromCaseIcon';
-import CaseIcon from './CaseIcon';
-import TrashIcon from './TrashIcon';
+import ClearFilterIcon from '../../../resources/RemoveFromCaseIcon';
+import CaseIcon from '../../../resources/CaseIcon';
+import TrashIcon from '../../../resources/TrashIcon';
 import styles from './ReportTableStyles';
 import './ReportTable.css';
 
@@ -40,7 +40,7 @@ class ReportTable extends React.PureComponent {
     getCaseReports: PropTypes.func.isRequired,
     moveReport: PropTypes.func.isRequired,
     getReportNarrativeFromID: PropTypes.func.isRequired,
-    bins: PropTypes.arrayOf(PropTypes.string).isRequired,
+    bins: PropTypes.arrayOf(PropTypes.object).isRequired,
     filters: PropTypes.shape({
       init_fda_dt: PropTypes.object,
       sex: PropTypes.array,
@@ -239,8 +239,8 @@ class ReportTable extends React.PureComponent {
   handleMoveReport = (primaryid, toBin) => {
     this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID).then(() =>
       this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
-        .then(bins => this.setState({
-          data: bins,
+        .then(reports => this.setState({
+          data: reports,
         })));
     if (this.props.bin !== 'all reports' || toBin === 'trash') {
       const newExpandedRows = this.state.expandedRows;
@@ -309,18 +309,18 @@ class ReportTable extends React.PureComponent {
           Send Report to:
         </Typography>
         <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
-          {this.props.bins.map((binName, index) => (
-            (this.props.bin.toLowerCase() !== binName.toLowerCase())
+          {this.props.bins.map((bin, index) => (
+            (this.props.bin.toLowerCase() !== bin.name.toLowerCase())
               ? (
                 <Button
                   flat="true"
-                  key={binName}
+                  key={bin.case_id}
                   className={this.props.classes.caseGridList}
                   onClick={() => {
-                    this.handleMoveReport(row.row.primaryid, this.props.bins[index].toLowerCase());
+                    this.handleMoveReport(row.row.primaryid, this.props.bins[index].name.toLowerCase());
                   }}
                 >
-                  {this.renderMoveToIcon(binName)}
+                  {this.renderMoveToIcon(bin.name)}
                 </Button>
               )
             : null

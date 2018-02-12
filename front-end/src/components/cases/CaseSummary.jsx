@@ -1,10 +1,28 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {};
 
 class CaseSummary extends Component {
   static propTypes = {
+    caseID: PropTypes.number,
+    userID: PropTypes.number.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        id: PropTypes.string,
+      }),
+    }),
+  }
+
+  static defaultProps = {
+    caseID: null,
+    match: {
+      params: {
+        id: null,
+      },
+    },
   }
 
   constructor(props) {
@@ -20,12 +38,28 @@ class CaseSummary extends Component {
   render() {
     return (
       <div>
-        <h1> Gorgeous Case Deets </h1>
-        <h2> {Number(this.props.match.params.id, 10)} </h2>
+        <p> Case Details </p>
+        <p> Case ID: {Number(this.props.caseID, 10)} </p>
+        <p> User ID: {Number(this.props.userID, 10)} </p>
+        <p> URL PARAM: {Number(this.props.match.params.id, 10)} </p>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(CaseSummary);
+
+const mapStateToProps = state => ({
+  userID: state.user.userID,
+});
+
+/**
+ * Conect this component to the Redux global State.
+ * Maps Redux state to this comonent's props.
+ * Gets Redux actions to be called in this component.
+ * Exports this component with the proper JSS styles.
+ */
+export default connect(
+  mapStateToProps,
+  null,
+)(withStyles(styles)(CaseSummary));
 
