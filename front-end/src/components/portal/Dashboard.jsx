@@ -44,7 +44,7 @@ const defaultTheme = createMuiTheme({
 });
 
 /**
- * This is the component for the App
+ * This is the component for the Dashboard
  */
 class Dashboard extends Component {
   static propTypes = {
@@ -134,28 +134,28 @@ class Dashboard extends Component {
                   {this.state.userBins.map((option, index) => {
                     if (value === index) {
                       return (
-                      <TabContainer key={index}>
-                        <div className={`col-sm-4`}>
-                          <h3>Case Name:</h3>
-                          <div className={`${this.props.classes.paper}`}>
-                            {option}
+                        <TabContainer key={index}>
+                          <div className={`col-sm-4`}>
+                            <h3>Case Name:</h3>
+                            <div className={`${this.props.classes.paper}`}>
+                              {option}
+                            </div>
                           </div>
-                        </div>
-                        <div className={`col-sm-4`}>
-                          <h3>Report Count:</h3>
-                          <div className={`${this.props.classes.paper}`}>
-                            <p># of reports in bin</p>
+                          <div className={`col-sm-4`}>
+                            <h3>Report Count:</h3>
+                            <div className={`${this.props.classes.paper}`}>
+                              <p># of reports in bin</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
-                          <h3 style={{ marginTop: '10px' }}>Reports:</h3>
-                          <div className={`${this.props.classes.paperNoPadding}`}>
-                            <UserReportTable bin={this.state.case} bins={this.state.userBins} />
+                          <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
+                            <h3 style={{ marginTop: '10px' }}>Reports:</h3>
+                            <div className={`${this.props.classes.paperNoPadding}`}>
+                              <UserReportTable bin={this.state.case} bins={this.state.userBins} />
+                            </div>
                           </div>
-                        </div>
-                        <div className={`${this.props.classes.clearfix}`}></div>
-                      </TabContainer>
-                      )
+                          <div className={`${this.props.classes.clearfix}`}></div>
+                        </TabContainer>
+                      );
                     }
                   })}
                 </div>
