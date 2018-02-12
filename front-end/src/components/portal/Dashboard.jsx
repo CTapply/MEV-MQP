@@ -68,7 +68,7 @@ class Dashboard extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.getBins();
   }
 
