@@ -24,7 +24,7 @@ let cache = {
 // Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
-  // cache = redis.createClient();  
+  cache = redis.createClient();  
 }
 
 // We cannot use REDIS if on Windows
@@ -435,8 +435,8 @@ app.post('/binreport', (req, res) => {
 app.post('/createuserbin', (req, res) => {
   console.log('got a request to create new bin with body:\n', req.body);
   let query =
-  'INSERT INTO cases (name, user_id, primaryid) '
-+ `VALUES ('${req.body.binName}',${req.body.userID}, -1)`;
+  'INSERT INTO cases (name, user_id, primaryid, description) '
++ `VALUES ('${req.body.binName}',${req.body.userID}, -1, '${req.body.binDesc}')`;
   console.log(query);
   db.query(query, (err, data) => {
     let findCaseIDQuery =
@@ -453,9 +453,9 @@ app.post('/createuserbin', (req, res) => {
 app.post('/getusercases', (req, res) => {
   console.log('got a request to get cases with body:\n', req.body);
   let query =
-  'SELECT DISTINCT name, case_id '
+  'SELECT DISTINCT name, case_id, description, active '
 + 'FROM cases '
-+ `WHERE user_id = ${req.body.userID}`;
++ `WHERE user_id = ${req.body.userID} AND primaryid = -1`;
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send(data);
@@ -511,6 +511,18 @@ app.put('/makeusertrash', (req, res) => {
   console.log('got a make trash request');
   let query =
   'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'trash\',' + req.body.userID + ', -1)';
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/archivecase', (req, res) => {
+  console.log('got an archive request');
+  let query =
+  'UPDATE cases '
++ `SET active = '${req.body.active}' `
++ `WHERE name = '${req.body.name}' AND user_id = '${req.body.userID}' AND primaryid = -1`
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send();

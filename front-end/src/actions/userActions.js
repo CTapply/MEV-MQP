@@ -40,5 +40,4 @@ export const makeUserTrash = userID => () => {
     body: JSON.stringify({ userID }),
   };
   fetch('http://localhost:3001/makeusertrash', fetchData);
-  console.log('tried to run make trash user');
 };

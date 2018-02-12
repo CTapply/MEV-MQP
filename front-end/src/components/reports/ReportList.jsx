@@ -88,7 +88,10 @@ class ReportList extends Component {
       .then((bins) => {
         if (bins) {
           this.setState({
-            userBins: [{ name: 'All Reports', case_id: -1 }].concat(bins.map(bin => ({ name: this.toTitleCase(bin.name), case_id: bin.case_id }))),
+            userBins: [{ name: 'All Reports', case_id: -1 }].concat(
+              bins.filter(bin => bin.active)
+                .map(bin => ({ name: this.toTitleCase(bin.name), case_id: bin.case_id }))
+            ),
           });
         }
       });
@@ -155,8 +158,9 @@ class ReportList extends Component {
    */
   handleNewCaseClick = () => {
     const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
+    const binDesc = document.getElementById('newCaseDesc').value.trim();
     if (binName !== '' && !this.state.userBins.filter(bin => bin.name.toLowerCase()).includes(binName).length) {
-      this.props.createUserBin(this.props.userID, binName)
+      this.props.createUserBin(this.props.userID, binName, binDesc)
         .then((newCaseID) => {
           this.setState({
             snackbarOpen: true,
@@ -166,6 +170,7 @@ class ReportList extends Component {
             }),
           });
           document.getElementById('newCaseName').value = '';
+          document.getElementById('newCaseDesc').value = '';
           this.handleNewCaseClose();
         });
     } else {
@@ -188,6 +193,7 @@ class ReportList extends Component {
               scrollButtons="auto"
               centered
             >
+              {console.log(this.state.userBins)}
               <Tab icon={<AllReportsIcon />} label="All Reports" key="All Reports" name="All Reports" />
               <Tab icon={<TrashIcon />} label="Trash" key="Trash" name="Trash" />
               <Tab icon={<NewCaseIcon />} label="New Case" name="New Case" />

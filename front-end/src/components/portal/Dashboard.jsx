@@ -5,21 +5,25 @@ import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles
 import { blue, green, red } from 'material-ui/colors';
 import Paper from 'material-ui/Paper';
 import AppBar from 'material-ui/AppBar';
+import Switch from 'material-ui/Switch';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import MEVColors from '../../theme';
 import placeholderUserImage from './images/user_img.png';
 import UserReportTable from './userComponents/UserReportTable';
+import { getUserCases, archiveCase } from '../../actions/reportActions';
 import styles from './DashboardStyles';
-
-import { getUserCases } from '../../actions/reportActions';
 
 function TabContainer(props) {
   return (
-    <Typography component="div" style={{ 
+    <Typography
+      component="div"
+      style={{
       padding: '15px',
-      'boxShadow': '0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12)',
-      border: '3px solid ##f5f5f5',}}>
+      boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12)',
+      border: '3px solid ##f5f5f5',
+  }}
+    >
       {props.children}
     </Typography>
   );
@@ -57,8 +61,10 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       userBins: [],
+      binDescs: {},
       value: 0,
       case: '',
+      binActives: {},
     };
   }
 
@@ -72,9 +78,20 @@ class Dashboard extends Component {
    */
   getBins = () => {
     this.props.getUserCases(this.props.userID)
-      .then(bins => this.setState({
-        userBins: bins.map(bin => this.toTitleCase(bin.name)).sort(),
-      }));
+      .then((bins) => {
+        const descs = {};
+        bins.forEach((bin, i) => descs[bin.name] = bin.description);
+        const active = {};
+        bins.forEach((bin, i) => active[bin.name] = bin.active);
+        const userBins = bins.map(bin => this.toTitleCase(bin.name)).sort();
+        console.log(active);
+        this.setState({
+          userBins,
+          binDescs: descs,
+          binActives: active,
+          case: bins[0].name,
+        });
+      });
   }
 
   /**
@@ -94,16 +111,20 @@ class Dashboard extends Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
-    console.log('case clicked:', this.state.case);
   };
 
-  TabContainer = (props) => {
-    return (
-      <Typography component="div" style={{ padding: 8 * 3 }}>
-        {props.children}
-      </Typography>
-    );
-  }
+  handleActiveChange = name => (event, checked) => {
+    const newActives = Object.assign({}, this.state.binActives);
+    newActives[name] = checked;
+    this.props.archiveCase(name, checked, this.props.userID);
+    this.setState({ binActives: newActives });
+  };
+
+  TabContainer = props => (
+    <Typography component="div" style={{ padding: 8 * 3 }}>
+      {props.children}
+    </Typography>
+  )
 
   render() {
     const { value } = this.state;
@@ -128,36 +149,51 @@ class Dashboard extends Component {
                     >
                       {this.state.userBins.map((option, index) => (
                         <Tab label={option} value={index} key={index} onClick={event => this.handleCaseClick(event, index)} />
-                      ))}
+                ))}
                     </Tabs>
                   </AppBar>
                   {this.state.userBins.map((option, index) => {
-                    if (value === index) {
-                      return (
-                        <TabContainer key={index}>
-                          <div className={`col-sm-4`}>
-                            <h3>Case Name:</h3>
-                            <div className={`${this.props.classes.paper}`}>
-                              {option}
-                            </div>
-                          </div>
-                          <div className={`col-sm-4`}>
-                            <h3>Report Count:</h3>
-                            <div className={`${this.props.classes.paper}`}>
-                              <p># of reports in bin</p>
-                            </div>
-                          </div>
-                          <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
-                            <h3 style={{ marginTop: '10px' }}>Reports:</h3>
-                            <div className={`${this.props.classes.paperNoPadding}`}>
-                              <UserReportTable bin={this.state.case} bins={this.state.userBins} />
-                            </div>
-                          </div>
-                          <div className={`${this.props.classes.clearfix}`}></div>
-                        </TabContainer>
-                      );
-                    }
-                  })}
+               if (value === index) {
+                 return (
+                   <TabContainer key={index}>
+                     <div className="col-sm-12">
+                       <h3>Case Description:</h3>
+                       <div className={`${this.props.classes.paper}`}>
+                         <p>{this.state.binDescs[this.state.case]}</p>
+                       </div>
+                     </div>
+                     <div className="col-sm-4">
+                       <h3>Case Name:</h3>
+                       <div className={`${this.props.classes.paper}`}>
+                         {option}
+                       </div>
+                     </div>
+                     <div className="col-sm-4">
+                       <h3>Report Count:</h3>
+                       <div className={`${this.props.classes.paper}`}>
+                         <p># of reports in bin</p>
+                       </div>
+                     </div>
+                     <div className="col-sm-4">
+                       <h3>Active:</h3>
+                       {console.log(this.state.binActives)}
+                       <Switch
+                         checked={this.state.binActives[this.state.case]}
+                         onChange={this.handleActiveChange(this.state.case)}
+                         aria-label="checked"
+                       />
+                     </div>
+                     <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
+                       <h3 style={{ marginTop: '10px' }}>Reports:</h3>
+                       <div className={`${this.props.classes.paperNoPadding}`}>
+                         <UserReportTable bin={this.state.case} bins={this.state.userBins} />
+                       </div>
+                     </div>
+                     <div className={`${this.props.classes.clearfix}`} />
+                   </TabContainer>
+                );
+              }
+            })}
                 </div>
               </Paper>
             </div>
@@ -168,9 +204,9 @@ class Dashboard extends Component {
                   <p>Number of cases: {this.state.userBins.length}</p>
                 </div>
                 <div className="col-xs-5">
-                  <img src={placeholderUserImage} className={`${this.props.classes.userimage} img-responsive`}/>
+                  <img src={placeholderUserImage} className={`${this.props.classes.userimage} img-responsive`} />
                 </div>
-                <div className={`${this.props.classes.clearfix}`}></div>
+                <div className={`${this.props.classes.clearfix}`} />
               </Paper>
             </div>
           </div>
@@ -186,5 +222,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getUserCases },
+  { getUserCases, archiveCase },
 )(withStyles(styles)(Dashboard));

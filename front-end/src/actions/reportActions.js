@@ -24,7 +24,7 @@ export const getUserCases = userID => () => {
  * Queries the Database with the current userID and a bin name to create
  * that bin in the database
  */
-export const createUserBin = (userID, binName) => () => {
+export const createUserBin = (userID, binName, binDesc) => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -34,6 +34,7 @@ export const createUserBin = (userID, binName) => () => {
     body: JSON.stringify({
       userID,
       binName,
+      binDesc,
     }),
   };
   return fetch('http://localhost:3001/createuserbin', fetchData)
@@ -107,4 +108,21 @@ export const getReportNarrativeFromID = primaryid => () => {
     .then(response => response.json())
     .then(report => report.rows)
     .catch(err => console.log('Failed to retrieve report text', err));
+};
+
+export const archiveCase = (name, active, userID) => () => {
+  const fetchData = {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name,
+      active,
+      userID,
+    }),
+  };
+
+  fetch('http://localhost:3001/archivecase', fetchData);
 };
