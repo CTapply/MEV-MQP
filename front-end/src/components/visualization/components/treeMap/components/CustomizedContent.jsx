@@ -92,11 +92,11 @@ class CustomizedContent extends Component {
     return (!isNaN(this.props.width) && !isNaN(this.props.height) && this.props.name) ? (
       <g id={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`} >
         <defs>
-          <radialGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
+          <radialGradient id={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}_gradient`} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
             <stop offset="85%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
           </radialGradient>
-          {/* <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
+          {/* <linearGradient id={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}_gradient`} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
             <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
           </linearGradient> */}
@@ -109,7 +109,9 @@ class CustomizedContent extends Component {
           parentgroupid={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`}
           style={{
             // fill: `#${this.getFillColor().lightColor}`,
-            fill: `url(#${this.props.size})`,
+            fill: `${(this.checkTextLength())
+              ? `url(#${`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}_gradient`})`
+              : `#${this.getFillColor().lightColor}`}`,
             stroke: '#fff',
             strokeWidth: 1,
             strokeOpacity: 1,

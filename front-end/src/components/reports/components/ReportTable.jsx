@@ -224,7 +224,15 @@ class ReportTable extends React.PureComponent {
   updateHighlightedRows = () => {
     this.props.getReportsInCases(this.props.userID)
       .then(primaryids => this.setState({
-        currentlyInCase: primaryids.reduce((acc, row) => ({ ...acc, [row.primaryid]: '' }), {}),
+        currentlyInCase: primaryids.reduce((acc, row) => {
+          const caseNames = (acc[row.primaryid])
+            ? acc[row.primaryid].concat(row.name)
+            : [row.name];
+          return ({
+            ...acc,
+            [row.primaryid]: caseNames,
+          });
+        }, {}),
       }));
   }
 
@@ -294,7 +302,7 @@ class ReportTable extends React.PureComponent {
    */
   TableRow = ({ row, ...props }) => {
     const backgroundColor =
-      (this.state.currentlyInCase[props.tableRow.rowId] === '' && this.props.bin === 'all reports')
+      (this.state.currentlyInCase[props.tableRow.rowId] && this.props.bin === 'all reports')
         ? 'RGBA(131, 255, 168, 0.2)'
         : '';
     return (
@@ -307,7 +315,7 @@ class ReportTable extends React.PureComponent {
     );
   };
 
-  renderMoveToIcon = (binName) => {
+  renderMoveToIcon = (binName, greyOutCaseIcon) => {
     switch (binName) {
       case 'Trash':
         return (
@@ -330,7 +338,9 @@ class ReportTable extends React.PureComponent {
       default:
         return (
           <div>
-            <CaseIcon width={45} height={45} />
+            {(greyOutCaseIcon)
+              ? <CaseIcon width={45} height={45} style={{ filter: 'grayscale(100%)' }} />
+              : <CaseIcon width={45} height={45} />}
             <Typography style={{ display: 'block' }} type="subheading">
               {binName}
             </Typography>
@@ -363,10 +373,16 @@ class ReportTable extends React.PureComponent {
                   key={bin.case_id}
                   className={this.props.classes.caseGridList}
                   onClick={() => {
-                    this.handleMoveReport(row.row.primaryid, this.props.bins[index].name.toLowerCase());
+                    this.handleMoveReport(
+                      row.row.primaryid,
+                      this.props.bins[index].name.toLowerCase(),
+                    );
                   }}
                 >
-                  {this.renderMoveToIcon(bin.name)}
+                  {(this.state.currentlyInCase[row.row.primaryid]
+                  && this.state.currentlyInCase[row.row.primaryid].includes(bin.name.toLowerCase()))
+                    ? this.renderMoveToIcon(bin.name, true)
+                    : this.renderMoveToIcon(bin.name)}
                 </Button>
               )
             : null
@@ -461,5 +477,10 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases },
+  {
+    moveReport,
+    getCaseReports,
+    getReportNarrativeFromID,
+    getReportsInCases,
+  },
 )(withStyles(styles)(ReportTable));

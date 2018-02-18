@@ -395,7 +395,7 @@ app.post('/getreports', (req, res) => {
 app.post('/getreportsincases', (req, res) => {
   console.log('got a report in cases request with body:\n ', req.body);
   if (req.body.userID) {
-    let query = 'SELECT DISTINCT primaryid '
+    let query = 'SELECT DISTINCT primaryid, name '
     + 'FROM cases '
     + `WHERE user_id='${req.body.userID}'`;
     

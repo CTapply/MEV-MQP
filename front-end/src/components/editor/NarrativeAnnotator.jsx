@@ -157,7 +157,6 @@ class NarrativeAnnotator extends Component {
     const spans = document.getElementById('react-quill')
       .getElementsByClassName('ql-editor')[0]
       .getElementsByTagName('span');
-    console.log(spans);
 
     for (let i = 0; i < spans.length; i += 1) {
       switch (spans[i].getAttribute('style')) {
@@ -202,10 +201,8 @@ class NarrativeAnnotator extends Component {
             : [spans[i].innerText];
           break;
         default:
-          console.log('Nothing');
       }
     }
-    console.log(newTags);
     this.setState({ success: false, current: { reportText: value, tags: newTags } });
   }
 
