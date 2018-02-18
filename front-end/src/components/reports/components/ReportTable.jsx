@@ -20,12 +20,13 @@ import ExpansionPanel, {
 } from 'material-ui/ExpansionPanel';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Divider from 'material-ui/Divider';
+import Snackbar from 'material-ui/Snackbar';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import _ from 'lodash';
-import { moveReport, getCaseReports, getReportNarrativeFromID } from '../../../actions/reportActions';
+import { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases } from '../../../actions/reportActions';
 import ClearFilterIcon from '../../../resources/RemoveFromCaseIcon';
 import CaseIcon from '../../../resources/CaseIcon';
 import TrashIcon from '../../../resources/TrashIcon';
@@ -40,6 +41,8 @@ class ReportTable extends React.PureComponent {
     getCaseReports: PropTypes.func.isRequired,
     moveReport: PropTypes.func.isRequired,
     getReportNarrativeFromID: PropTypes.func.isRequired,
+    getReportsInCases: PropTypes.func.isRequired,
+    toTitleCase: PropTypes.func.isRequired,
     bins: PropTypes.arrayOf(PropTypes.object).isRequired,
     filters: PropTypes.shape({
       init_fda_dt: PropTypes.object,
@@ -69,6 +72,9 @@ class ReportTable extends React.PureComponent {
       expandedRows: [],
       tableHeight: 0,
       stillResizingTimer: '',
+      currentlyInCase: [],
+      snackbarOpen: false,
+      snackbarMessage: '',
 
       /**
        * Default widths for the columns of the table
@@ -112,6 +118,8 @@ class ReportTable extends React.PureComponent {
       .then(bins => this.setState({
         data: bins,
       }));
+
+    this.updateHighlightedRows();
   }
 
   componentDidMount() {
@@ -153,7 +161,6 @@ class ReportTable extends React.PureComponent {
   getReportNarrative = (primaryid) => {
     this.props.getReportNarrativeFromID(primaryid)
       .then((rows) => {
-        console.log(rows[0].report_text);
         if (rows.length > 0) {
           return `${rows[0].report_text}`;
         }
@@ -214,6 +221,13 @@ class ReportTable extends React.PureComponent {
     this.setState({ expandedRows });
   };
 
+  updateHighlightedRows = () => {
+    this.props.getReportsInCases(this.props.userID)
+      .then(primaryids => this.setState({
+        currentlyInCase: primaryids.reduce((acc, row) => ({ ...acc, [row.primaryid]: '' }), {}),
+      }));
+  }
+
   /**
    * After 100ms of not resizing, we will then resize the graph (this improves performance)
    */
@@ -232,20 +246,33 @@ class ReportTable extends React.PureComponent {
    */
   sortNumbers = (a, b) => ((Number(a) < Number(b)) ? -1 : 1)
 
+  /**
+   * Handler to close the SnackBar
+   */
+  handleCloseSnackbar = () => {
+    this.setState({ snackbarOpen: false });
+  };
 
   /**
    * Sends a backend request to move a report from one bin to another
    */
   handleMoveReport = (primaryid, toBin) => {
-    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID).then(() =>
-      this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
-        .then(reports => this.setState({
-          data: reports,
-        })));
+    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID)
+      .then(() =>
+        this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+          .then(reports => this.setState({ data: reports }))
+          .then(() => {
+            this.updateHighlightedRows();
+            this.setState({
+              snackbarOpen: true,
+              snackbarMessage: `Report ${primaryid} Moved to ${this.props.toTitleCase(toBin)}`,
+            });
+          }));
     if (this.props.bin !== 'all reports' || toBin === 'trash') {
       const newExpandedRows = this.state.expandedRows;
       newExpandedRows.splice(this.state.expandedRows.indexOf(primaryid.toString()), 1);
       this.changeExpandedDetails(newExpandedRows);
+      this.updateHighlightedRows();
     }
   };
 
@@ -260,6 +287,25 @@ class ReportTable extends React.PureComponent {
       stillResizingTimer: '',
     });
   }
+
+  /**
+   * This returns the table Row component with the added background color
+   * if the report is in any case for the current user
+   */
+  TableRow = ({ row, ...props }) => {
+    const backgroundColor =
+      (this.state.currentlyInCase[props.tableRow.rowId] === '' && this.props.bin === 'all reports')
+        ? 'RGBA(131, 255, 168, 0.2)'
+        : '';
+    return (
+      <VirtualTable.Row
+        {...props}
+        style={{
+          backgroundColor,
+        }}
+      />
+    );
+  };
 
   renderMoveToIcon = (binName) => {
     switch (binName) {
@@ -364,7 +410,7 @@ class ReportTable extends React.PureComponent {
               <IntegratedSorting
                 columnExtensions={this.state.customSorting}
               />
-              <VirtualTable height={this.state.tableHeight} />
+              <VirtualTable rowComponent={this.TableRow} height={this.state.tableHeight} />
               <TableColumnResizing
                 columnWidths={this.state.widths}
                 onColumnWidthsChange={this.onColumnWidthsChange}
@@ -378,6 +424,24 @@ class ReportTable extends React.PureComponent {
             )
           : null
         }
+
+        {/* ====== Snackbar for Notificaitons to the User ====== */}
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.snackbarOpen}
+          onClose={this.handleCloseSnackbar}
+          transitionDuration={300}
+          autoHideDuration={3000}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={
+            <span id="message-id" style={{ color: 'LightGreen' }} >{this.state.snackbarMessage}</span>
+          }
+        />
       </Paper>
     );
   }
@@ -397,5 +461,5 @@ const mapStateToProps = state => ({
  */
 export default connect(
   mapStateToProps,
-  { moveReport, getCaseReports, getReportNarrativeFromID },
+  { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases },
 )(withStyles(styles)(ReportTable));

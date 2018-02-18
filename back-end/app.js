@@ -391,6 +391,23 @@ app.post('/getreports', (req, res) => {
     res.status(200).send(data);
   });
 });
+
+app.post('/getreportsincases', (req, res) => {
+  console.log('got a report in cases request with body:\n ', req.body);
+  if (req.body.userID) {
+    let query = 'SELECT DISTINCT primaryid '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}'`;
+    
+    console.log(query)
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  } else {
+    res.status(200).send({ rows: [] });
+  }
+});
+
 app.post('/binreport', (req, res) => {
   console.log('got a bin request to move report with body:\n', req.body);
   caseIDQuery = `SELECT DISTINCT case_id FROM cases WHERE name = '${req.body.toBin}' AND user_id = ${req.body.userID}`;
@@ -536,8 +553,8 @@ app.put('/savereporttext', (req, res) => {
   'UPDATE reports '
 + 'SET report_text = $$' + req.body.text + '$$, tags = (' + tags + ') '
 + 'WHERE primaryid = ' + req.body.primaryid;
+  console.log(query)
   db.query(query, (err, data) => {
-    console.log(err)
     res.status(200).send();
   });
 });

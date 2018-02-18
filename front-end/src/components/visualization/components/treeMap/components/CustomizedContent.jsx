@@ -57,9 +57,9 @@ class CustomizedContent extends Component {
     const g = Math.ceil(parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent));
     const b = Math.ceil(parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent));
 
-    const rDark = Math.ceil((parseInt(color1.substring(0, 2), 16) * percent + parseInt(color2.substring(0, 2), 16) * (1-percent)) * 0.75);
-    const gDark = Math.ceil((parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent)) * 0.75);
-    const bDark = Math.ceil((parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent)) * 0.75);
+    const rDark = Math.ceil((parseInt(color1.substring(0, 2), 16) * percent + parseInt(color2.substring(0, 2), 16) * (1-percent)) * 0.9);
+    const gDark = Math.ceil((parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent)) * 0.9);
+    const bDark = Math.ceil((parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent)) * 0.9);
 
     return {
       lightColor: this.fixHex(r) + this.fixHex(g) + this.fixHex(b),
@@ -92,10 +92,14 @@ class CustomizedContent extends Component {
     return (!isNaN(this.props.width) && !isNaN(this.props.height) && this.props.name) ? (
       <g id={`${this.props.treeMap}_${this.props.name.replace(/[^a-zA-Z0-9]/g, '')}`} >
         <defs>
-          <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
+          <radialGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
+            <stop offset="85%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
+          </radialGradient>
+          {/* <linearGradient id={this.props.size} x1="100%" y1="0%" x2="0%" y2="100%">
             <stop offset="15%" stopColor={`#${this.getFillColor().lightColor}`} stopOpacity={1} />
             <stop offset="99%" stopColor={`#${this.getFillColor().darkColor}`} stopOpacity={1} />
-          </linearGradient>
+          </linearGradient> */}
         </defs>
         <rect
           x={this.props.x}

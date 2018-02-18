@@ -110,6 +110,28 @@ export const getReportNarrativeFromID = primaryid => () => {
     .catch(err => console.log('Failed to retrieve report text', err));
 };
 
+/**
+ * Queries the Database with a userID to get
+ * that report PrimaryIDs that exist in a case already
+ */
+export const getReportsInCases = userID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userID,
+    }),
+  };
+
+  return fetch('http://localhost:3001/getreportsincases', fetchData)
+    .then(response => response.json())
+    .then(response => response.rows)
+    .catch(err => console.log('Failed to retrieve reports in Cases', err));
+};
+
 export const archiveCase = (name, active, userID) => () => {
   const fetchData = {
     method: 'PUT',

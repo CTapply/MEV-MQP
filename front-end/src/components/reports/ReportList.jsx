@@ -121,9 +121,9 @@ class ReportList extends Component {
   };
 
   /**
-   * Handler for invalid case name input during case creation
+   * Handler to close the SnackBar
    */
-  handleInvalidCase = () => {
+  handleCloseSnackbar = () => {
     this.setState({ snackbarOpen: false });
   };
 
@@ -193,7 +193,6 @@ class ReportList extends Component {
               scrollButtons="auto"
               centered
             >
-              {console.log(this.state.userBins)}
               <Tab icon={<AllReportsIcon />} label="All Reports" key="All Reports" name="All Reports" />
               <Tab icon={<TrashIcon />} label="Trash" key="Trash" name="Trash" />
               <Tab icon={<NewCaseIcon />} label="New Case" name="New Case" />
@@ -217,6 +216,7 @@ class ReportList extends Component {
               bin={this.state.bin}
               bins={this.state.userBins}
               summaryOpen={this.state.summaryOpen}
+              toTitleCase={this.toTitleCase}
             />
           </div>
 
@@ -303,7 +303,7 @@ class ReportList extends Component {
               horizontal: 'left',
             }}
             open={this.state.snackbarOpen}
-            onClose={this.handleInvalidCase}
+            onClose={this.handleCloseSnackbar}
             transitionDuration={1000}
             SnackbarContentProps={{
               'aria-describedby': 'message-id',

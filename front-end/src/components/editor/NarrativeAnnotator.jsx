@@ -144,39 +144,68 @@ class NarrativeAnnotator extends Component {
   }
 
   handleChange = (value) => {
-    const greenRe = /background-color: chartreuse/;
-    const blueRe = /background-color: cadetblue/;
-    const orangeRe = /background-color: darkorange/;
-    const yellowRe = /background-color: gold/;
-    const pinkRe = /background-color: lightpink/;
-    const purpleRe = /background-color: orchid/;
-    const silverRe = /background-color: silver/;
-    const cyanRe = /background-color: cyan/;
+    const greenRe = 'background-color: chartreuse;';
+    const blueRe = 'background-color: cadetblue;';
+    const orangeRe = 'background-color: darkorange;';
+    const yellowRe = 'background-color: gold;';
+    const pinkRe = 'background-color: lightpink;';
+    const purpleRe = 'background-color: orchid;';
+    const silverRe = 'background-color: silver;';
+    const cyanRe = 'background-color: cyan;';
     const newTags = {};
-    if (greenRe.exec(value)) {
-      newTags.greenTag = 't';
+
+    const spans = document.getElementById('react-quill')
+      .getElementsByClassName('ql-editor')[0]
+      .getElementsByTagName('span');
+    console.log(spans);
+
+    for (let i = 0; i < spans.length; i += 1) {
+      switch (spans[i].getAttribute('style')) {
+        case greenRe:
+          newTags.greenTag = (newTags.greenTag)
+            ? newTags.greenTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case blueRe:
+          newTags.blueTag = (newTags.blueTag)
+            ? newTags.blueTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case orangeRe:
+          newTags.orangeTag = (newTags.orangeTag)
+            ? newTags.orangeTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case yellowRe:
+          newTags.yellowTag = (newTags.yellowTag)
+            ? newTags.yellowTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case pinkRe:
+          newTags.pinkTag = (newTags.pinkTag)
+            ? newTags.pinkTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case purpleRe:
+          newTags.purpleTag = (newTags.purpleTag)
+            ? newTags.purpleTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case silverRe:
+          newTags.silverTag = (newTags.silverTag)
+            ? newTags.silverTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        case cyanRe:
+          newTags.cyanTag = (newTags.cyanTag)
+            ? newTags.cyanTag.concat(spans[i].innerText)
+            : [spans[i].innerText];
+          break;
+        default:
+          console.log('Nothing');
+      }
     }
-    if (cyanRe.exec(value)) {
-      newTags.cyanTag = 't';
-    }
-    if (orangeRe.exec(value)) {
-      newTags.redTag = 't';
-    }
-    if (yellowRe.exec(value)) {
-      newTags.yellowTag = 't';
-    }
-    if (pinkRe.exec(value)) {
-      newTags.pinkTag = 't';
-    }
-    if (purpleRe.exec(value)) {
-      newTags.purpleTag = 't';
-    }
-    if (silverRe.exec(value)) {
-      newTags.silverTag = 't';
-    }
-    if (blueRe.exec(value)) {
-      newTags.blueTag = 't';
-    }
+    console.log(newTags);
     this.setState({ success: false, current: { reportText: value, tags: newTags } });
   }
 
@@ -201,48 +230,49 @@ class NarrativeAnnotator extends Component {
   render() {
     return (
       <div className={`${this.props.classes.pdfView} container`}>
-      <div className="row">
-      <div className="col-sm-8">
-        <h1>PDF View</h1>
+        <div className="row">
+          <div className="col-sm-8">
+            <h1>PDF View</h1>
 
-        {/* ====== Quil editor for Annotating the Report Text ====== */}
-        <Paper elevation={4} className={this.props.classes.paperWindow}>
-          {
-            (!this.state.loading)
-              ? <ReactQuill
-                value={this.state.current.reportText}
-                onChange={this.handleChange}
-                modules={this.modules}
-                theme="snow"
-              />
-              : null
-          }
-        </Paper>
+            {/* ====== Quil editor for Annotating the Report Text ====== */}
+            <Paper elevation={4} className={this.props.classes.paperWindow}>
+              {
+                (!this.state.loading)
+                  ? <ReactQuill
+                    id={'react-quill'}
+                    value={this.state.current.reportText}
+                    onChange={this.handleChange}
+                    modules={this.modules}
+                    theme="snow"
+                  />
+                  : null
+              }
+            </Paper>
 
-        {/* ====== Save Button Area ====== */}
-        <div className={this.props.classes.wrapper}>
-          <Button
-            raised
-            color="primary"
-            className={(this.state.success) ? this.props.classes.buttonSuccess : ''}
-            disabled={this.state.saving}
-            onClick={this.saveWork}
-          >
-            Save
-          </Button>
-          {this.state.saving &&
-            <CircularProgress
-              size={24}
-              className={this.props.classes.buttonProgress}
-            />}
-        </div>
-        </div>
-        <div className="col-sm-4">
-        <h1>Legend</h1>
-        <Paper elevation={4} className={`${this.props.classes.legend}`}>
-          <img src={legendImage} className="img-responsive" />
-        </Paper>
-        </div>
+            {/* ====== Save Button Area ====== */}
+            <div className={this.props.classes.wrapper}>
+              <Button
+                raised
+                color="primary"
+                className={(this.state.success) ? this.props.classes.buttonSuccess : ''}
+                disabled={this.state.saving}
+                onClick={this.saveWork}
+              >
+                Save
+              </Button>
+              {this.state.saving &&
+                <CircularProgress
+                  size={24}
+                  className={this.props.classes.buttonProgress}
+                />}
+            </div>
+          </div>
+          <div className="col-sm-4">
+            <h1>Legend</h1>
+            <Paper elevation={4} className={`${this.props.classes.legend}`}>
+              <img src={legendImage} className="img-responsive" />
+            </Paper>
+          </div>
         </div>
 
         {/* ====== Snackbar for Notificaitons to the User ====== */}

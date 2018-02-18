@@ -35,7 +35,6 @@ export default {
   // notSevereStroke: '#F7E2C3',
   // // middleOfGradient: '#7CD5A4',
   // middleOfGradient: '',
-  // // middleOfGradient: '',
   // severeLight: '#e34a33',
   // severeDark: '#DB4731',
   // severeStroke: '#D44530',
@@ -50,7 +49,6 @@ export default {
   // notSevereStroke: '#FECCC8',
   // // middleOfGradient: '#7CD5A4',
   // middleOfGradient: '',
-  // // middleOfGradient: '',
   // severeLight: '#C7004D',
   // severeDark: '#C7004D',
   // severeStroke: '#C7004D',
@@ -108,19 +106,19 @@ export default {
   // severeStroke: '#633D00',
 
   // Blue and Brown
-  // navBar: '#0458A1',
-  // navBarSlide: '#1E8DED',
-  // buttonLight: '#0458A1',
-  // buttonHover: '#1E8DED',
-  // notSevereLight: '#0458A1',
-  // notSevereDark: '#02427A',
-  // notSevereStroke: '#012E54',
-  // middleOfGradient: '',
-  // severeLight: '#915900',
-  // severeDark: '#7F4E00',
-  // severeStroke: '#543400',
+  navBar: '#0458A1',
+  navBarSlide: '#1E8DED',
+  buttonLight: '#0458A1',
+  buttonHover: '#1E8DED',
+  notSevereLight: '#0458A1',
+  notSevereDark: '#02427A',
+  notSevereStroke: '#012E54',
+  middleOfGradient: '',
+  severeLight: '#915900',
+  severeDark: '#7F4E00',
+  severeStroke: '#543400',
 
-  // GOOD THEME
+  // Orange THEME
   // navBar: '#e4521B',
   // navBarSlide: '#e4521B',
   // buttonLight: '#e4521B',
@@ -133,7 +131,7 @@ export default {
   // severeDark: '#aa3e20',
   // severeStroke: '#4a332f',
 
-  // GOOD Blue THEME
+  // Blue THEME
   // navBar: '#1a237e',
   // navBarSlide: '#1a237e',
   // buttonLight: '#1a237e',
@@ -146,16 +144,16 @@ export default {
   // severeDark: '#1b2681',
   // severeStroke: '#1a237e',
 
-  // GOOD Blue THEME
-  navBar: '#280945',
-  navBarSlide: '#280945',
-  buttonLight: '#4b127b',
-  buttonHover: '#711d9a',
-  notSevereLight: '#fdb89d',
-  notSevereDark: '#fb9b95',
-  notSevereStroke: '#f6768c',
-  middleOfGradient: '',
-  severeLight: '#621895',
-  severeDark: '#4a117a',
-  severeStroke: '#340b59',
+  // Purple THEME
+  // navBar: '#280945',
+  // navBarSlide: '#280945',
+  // buttonLight: '#4b127b',
+  // buttonHover: '#711d9a',
+  // notSevereLight: '#fdb89d',
+  // notSevereDark: '#fb9b95',
+  // notSevereStroke: '#f6768c',
+  // middleOfGradient: '',
+  // severeLight: '#621895',
+  // severeDark: '#4a117a',
+  // severeStroke: '#340b59',
 };
