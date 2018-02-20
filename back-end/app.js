@@ -24,7 +24,7 @@ let cache = {
 // Connect to the REDIS cache if we are on MacOS or Liux
 if (os.platform() === 'linux' || os.platform() === 'darwin') {
   console.log('on linux or mac, using local cache');
-  cache = redis.createClient();  
+  // cache = redis.createClient();  
 }
 
 // We cannot use REDIS if on Windows

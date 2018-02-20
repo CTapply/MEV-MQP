@@ -210,13 +210,50 @@ class NarrativeAnnotator extends Component {
     this.setState({ snackbarOpen: false });
   };
 
+  colorBackground(color) {
+    const { index, length } = this.quill.getSelection();
+    this.quill.formatText(index, length, 'background', color);
+  }
+
+  customToolbar = () => (
+    <div id="quill-toolbar" style={{ padding: '4px' }}>
+      <Button className="ql-colorBackground" value="chartreuse" style={{ padding: '0px', margin: '4px', background: 'chartreuse' }}>
+        Drug
+      </Button>
+      <Button className="ql-colorBackground" value="cyan" style={{ padding: '0px', margin: '4px', background: 'cyan' }}>
+        Adverse Reaction
+      </Button>
+      <Button className="ql-colorBackground" value="darkorange" style={{ padding: '0px', margin: '4px', background: 'darkorange' }}>
+        Dosage
+      </Button>
+      <Button className="ql-colorBackground" value="gold" style={{ padding: '0px', margin: '4px', background: 'gold' }}>
+        Age
+      </Button>
+      <Button className="ql-colorBackground" value="lightpink" style={{ padding: '0px', margin: '4px', background: 'lightpink' }}>
+        Gender
+      </Button>
+      <Button className="ql-colorBackground" value="orchid" style={{ padding: '0px', margin: '4px', background: 'orchid' }}>
+        Weight
+      </Button>
+      <Button className="ql-colorBackground" value="silver" style={{ padding: '0px', margin: '4px', background: 'silver' }}>
+        Indication
+      </Button>
+      <Button className="ql-colorBackground" value="cadetblue" style={{ padding: '0px', margin: '4px', background: 'cadetblue' }}>
+        Interesting
+      </Button>
+      <Button className="ql-colorBackground" value="" style={{ padding: '0px', margin: '4px' }}>
+        Clear
+      </Button>
+    </div>
+  )
+
   modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ color: [] }, { background: ['chartreuse', 'cyan', 'darkorange', 'gold', 'lightpink', 'orchid', 'silver', 'cadetblue'] }],
-      ['clean'],
-    ],
+    toolbar: {
+      container: '#quill-toolbar',
+      handlers: {
+        colorBackground: this.colorBackground,
+      },
+    },
     history: {
       delay: 500,
       maxStack: 500,
@@ -228,11 +265,12 @@ class NarrativeAnnotator extends Component {
     return (
       <div className={`${this.props.classes.pdfView} container`}>
         <div className="row">
-          <div className="col-sm-8">
+          <div className="col-sm-12">
             <h1>PDF View</h1>
 
             {/* ====== Quil editor for Annotating the Report Text ====== */}
             <Paper elevation={4} className={this.props.classes.paperWindow}>
+              {this.customToolbar()}
               {
                 (!this.state.loading)
                   ? <ReactQuill
@@ -263,12 +301,6 @@ class NarrativeAnnotator extends Component {
                   className={this.props.classes.buttonProgress}
                 />}
             </div>
-          </div>
-          <div className="col-sm-4">
-            <h1>Legend</h1>
-            <Paper elevation={4} className={`${this.props.classes.legend}`}>
-              <img src={legendImage} className="img-responsive" />
-            </Paper>
           </div>
         </div>
 
