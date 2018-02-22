@@ -78,13 +78,10 @@ class ReportList extends Component {
   }
 
   componentWillMount() {
-    this.getBins();
-  }
-
-  componentDidMount() {
     if (!this.props.isLoggedIn) {
       window.location = '/';
     }
+    this.getBins();
   }
 
   /**

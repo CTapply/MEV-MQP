@@ -82,18 +82,6 @@ class TopNavigation extends Component {
                         />
                       </ListItem>
                     </Link>
-                    <Link to="/about" className={this.props.classes.listLink}>
-                      <ListItem button >
-                        <ListItemText
-                          disableTypography
-                          primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
-                            About
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    </Link>
                     <Link to="/report" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText
@@ -101,6 +89,18 @@ class TopNavigation extends Component {
                           primary={
                             <Typography style={{ fontSize: '16px', color: '#fff' } }>
                             Reports
+                            </Typography>
+                          }
+                        />
+                      </ListItem>
+                    </Link>
+                    <Link to="/about" className={this.props.classes.listLink}>
+                      <ListItem button >
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            About
                             </Typography>
                           }
                         />

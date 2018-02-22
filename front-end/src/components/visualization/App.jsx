@@ -39,14 +39,17 @@ class App extends Component {
     }).isRequired,
   }
 
-  componentDidMount() {
+  componentWillMount() {
     if (!this.props.isLoggedIn) {
-      window.location = "/";
+      window.location = '/';
     }
+  }
+  
+  componentDidMount() {
     window.addEventListener('keydown', this.setSelectingBool);
     window.addEventListener('keyup', this.removeSelectingBool);
   }
-
+  
   componentWillUnmount() {
     window.removeEventListener('keydown', this.setSelectingBool);
     window.removeEventListener('keyup', this.removeSelectingBool);

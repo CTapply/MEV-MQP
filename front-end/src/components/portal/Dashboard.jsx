@@ -75,14 +75,12 @@ class Dashboard extends Component {
   }
 
   componentWillMount() {
-    this.getBins();
-  }
-
-  componentDidMount() {
     if (!this.props.isLoggedIn) {
       window.location = '/';
     }
+    this.getBins();
   }
+
   /**
    * Retrieves the names of the bins the user has created
    * ALSO ALPHABETIZES THE LIST OF CASES.
@@ -235,10 +233,10 @@ class Dashboard extends Component {
                 }}
           >
             <Link href="/visualization" to="/visualization" >
-                <Button fab style={{ margin: 12 }} color="primary">
-                  <img src={GoToVisualizationIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
-                </Button>
-              </Link>
+              <Button fab style={{ margin: 12 }} color="primary">
+                <img src={GoToVisualizationIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
+              </Button>
+            </Link>
           </MaterialTooltip>
         </div>
         {/* ====== Floating Action Button for Going back to Main Visualization ====== */}
@@ -253,10 +251,10 @@ class Dashboard extends Component {
                 }}
           >
             <Link href="/report" to="/report" >
-                <Button fab style={{ margin: 12 }} color="primary">
-                  <img src={GoToReportsIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
-                </Button>
-              </Link>
+              <Button fab style={{ margin: 12 }} color="primary">
+                <img src={GoToReportsIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
+              </Button>
+            </Link>
           </MaterialTooltip>
         </div>
       </MuiThemeProvider>
