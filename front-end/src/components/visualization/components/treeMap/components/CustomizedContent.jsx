@@ -57,9 +57,9 @@ class CustomizedContent extends Component {
     const g = Math.ceil(parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent));
     const b = Math.ceil(parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent));
 
-    const rDark = Math.ceil((parseInt(color1.substring(0, 2), 16) * percent + parseInt(color2.substring(0, 2), 16) * (1-percent)) * 0.9);
-    const gDark = Math.ceil((parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent)) * 0.9);
-    const bDark = Math.ceil((parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent)) * 0.9);
+    const rDark = Math.ceil((parseInt(color1.substring(0, 2), 16) * percent + parseInt(color2.substring(0, 2), 16) * (1-percent)) * 0.93);
+    const gDark = Math.ceil((parseInt(color1.substring(2, 4), 16) * percent + parseInt(color2.substring(2, 4), 16) * (1-percent)) * 0.93);
+    const bDark = Math.ceil((parseInt(color1.substring(4, 6), 16) * percent + parseInt(color2.substring(4, 6), 16) * (1-percent)) * 0.93);
 
     return {
       lightColor: this.fixHex(r) + this.fixHex(g) + this.fixHex(b),

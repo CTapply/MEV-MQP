@@ -23,4 +23,11 @@ export default {
     width: 'calc(100% - 164px)',
     marginLeft: '12px',
   },
+  smallDetailRow: {
+    transition: 'width 200ms ease-in-out',
+  },
+  largeDetailRow: {
+    width: '100%',
+    transition: 'width 200ms ease-in-out',
+  },
 };

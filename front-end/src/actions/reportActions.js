@@ -128,7 +128,7 @@ export const getReportsInCases = userID => () => {
 
   return fetch('http://localhost:3001/getreportsincases', fetchData)
     .then(response => response.json())
-    .then(response => response.rows)
+    .then(response => (response.rows ? response.rows : []))
     .catch(err => console.log('Failed to retrieve reports in Cases', err));
 };
 

@@ -27,6 +27,7 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import _ from 'lodash';
 import { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases } from '../../../actions/reportActions';
+import QuillEditor from '../../editor/components/QuillEditor';
 import ClearFilterIcon from '../../../resources/RemoveFromCaseIcon';
 import CaseIcon from '../../../resources/CaseIcon';
 import TrashIcon from '../../../resources/TrashIcon';
@@ -43,6 +44,7 @@ class ReportTable extends React.PureComponent {
     getReportNarrativeFromID: PropTypes.func.isRequired,
     getReportsInCases: PropTypes.func.isRequired,
     toTitleCase: PropTypes.func.isRequired,
+    summaryOpen: PropTypes.bool.isRequired,
     bins: PropTypes.arrayOf(PropTypes.object).isRequired,
     filters: PropTypes.shape({
       init_fda_dt: PropTypes.object,
@@ -62,6 +64,8 @@ class ReportTable extends React.PureComponent {
       moveToCaseDetailsContainer: PropTypes.string,
       caseGridList: PropTypes.string,
       sendToCaseContainer: PropTypes.string,
+      largeDetailRow: PropTypes.string,
+      smallDetailRow: PropTypes.string,
     }).isRequired,
   }
 
@@ -90,6 +94,7 @@ class ReportTable extends React.PureComponent {
         drugname: 200,
         me_type: 180,
         outc_cod: 85,
+        report_text: 200,
       },
 
       /**
@@ -106,6 +111,7 @@ class ReportTable extends React.PureComponent {
         { columnName: 'drugname', compare: this.sortText },
         { columnName: 'me_type', compare: this.sortText },
         { columnName: 'outc_cod', compare: this.sortText },
+        { columnName: 'report_text', compare: this.sortText },
       ],
     };
   }
@@ -211,6 +217,10 @@ class ReportTable extends React.PureComponent {
     {
       title: 'Outcome',
       name: 'outc_cod',
+    },
+    {
+      title: 'Narrative',
+      name: 'report_text',
     },
   ];
 
@@ -354,7 +364,7 @@ class ReportTable extends React.PureComponent {
    * of the table
    */
   renderDetailRowContent = row => (
-    <div>
+    <div className={(this.props.summaryOpen) ? this.props.classes.smallDetailRow : this.props.classes.largeDetailRow} >
       <Paper elevation={6} style={{ width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)' }} >
         <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
           <Button raised className="cal-button" color="primary">Go to report text</Button>
@@ -396,7 +406,7 @@ class ReportTable extends React.PureComponent {
           </ExpansionPanelSummary>
           <Divider light />
           <ExpansionPanelDetails>
-            <div style={{ fontSize: '14px' }} dangerouslySetInnerHTML={{ __html: row.row.report_text }} />
+            <QuillEditor primaryid={Number(row.row.primaryid, 10)} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </div>

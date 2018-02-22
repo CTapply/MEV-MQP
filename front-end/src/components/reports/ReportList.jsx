@@ -217,6 +217,7 @@ class ReportList extends Component {
               bins={this.state.userBins}
               summaryOpen={this.state.summaryOpen}
               toTitleCase={this.toTitleCase}
+              tableClass={this.state.summaryOpen}
             />
           </div>
 
