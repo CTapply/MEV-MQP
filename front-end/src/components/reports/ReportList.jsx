@@ -49,6 +49,7 @@ class ReportList extends Component {
     getUserCases: PropTypes.func.isRequired,
     createUserBin: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
       newCaseArea: PropTypes.string,
       goToVisualizationSVG: PropTypes.string,
@@ -80,6 +81,12 @@ class ReportList extends Component {
     this.getBins();
   }
 
+  componentDidMount() {
+    if (!this.props.isLoggedIn) {
+      window.location = '/';
+    }
+  }
+
   /**
    * Retrieves the names of the bins the user has created
    */
@@ -88,10 +95,8 @@ class ReportList extends Component {
       .then((bins) => {
         if (bins) {
           this.setState({
-            userBins: [{ name: 'All Reports', case_id: -1 }].concat(
-              bins.filter(bin => bin.active)
-                .map(bin => ({ name: this.toTitleCase(bin.name), case_id: bin.case_id }))
-            ),
+            userBins: [{ name: 'All Reports', case_id: -1 }].concat(bins.filter(bin => bin.active)
+                .map(bin => ({ name: this.toTitleCase(bin.name), case_id: bin.case_id })),),
           });
         }
       });
@@ -271,7 +276,7 @@ class ReportList extends Component {
                 popper: this.props.classes.tooltipStyle,
                 }}
             >
-              <Link href="/" to="/" >
+              <Link href="/visualization" to="/visualization" >
                 <Button fab style={{ margin: 12 }} color="primary">
                   <img src={GoToVisualizationIcon} className={this.props.classes.goToVisualizationSVG} alt="Go Back To Visualization" />
                 </Button>
@@ -318,6 +323,7 @@ class ReportList extends Component {
 
 const mapStateToProps = state => ({
   userID: state.user.userID,
+  isLoggedIn: state.user.isLoggedIn,
 });
 
 /**

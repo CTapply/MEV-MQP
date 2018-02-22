@@ -54,9 +54,9 @@ ReactDOM.render(
       <ConnectedRouter history={history}>
         <div>
           <TopNavigation />
-          <Route exact path="/" component={App} />
+          <Route exact path="/" component={Login} />
+          <Route path="/visualization" component={App} />
           <Route path="/report" component={ReportList} />
-          <Route path="/login" component={Login} />
           <Route path="/about" component={About} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/pdf/:id?" component={NarrativeAnnotator} />

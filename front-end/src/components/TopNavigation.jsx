@@ -58,34 +58,6 @@ class TopNavigation extends Component {
                   </div>
                   <Divider style={{ backgroundColor: 'rgb(255,255,255)' }} />
                   <List>
-                    {!this.props.isLoggedIn ? (
-                      <Link to="/login" className={this.props.classes.listLink}>
-                        <ListItem button >
-                          <ListItemText
-                            disableTypography
-                            primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
-                                Login
-                              </Typography>
-                            }
-                          />
-                        </ListItem>
-                      </Link>
-                    ) : (
-                      <Link to="/" onClick={this.logout} className={this.props.classes.listLink}>
-                        <ListItem button >
-                          <ListItemText
-                            disableTypography
-                            primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
-                                Logout
-                              </Typography>
-                            }
-                          />
-                        </ListItem>
-                      </Link>
-                    )
-                    }
                     <Link to="/dashboard" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText
@@ -98,7 +70,7 @@ class TopNavigation extends Component {
                         />
                       </ListItem>
                     </Link>
-                    <Link to="/" className={this.props.classes.listLink}>
+                    <Link to="/visualization" className={this.props.classes.listLink}>
                       <ListItem button >
                         <ListItemText
                           disableTypography
@@ -134,6 +106,34 @@ class TopNavigation extends Component {
                         />
                       </ListItem>
                     </Link>
+                    {!this.props.isLoggedIn ? (
+                      <Link to="/" className={this.props.classes.listLink}>
+                        <ListItem button >
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                                Login
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                      </Link>
+                    ) : (
+                      <Link to="/" onClick={this.logout} className={this.props.classes.listLink}>
+                        <ListItem button >
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                                Logout
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                      </Link>
+                    )
+                    }
                   </List>
                   <Divider style={{ backgroundColor: 'rgb(255,255,255)' }} />
                 </div>

@@ -32,6 +32,7 @@ class Login extends Component {
     makeUserTrash: PropTypes.func.isRequired,
     checkUserTrash: PropTypes.func.isRequired,
     userID: PropTypes.number.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -63,6 +64,7 @@ class Login extends Component {
           logged_in: true,
         });
         this.sendFormData();
+        window.location = '/dashboard';
       });
   }
 
@@ -102,7 +104,7 @@ class Login extends Component {
               } else {
                 this.props.makeUserTrash(user.rows[0].user_id);
               }
-              this.props.history.push('/');
+              this.props.history.push('/dashboard');
             });
         } else {
           this.setState({
@@ -115,6 +117,12 @@ class Login extends Component {
           console.log('userid', this.props.userID);
         }
       });
+  }
+
+  componentDidMount() {
+    if (this.props.isLoggedIn) {
+      window.location = '/visualization';
+    }
   }
 
   render() {
@@ -142,18 +150,24 @@ class Login extends Component {
             <div className="row">
               <div className="col-sm-12">
                 <h2>Login Page</h2>
-                <form className="form-horizontal" action="" onSubmit={this.handleSubmit}>
-                  <div className="form-group">
-                    <label htmlFor="inputEmail3" className="col-sm-2 control-label">Email</label>
-                    <div className="col-sm-6">
-                      <input type="email" className="form-control" id="inputEmail3" value={this.state.value} onChange={this.handleChange} placeholder="Email" />
-                    </div>
-                    <div className="col-sm-4">
-                      <button type="submit" className="btn btn-default">Sign in</button>
-                    </div>
+                <p><strong>Welcome to the MEV.</strong></p>
+                <p>We are going to ask that you login to get started. If you have an email that you have already used to login you may continue to login as before.</p>
+                <p><strong>New Users</strong></p>
+                <p>If you are new, you may enter in an email to begin analyzing with a new account in our system. You will then be directed to the user dashboard where you can see/edit your user details.</p>
+                <div className="col-sm-8 col-sm-offset-2">
+                  <form className="form-horizontal" action="" onSubmit={this.handleSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="inputEmail3" className="col-sm-1 control-label">Email</label>
+                      <div className="col-sm-8">
+                        <input type="email" className="form-control" id="inputEmail3" value={this.state.value} onChange={this.handleChange} placeholder="Email" />
+                      </div>
+                      <div className="col-sm-2">
+                        <button type="submit" className="btn btn-default">Sign in</button>
+                      </div>
 
-                  </div>
-                </form>
+                    </div>
+                  </form>
+                </div>
                 <div id="status" className={`alert alert-${this.state.type}`}>
                   {this.state.message}
                 </div>
@@ -169,6 +183,7 @@ class Login extends Component {
 
 const mapStateToProps = state => ({
   userID: state.user.userID,
+  isLoggedIn: state.user.isLoggedIn,
 });
 
 export default connect(

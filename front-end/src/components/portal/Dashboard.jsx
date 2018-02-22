@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import Paper from 'material-ui/Paper';
+import MaterialTooltip from 'material-ui/Tooltip';
+import Button from 'material-ui/Button';
 import AppBar from 'material-ui/AppBar';
 import Switch from 'material-ui/Switch';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
+import GoToVisualizationIcon from '../../resources/goToVisualizationIcon.svg';
+import GoToReportsIcon from '../../resources/goToReportsIcon.svg';
 import MEVColors from '../../theme';
 import placeholderUserImage from './images/user_img.png';
 import UserReportTable from './userComponents/UserReportTable';
@@ -53,6 +58,7 @@ const defaultTheme = createMuiTheme({
 class Dashboard extends Component {
   static propTypes = {
     getUserCases: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -72,6 +78,11 @@ class Dashboard extends Component {
     this.getBins();
   }
 
+  componentDidMount() {
+    if (!this.props.isLoggedIn) {
+      window.location = '/';
+    }
+  }
   /**
    * Retrieves the names of the bins the user has created
    * ALSO ALPHABETIZES THE LIST OF CASES.
@@ -211,6 +222,42 @@ class Dashboard extends Component {
               </Paper>
             </div>
           </div>
+        </div>
+        {/* ====== Floating Action Button for Going back to Main Visualization ====== */}
+        <div style={{ position: 'fixed', left: '20px', bottom: '20px' }} >
+          <MaterialTooltip
+            title="Go Back To Visualization"
+            placement="top"
+            enterDelay={50}
+            classes={{
+                tooltip: this.props.classes.tooltipStyle,
+                popper: this.props.classes.tooltipStyle,
+                }}
+          >
+            <Link href="/visualization" to="/visualization" >
+                <Button fab style={{ margin: 12 }} color="primary">
+                  <img src={GoToVisualizationIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
+                </Button>
+              </Link>
+          </MaterialTooltip>
+        </div>
+        {/* ====== Floating Action Button for Going back to Main Visualization ====== */}
+        <div style={{ position: 'fixed', right: '20px', bottom: '20px' }} >
+          <MaterialTooltip
+            title="Go to reports"
+            placement="top"
+            enterDelay={50}
+            classes={{
+                tooltip: this.props.classes.tooltipStyle,
+                popper: this.props.classes.tooltipStyle,
+                }}
+          >
+            <Link href="/report" to="/report" >
+                <Button fab style={{ margin: 12 }} color="primary">
+                  <img src={GoToReportsIcon} className={this.props.classes.goToVisualizationSVG} width="35px" height="35px" alt="Go Back To Visualization" />
+                </Button>
+              </Link>
+          </MaterialTooltip>
         </div>
       </MuiThemeProvider>
     );
