@@ -26,6 +26,13 @@ import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
+import {
+  FormLabel,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  FormHelperText,
+} from 'material-ui/Form';
 import _ from 'lodash';
 import { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases } from '../../../actions/reportActions';
 import QuillEditor from '../../editor/components/QuillEditor';
@@ -373,16 +380,31 @@ class ReportTable extends React.PureComponent {
    */
   renderDetailRowContent = row => (
     <div className={(this.props.summaryOpen) ? this.props.classes.smallDetailRow : this.props.classes.largeDetailRow} >
-      <Paper elevation={6} style={{ width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)' }} >
+    <div className="col-sm-3" style={{ marginBottom: '15px',}}>
+    <Paper elevation={6} style={{ padding: '5px', }} >
+    <div class="col-sm-12">
+    { this.props.bin === 'all reports' ? 
+          <FormControlLabel style={{  }}
+            control={
+              <Switch 
+                checked={this.state[row.row.primaryid]} 
+                onChange={this.handleToggleChange(row.row.primaryid)} 
+                color="primary" />}
+            label="Primary Evidence" />
+        : null}
+        </div>
+        <div class="col-sm-12">
         <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
           <Button raised className="cal-button" color="primary">Go to report text</Button>
         </Link>
+        </div>
+        <div style={{ clear: 'both', float: 'none' }}>&nbsp;</div>
       </Paper>
-      <div className={this.props.classes.sendToCaseContainer}>
+      </div>
+      <div className={`${this.props.classes.sendToCaseContainer} col-sm-9`}>
         <Typography style={{ position: 'absolute', fontSize: '14px', transform: 'translateX(3px) translateY(3px)' }} type="button">
           Send Report to:
         </Typography>
-        { this.props.bin === 'all reports' ? <Switch checked={this.state[row.row.primaryid]} onChange={this.handleToggleChange(row.row.primaryid)} color="primary" /> : null}
         <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
           {this.props.bins.map((bin, index) => (
             (this.props.bin.toLowerCase() !== bin.name.toLowerCase())
@@ -409,7 +431,7 @@ class ReportTable extends React.PureComponent {
           ))}
         </Paper>
       </div>
-      <div style={{ marginTop: '10px' }}>
+      <div style={{ marginTop: '10px' }} className={`col-sm-12`}>
         <ExpansionPanel elevation={6}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography type="subheading">Preview Narrative</Typography>
