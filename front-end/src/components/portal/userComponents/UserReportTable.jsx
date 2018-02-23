@@ -63,7 +63,7 @@ class UserReportTable extends React.PureComponent {
    * Sends fetch request to retrieve list of reports to be shown in table
    */
   componentDidMount() {
-    this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+    this.props.getCaseReports(this.props.bin, this.props.userID, {})
       .then(bins => this.setState({
         data: bins,
       }));
@@ -75,7 +75,7 @@ class UserReportTable extends React.PureComponent {
    */
   componentDidUpdate(prevProps) {
     if (prevProps.bin !== this.props.bin || !_.isEqual(this.props.filters, prevProps.filters)) {
-      this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+      this.props.getCaseReports(this.props.bin, this.props.userID, {})
         .then((bins) => {
           this.setState({ data: bins });
           this.changeExpandedDetails([]);
@@ -127,7 +127,7 @@ class UserReportTable extends React.PureComponent {
    */
   handleMoveReport = (primaryid, toBin) => {
     this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID).then(() =>
-      this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
+      this.props.getCaseReports(this.props.bin, this.props.userID, {})
         .then(bins => this.setState({
           data: bins,
         })));

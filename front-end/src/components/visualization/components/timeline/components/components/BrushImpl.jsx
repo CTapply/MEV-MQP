@@ -121,37 +121,40 @@ class BrushImpl extends Brush {
       }
     }, true);
 
-    document.getElementById('setDateBtn').addEventListener('click', () => {
-      const dateRange = document.getElementById('dateRangePicker').value;
-      const dates = this.props.getUnformattedDateFromFormattedRange(dateRange);
+    // This zooms the timeline into the selected date range
+    // when the set date button is clicked
 
-      const { data, x, width, travellerWidth } = this.props;
-      const len = data.length;
+    // document.getElementById('setDateBtn').addEventListener('click', () => {
+    //   const dateRange = document.getElementById('dateRangePicker').value;
+    //   const dates = this.props.getUnformattedDateFromFormattedRange(dateRange);
 
-      this.scale = scalePoint()
-        .domain(_.range(0, len))
-        .range([x, (x + width) - travellerWidth]);
-      this.scaleValues = this.scale.domain().map(entry => this.scale(entry));
+    //   const { data, x, width, travellerWidth } = this.props;
+    //   const len = data.length;
 
-      const brushStartIndex = Number(_.findKey(data, { init_fda_dt: dates.startDate }));
-      let brushEndIndex = Number(_.findKey(data, { init_fda_dt: dates.endDate }));
+    //   this.scale = scalePoint()
+    //     .domain(_.range(0, len))
+    //     .range([x, (x + width) - travellerWidth]);
+    //   this.scaleValues = this.scale.domain().map(entry => this.scale(entry));
 
-      if (brushStartIndex === brushEndIndex) brushEndIndex += 1;
+    //   const brushStartIndex = Number(_.findKey(data, { init_fda_dt: dates.startDate }));
+    //   let brushEndIndex = Number(_.findKey(data, { init_fda_dt: dates.endDate }));
 
-      const newIndex = this.getIndex({
-        startX: this.scale(brushStartIndex),
-        endX: this.scale(brushEndIndex),
-      });
+    //   if (brushStartIndex === brushEndIndex) brushEndIndex += 1;
 
-      this.setState({
-        startX: this.scale(brushStartIndex),
-        endX: this.scale(brushEndIndex),
-      }, () => {
-        if (this.props.onChange) {
-          this.props.onChange(newIndex);
-        }
-      });
-    });
+    //   const newIndex = this.getIndex({
+    //     startX: this.scale(brushStartIndex),
+    //     endX: this.scale(brushEndIndex),
+    //   });
+
+    //   this.setState({
+    //     startX: this.scale(brushStartIndex),
+    //     endX: this.scale(brushEndIndex),
+    //   }, () => {
+    //     if (this.props.onChange) {
+    //       this.props.onChange(newIndex);
+    //     }
+    //   });
+    // });
   }
 }
 

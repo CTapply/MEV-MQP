@@ -69,10 +69,10 @@ export const moveReport = (primaryid, fromBin, toBin, userID) => () => {
 };
 
 /**
- * Queries the Database with currently selected filters, a bin, and a userID to retrieve
+ * Queries the Database with a caseID to get the case name
  * that user's reports contained in specified bin that fit in filters
  */
-export const getCaseReports = (filters, bin, userID) => () => {
+export const getCaseNameByID = caseID => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -80,14 +80,52 @@ export const getCaseReports = (filters, bin, userID) => () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      ...filters,
+      caseID,
+    }),
+  };
+
+  return fetch('http://localhost:3001/getcasename', fetchData)
+    .then(response => response.json())
+    .then(reports => (reports.rows ? reports.rows : []));
+};
+
+/**
+ * Queries the Database with currently selected filters, a bin, and a userID to retrieve
+ * that user's reports contained in specified bin that fit in filters
+ */
+export const getCaseReports = (bin, userID, filters) => (dispatch, getState) => {
+  const defaultFilters = {
+    init_fda_dt: {
+      start: '1',
+      end: '9999999999',
+    },
+    sex: [],
+    occr_country: [],
+    age: [],
+    occp_cod: [],
+    meType: [],
+    product: [],
+    stage: [],
+    cause: [],
+  };
+
+  const filtersToUse = (filters) ? Object.assign(defaultFilters, filters) : getState().filters;
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ...filtersToUse,
       bin,
       userID,
     }),
   };
+
   return fetch('http://localhost:3001/getreports', fetchData)
     .then(response => response.json())
-    .then(reports => reports.rows);
+    .then(reports => (reports.rows ? reports.rows : []));
 };
 
 /**
@@ -111,10 +149,11 @@ export const getReportNarrativeFromID = primaryid => () => {
 };
 
 /**
- * Queries the Database with a userID to get
- * that report PrimaryIDs that exist in a case already
+ * Queries the Database with a userID and an (optional) caseName
+ * If caseName is not present, its get reports in any case
+ * to get that report PrimaryIDs that exist in a case already
  */
-export const getReportsInCases = userID => () => {
+export const getReportsInCases = (userID, caseName) => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -123,6 +162,7 @@ export const getReportsInCases = userID => () => {
     },
     body: JSON.stringify({
       userID,
+      caseName,
     }),
   };
 
@@ -130,6 +170,28 @@ export const getReportsInCases = userID => () => {
     .then(response => response.json())
     .then(response => (response.rows ? response.rows : []))
     .catch(err => console.log('Failed to retrieve reports in Cases', err));
+};
+
+/**
+ * Queries the Database with a caseID to get
+ * the tags of the reports from the case
+ */
+export const getTagsinCase = caseID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      caseID,
+    }),
+  };
+
+  return fetch('http://localhost:3001/getcasetags', fetchData)
+    .then(response => response.json())
+    .then(response => (response.rows ? response.rows : []))
+    .catch(err => console.log('Failed to retrieve tags in that case', err));
 };
 
 export const archiveCase = (name, active, userID) => () => {

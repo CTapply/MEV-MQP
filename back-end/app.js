@@ -395,9 +395,14 @@ app.post('/getreports', (req, res) => {
 app.post('/getreportsincases', (req, res) => {
   console.log('got a report in cases request with body:\n ', req.body);
   if (req.body.userID) {
-    let query = 'SELECT DISTINCT primaryid, name '
+    let query = 'SELECT DISTINCT name, * '
     + 'FROM cases '
-    + `WHERE user_id='${req.body.userID}'`;
+    + `WHERE user_id='${req.body.userID}' `
+    + `AND NOT primaryid='-1'`;
+    
+    if (req.body.caseName) {
+      query += ` AND name='${req.body.caseName}'`;
+    }
     
     console.log(query)
     db.query(query, (err, data) => {
@@ -406,6 +411,43 @@ app.post('/getreportsincases', (req, res) => {
   } else {
     res.status(200).send({ rows: [] });
   }
+});
+
+app.post('/getcasename', (req, res) => {
+  console.log('got a request with body for case tags:\n ', req.body);
+  let query = 'SELECT name '
+    + 'FROM cases '
+    + `WHERE case_id='${req.body.caseID}' `
+    + `AND primaryid='-1' LIMIT 1`;
+
+    console.log(query)
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+});
+
+app.post('/getcasetags', (req, res) => {
+  console.log('got a request with body for case tags:\n ', req.body);
+  let useridQuery = 'SELECT user_id, name '
+    + 'FROM cases '
+    + `WHERE case_id='${req.body.caseID}' `
+    + `AND primaryid='-1' LIMIT 1`;
+
+  let primaryidsQuery = 'SELECT primaryid '
+    + `FROM (${useridQuery}) as u INNER JOIN cases as c `
+    + `ON u.user_id = c.user_id `
+    + `AND u.name = c.name `
+    + `WHERE NOT primaryid='-1'`;
+
+    let query = 'SELECT tags '
+    + `FROM (${primaryidsQuery}) as p INNER JOIN reports as r `
+    + `ON p.primaryid = r.primaryid `
+    + `WHERE NOT tags IS NULL `;
+
+    console.log(query)
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
 });
 
 app.post('/binreport', (req, res) => {

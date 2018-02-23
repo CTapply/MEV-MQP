@@ -57,9 +57,7 @@ class Timeline extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.demographicSexData)
     if (this.props.demographicSexData.length === 0) {
-      console.log('has no sex DATA!!!');
       this.updateDateRangePickerTextBox('03/16/2017 - 03/31/2017');
       this.updateSelectedDate()('');
     }
@@ -130,9 +128,6 @@ class Timeline extends Component {
       currentlyFilteredEndDate: dates.endDate,
       currentlyFilteredDateRange: `${dateRange}`,
     });
-
-    // Remove the class that makes the Set Date Button Orange
-    // document.getElementById('setDateBtn').classList.remove(this.props.classes.nonSetDateButton);
 
     this.props.setSelectedDate({
       ...dates,

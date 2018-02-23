@@ -161,7 +161,8 @@ class ReportList extends Component {
   handleNewCaseClick = () => {
     const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
     const binDesc = document.getElementById('newCaseDesc').value.trim();
-    if (binName !== '' && !this.state.userBins.filter(bin => bin.name.toLowerCase()).includes(binName).length) {
+    if (binName !== '' && !(this.state.userBins.filter(bin => bin.name.toLowerCase() === binName).length)) {
+      console.log('inside')
       this.props.createUserBin(this.props.userID, binName, binDesc)
         .then((newCaseID) => {
           this.setState({
@@ -176,7 +177,7 @@ class ReportList extends Component {
           this.handleNewCaseClose();
         });
     } else {
-      this.setState({ snackbarOpen: true, snackbarMessage: 'Invalid Case Name' });
+      this.setState({ snackbarOpen: true, snackbarMessage: 'Error! Invalid Case Name' });
     }
   }
 
