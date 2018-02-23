@@ -12,6 +12,9 @@ import Divider from 'material-ui/Divider';
 import { setUserInfo } from '../actions/userActions';
 import CurrentlySelectedFilters from './components/CurrentlySelectedFilters';
 import styles from './TopNavigationStyles';
+import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../actions/demographicActions';
+import { toggleMETypeFilter, toggleProductFilter, toggleStageFilter, toggleCauseFilter } from '../actions/visualizationActions';
+import { setSelectedDate } from '../../src/actions/timelineActions';
 
 class TopNavigation extends Component {
   static propTypes = {
@@ -39,6 +42,21 @@ class TopNavigation extends Component {
 
   formatNumberWithCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
+  handleClearFilters = () => {
+    this.props.toggleSexFilter('CLEAR');
+    this.props.toggleAgeFilter('CLEAR');
+    this.props.toggleLocationFilter('CLEAR');
+    this.props.toggleOccupationFilter('CLEAR');
+    this.props.toggleMETypeFilter('CLEAR');
+    this.props.toggleProductFilter('CLEAR');
+    this.props.toggleStageFilter('CLEAR');
+    this.props.toggleCauseFilter('CLEAR');
+    this.props.setSelectedDate({
+      startDate: 20170316,
+      endDate: 20170331,
+    });
+  }
+
   render = () => (
     <div className={this.props.classes.topNavigationContainer}>
       <nav className={`${this.props.classes.topNavigationContainer} navbar navbar-default`}>
@@ -63,7 +81,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Dashboard
                             </Typography>
                           }
@@ -75,7 +93,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Visualizations
                             </Typography>
                           }
@@ -87,7 +105,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Reports
                             </Typography>
                           }
@@ -99,7 +117,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             About
                             </Typography>
                           }
@@ -112,7 +130,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                              <Typography style={{ fontSize: '16px', color: '#fff' }}>
                                 Login
                               </Typography>
                             }
@@ -125,7 +143,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                              <Typography style={{ fontSize: '16px', color: '#fff' }}>
                                 Logout
                               </Typography>
                             }
@@ -154,6 +172,11 @@ class TopNavigation extends Component {
                 {this.formatNumberWithCommas(this.props.totalCount)}
               </Typography>
             </Paper>
+            <Paper className={this.props.classes.TotalCountBox} style={{ transform: 'translateY(-9px)'}} elevation={4} >
+              <Button style={{ fontSize: '11px', padding: '2px', height: '100%', width: '100%', backgroundColor: '#FFE6D2', border: 'solid 1px #F42D1F' }} onClick={this.handleClearFilters} >
+                Clear All Filters
+              </Button>
+            </Paper>
             <CurrentlySelectedFilters />
           </div>
         </div>
@@ -169,5 +192,16 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { setUserInfo },
+  {
+    setUserInfo,
+    toggleSexFilter,
+    toggleAgeFilter,
+    toggleLocationFilter,
+    toggleOccupationFilter,
+    toggleMETypeFilter,
+    toggleProductFilter,
+    toggleStageFilter,
+    toggleCauseFilter,
+    setSelectedDate,
+  },
 )(withStyles(styles)(TopNavigation));
