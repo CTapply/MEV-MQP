@@ -66,14 +66,40 @@ export const makeUserTrash = userID => () => {
   fetch('http://localhost:3001/makeusertrash', fetchData);
 };
 
-export const makeUserRead = userID => () => {
+export const getUserInactiveCasesCount = userID => () => {
   const fetchData = {
-    method: 'PUT',
+    method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ userID }),
   };
-  fetch('http://localhost:3001/makeuserread', fetchData);
+
+  return fetch('http://localhost:3001/getinactivecases', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows.length;
+      }
+      return 0;
+   });
+};
+export const getUserActiveCasesCount = userID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID }),
+  };
+  return fetch('http://localhost:3001/getactivecases', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows.length;
+      }
+      return 0;
+    });
 };

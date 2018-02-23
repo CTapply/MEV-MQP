@@ -11,6 +11,7 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import { setUserInfo } from '../actions/userActions';
 import CurrentlySelectedFilters from './components/CurrentlySelectedFilters';
+import wpiLogo from '../resources/wpi-logo.png';
 import styles from './TopNavigationStyles';
 
 class TopNavigation extends Component {
@@ -64,7 +65,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Dashboard
                             </Typography>
                           }
@@ -76,7 +77,7 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Visualizations
                             </Typography>
                           }
@@ -88,20 +89,8 @@ class TopNavigation extends Component {
                         <ListItemText
                           disableTypography
                           primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
                             Reports
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    </Link>
-                    <Link to="/about" className={this.props.classes.listLink}>
-                      <ListItem button >
-                        <ListItemText
-                          disableTypography
-                          primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' } }>
-                            About
                             </Typography>
                           }
                         />
@@ -113,7 +102,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                              <Typography style={{ fontSize: '16px', color: '#fff' }}>
                                 Login
                               </Typography>
                             }
@@ -126,7 +115,7 @@ class TopNavigation extends Component {
                           <ListItemText
                             disableTypography
                             primary={
-                              <Typography style={{ fontSize: '16px', color: '#fff' } }>
+                              <Typography style={{ fontSize: '16px', color: '#fff' }}>
                                 Logout
                               </Typography>
                             }
@@ -137,6 +126,17 @@ class TopNavigation extends Component {
                     }
                   </List>
                   <Divider style={{ backgroundColor: 'rgb(255,255,255)' }} />
+                </div>
+                <div className={`${this.props.classes.wpiLogoContainer}`} >
+                  <img src={wpiLogo} className={`${this.props.classes.wpiLogoClass} img-responsive`} />
+                  <Link to="/about" className={this.props.classes.listLink}>
+                    <Typography style={{ fontSize: '12px', color: '#fff', marginTop: '15px', display: 'inline-block' }}>
+                      About&nbsp;
+                    </Typography>
+                  </Link>
+                  <Typography style={{ fontSize: '12px', color: '#fff', marginTop: '15px', display: 'inline-block' }}>
+                      | &copy; 2018
+                    </Typography>
                 </div>
               </Drawer>
             </div>

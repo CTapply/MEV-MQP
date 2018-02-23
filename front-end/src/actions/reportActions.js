@@ -147,5 +147,5 @@ export const archiveCase = (name, active, userID) => () => {
     }),
   };
 
-  fetch('http://localhost:3001/archivecase', fetchData);
+  return fetch('http://localhost:3001/archivecase', fetchData);
 };

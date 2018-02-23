@@ -52,17 +52,26 @@
 | |____actions  
 | |____reducers  
 
-## Working on the Visualization page
+## Working on the Front End
+To make changes to the UI and other aspects of the front end, you must edit assets found in the front-end folder.
+
+### Working on the Visualization page
 Assets for the visualization page exist within the visualization folder src/components/visualization.  
 visualization/App.js uses the components for the treemaps, demographics, and timeline which assets are each in their respective folder inside visualization/components.
 
-## Working on the Reports Listing page
+### Working on the Reports Listing page
 Assets for the reports listing page exist within the reports folder src/components/reports.  
 reports/ReportsList.jsx uses the components for the report listing grid which assets are all contained in teh folder reports/components.
 
-## Working on the Narrative Editor page
+### Working on the Narrative Editor page
 All assets for the narrative editor page exist within the editor folder src/components/editor   
 
-## Working on the Login page, About page, or Dashboard page
+### Working on the Login page, About page, or Dashboard page
 All assets for these pages exist within the portal folder src/components/portal   
 Assets for the dashboard page exist inside the portal/userComponents folder.
+
+## Working on the Back End
+Our backend is a one file server that recieves requests sent from the front end located at back-end/App.js
+
+### Adding and modifying endpoints
+We use the express library (https://expressjs.com/) for our backend and documentation for use can be found at https://expressjs.com/en/4x/api.html#app.
