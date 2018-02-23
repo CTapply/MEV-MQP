@@ -233,7 +233,8 @@ class ReportTable extends React.PureComponent {
 
   updateHighlightedRows = () => {
     this.props.getReportsInCases(this.props.userID)
-      .then(primaryids => this.setState({
+      .then(primaryids => {
+        this.setState({
         currentlyInCase: primaryids.reduce((acc, row) => {
           const caseNames = (acc[row.primaryid])
             ? acc[row.primaryid].concat(row.name)
@@ -243,7 +244,8 @@ class ReportTable extends React.PureComponent {
             [row.primaryid]: caseNames,
           });
         }, {}),
-      }));
+      });
+    });
   }
 
   /**
@@ -311,9 +313,10 @@ class ReportTable extends React.PureComponent {
    * if the report is in any case for the current user
    */
   TableRow = ({ row, ...props }) => {
+    let incase = this.state.currentlyInCase[props.tableRow.rowId];
     const backgroundColor =
-      (this.state.currentlyInCase[props.tableRow.rowId] && this.props.bin === 'all reports')
-        ? 'RGBA(131, 255, 168, 0.2)'
+      (incase && this.props.bin === 'all reports')
+        ? (incase.includes('read') && incase.length) === 1 ? 'RGBA(211,211,211, 0.2)' : 'RGBA(131, 255, 168, 0.2)'
         : '';
     return (
       <VirtualTable.Row

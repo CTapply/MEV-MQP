@@ -33,20 +33,20 @@ if (os.platform() === 'win32') {
 }
 
 // Connect to the Database on Localhost
-// const db = new Client({
-//   host: 'localhost',
-//    database: 'faers',
-//    port: 5432,
-//  });
+const db = new Client({
+  host: 'localhost',
+   database: 'faers',
+   port: 5432,
+ });
 
 //Connect to the Database on WPI Server
-const db = new Client({
-  user: 'mevuser',
-  host: 'mev.wpi.edu',
-  database: 'faers',
-  password: 'mevmqp',
-  port: '5432'
-});
+// const db = new Client({
+//   user: 'mevuser',
+//   host: 'mev.wpi.edu',
+//   database: 'faers',
+//   password: 'mevmqp',
+//   port: '5432'
+// });
 
 db.connect()
 .catch(err => console.log(err))
@@ -492,6 +492,19 @@ app.post('/getusertrash', (req, res) => {
   });
 });
 
+app.post('/getuserread', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM cases '
++ 'WHERE user_id = ' + req.body.userID + ' '
++ `AND name = 'trash'`;
+  console.log(query)
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
@@ -528,6 +541,16 @@ app.put('/makeusertrash', (req, res) => {
   console.log('got a make trash request');
   let query =
   'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'trash\',' + req.body.userID + ', -1)';
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/makeuserread', (req, res) => {
+  console.log('got a make read case request');
+  let query =
+  'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'read\',' + req.body.userID + ', -1)';
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send();

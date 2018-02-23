@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
-import { setUserInfo, makeUserTrash, checkUserTrash } from '../../actions/userActions';
+import { setUserInfo, makeUserTrash, makeUserRead, checkUserTrash, checkUserRead } from '../../actions/userActions';
 import MEVColors from '../../theme';
 
 const defaultTheme = createMuiTheme({
@@ -104,7 +104,15 @@ class Login extends Component {
               } else {
                 this.props.makeUserTrash(user.rows[0].user_id);
               }
-              this.props.history.push('/dashboard');
+              this.props.checkUserRead(user.rows[0].user_id)
+                .then((readFound) => {
+                  if (readFound) {
+                    console.log('user read case found');
+                  } else {
+                    this.props.makeUserRead(user.rows[0].user_id);
+                  }
+                  this.props.history.push('/dashboard');
+                });
             });
         } else {
           this.setState({
@@ -188,5 +196,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { setUserInfo, makeUserTrash, checkUserTrash },
+  { setUserInfo, makeUserTrash, makeUserRead, checkUserTrash, checkUserRead },
 )(withStyles(styles)(Login));

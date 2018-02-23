@@ -29,6 +29,7 @@ class TopNavigation extends Component {
   logout = (event) => {
     event.preventDefault();
     this.props.setUserInfo(false, '', -1);
+    window.location = '/';
   }
 
   toggleDrawer = (side, open) => () => {
