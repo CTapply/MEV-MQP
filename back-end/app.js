@@ -408,6 +408,32 @@ app.post('/getreportsincases', (req, res) => {
   }
 });
 
+app.post('/getinactivecases', (req, res) => {
+  if (req.body.userID) {
+    let query = 'SELECT * '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}' AND active='f' AND primaryid='-1'`;
+    
+    console.log(query);
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  }
+});
+
+app.post('/getactivecases', (req, res) => {
+  if (req.body.userID) {
+    let query = 'SELECT * '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}' AND active='t' AND primaryid='-1'`;
+    
+    console.log(query);
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  } 
+});
+
 app.post('/binreport', (req, res) => {
   console.log('got a bin request to move report with body:\n', req.body);
   caseIDQuery = `SELECT DISTINCT case_id FROM cases WHERE name = '${req.body.toBin}' AND user_id = ${req.body.userID}`;

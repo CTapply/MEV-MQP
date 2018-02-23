@@ -7,6 +7,15 @@ export default {
     'background-color': MEVColors.navBar,
     zIndex: 500,
     border: 'none',
+    position: 'relative',
+  },
+  wpiLogoContainer: {
+    position: 'absolute',
+    bottom: '30px',
+    left: '0px',
+    right: '0px',
+    padding: '30px 30px 15px 30px',
+    textAlign: 'center',
   },
   drawerClass: {
     'background-color': MEVColors.navBarSlide,

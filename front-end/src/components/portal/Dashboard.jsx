@@ -17,6 +17,7 @@ import MEVColors from '../../theme';
 import placeholderUserImage from './images/user_img.png';
 import UserReportTable from './userComponents/UserReportTable';
 import { getUserCases, archiveCase } from '../../actions/reportActions';
+import { getUserInactiveCasesCount, getUserActiveCasesCount } from '../../actions/userActions';
 import styles from './DashboardStyles';
 
 function TabContainer(props) {
@@ -58,7 +59,10 @@ const defaultTheme = createMuiTheme({
 class Dashboard extends Component {
   static propTypes = {
     getUserCases: PropTypes.func.isRequired,
+    getUserInactiveCasesCount: PropTypes.func.isRequired,
+    getUserActiveCasesCount: PropTypes.func.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
+    userID: PropTypes.number.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
   }
@@ -71,6 +75,8 @@ class Dashboard extends Component {
       value: 0,
       case: '',
       binActives: {},
+      activeBinNumbers: 0,
+      inactiveBinNumbers: 0,
     };
   }
 
@@ -79,6 +85,8 @@ class Dashboard extends Component {
       window.location = '/';
     }
     this.getBins();
+    this.getActiveCases();
+    this.getInactiveCases();
   }
 
   /**
@@ -123,10 +131,47 @@ class Dashboard extends Component {
     this.setState({ value });
   };
 
+  getInactiveCases() {
+    this.props.getUserInactiveCasesCount(this.props.userID)
+      .then((bins) => {
+        console.log('inactive bins', bins);
+        this.setState({ inactiveBinNumbers: bins });
+      });
+  }
+
+  getActiveCases() {
+    this.props.getUserActiveCasesCount(this.props.userID)
+      .then((bins) => {
+        console.log('active bins', bins);
+        this.setState({ activeBinNumbers: (bins - 1) });
+      });
+  }
+  getTrashValue() {
+    let trashValue = -1;
+    this.state.userBins.forEach((option, index) => {
+      if (option === 'Trash') {
+        trashValue = index;
+      }
+    });
+    return trashValue;
+  }
+  getReadValue() {
+    let readValue = -1;
+    this.state.userBins.forEach((option, index) => {
+      if (option === 'Read') {
+        readValue = index;
+      }
+    });
+    return readValue;
+  }
   handleActiveChange = name => (event, checked) => {
     const newActives = Object.assign({}, this.state.binActives);
     newActives[name] = checked;
-    this.props.archiveCase(name, checked, this.props.userID);
+    this.props.archiveCase(name, checked, this.props.userID)
+      .then(() => {
+        this.getInactiveCases();
+        this.getActiveCases();
+      });
     this.setState({ binActives: newActives });
   };
 
@@ -138,6 +183,7 @@ class Dashboard extends Component {
 
   render() {
     const { value } = this.state;
+    console.log(this.props.getUserInactiveCasesCount(this.props.userID));
     return (
       <MuiThemeProvider theme={defaultTheme} >
         <div className="About container">
@@ -159,40 +205,57 @@ class Dashboard extends Component {
                     >
                       {this.state.userBins.map((option, index) => (
                         <Tab label={option} value={index} key={index} onClick={event => this.handleCaseClick(event, index)} />
-                ))}
+                      ))}
                     </Tabs>
                   </AppBar>
                   {this.state.userBins.map((option, index) => {
                if (value === index) {
                  return (
                    <TabContainer key={index}>
-                     <div className="col-sm-12">
-                       <h3>Case Description:</h3>
-                       <div className={`${this.props.classes.paper}`}>
-                         <p>{this.state.binDescs[this.state.case]}</p>
-                       </div>
-                     </div>
+                     {
+                    (this.state.value === this.getTrashValue() || this.state.value === this.getReadValue()) ?
+                      null
+                    :
+                      <div className="col-sm-12">
+                        <h3>Case Description:</h3>
+                        <div className={`${this.props.classes.paper}`}>
+                          <p>{this.state.binDescs[this.state.case]}</p>
+                        </div>
+                      </div>
+                    }
                      <div className="col-sm-4">
                        <h3>Case Name:</h3>
                        <div className={`${this.props.classes.paper}`}>
                          {option}
                        </div>
                      </div>
-                     <div className="col-sm-4">
-                       <h3>Report Count:</h3>
-                       <div className={`${this.props.classes.paper}`}>
-                         <p># of reports in bin</p>
-                       </div>
-                     </div>
-                     <div className="col-sm-4">
-                       <h3>Active:</h3>
-                       {console.log(this.state.binActives)}
-                       <Switch
-                         checked={this.state.binActives[this.state.case]}
-                         onChange={this.handleActiveChange(this.state.case)}
-                         aria-label="checked"
-                       />
-                     </div>
+                     {
+                      (this.state.value === this.getTrashValue() || this.state.value === this.getReadValue()) ?
+                        <div className="col-sm-8">
+                          <h3>Report Count:</h3>
+                          <div className={`${this.props.classes.paper}`}>
+                            <p># of reports in bin</p>
+                          </div>
+                        </div>
+                      :
+                        <div>
+                          <div className="col-sm-4">
+                            <h3>Report Count:</h3>
+                            <div className={`${this.props.classes.paper}`}>
+                              <p># of reports in bin</p>
+                            </div>
+                          </div>
+                          <div className="col-sm-4">
+                            <h3>Active:</h3>
+                            <Switch
+                              checked={this.state.binActives[this.state.case]}
+                              onChange={this.handleActiveChange(this.state.case)}
+                              aria-label="checked"
+                            />
+                          </div>
+                        </div>
+                      }
+
                      <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
                        <h3 style={{ marginTop: '10px' }}>Reports:</h3>
                        <div className={`${this.props.classes.paperNoPadding}`}>
@@ -209,12 +272,22 @@ class Dashboard extends Component {
             </div>
             <div className="col-sm-4">
               <Paper elevation={2} className={`${this.props.classes.paper}`} >
-                <div className="col-xs-7">
+                <div className="col-sm-7">
                   <p>Hello {this.props.userEmail != '' ? (this.props.userEmail) : ('undefined')}!</p>
                   <p>Number of cases: {this.state.userBins.length}</p>
                 </div>
-                <div className="col-xs-5">
+                <div className="col-sm-5">
                   <img src={placeholderUserImage} className={`${this.props.classes.userimage} img-responsive`} />
+                </div>
+                <div className={`${this.props.classes.clearfix}`} />
+              </Paper>
+            </div>
+            <p>&nbsp;</p>
+            <div className="col-sm-4">
+              <Paper elevation={2} className={`${this.props.classes.paper}`} >
+                <div className="col-sm-12">
+                  <p><strong>Number of active cases:</strong> {this.state.activeBinNumbers}</p>
+                  <p><strong>Number of inactive cases:</strong> {this.state.inactiveBinNumbers}</p>
                 </div>
                 <div className={`${this.props.classes.clearfix}`} />
               </Paper>
@@ -268,5 +341,7 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getUserCases, archiveCase },
+  {
+    getUserCases, archiveCase, getUserInactiveCasesCount, getUserActiveCasesCount,
+  },
 )(withStyles(styles)(Dashboard));
