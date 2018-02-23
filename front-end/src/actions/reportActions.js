@@ -51,7 +51,7 @@ export const createUserBin = (userID, binName, binDesc) => () => {
  * Queries the Database with a primaryid, two bins, and the current userID to
  * move a report from one bin to another
  */
-export const moveReport = (primaryid, fromBin, toBin, userID) => () => {
+export const moveReport = (primaryid, fromBin, toBin, userID, type) => () => {
   const fetchData = {
     method: 'POST',
     mode: 'cors',
@@ -63,6 +63,7 @@ export const moveReport = (primaryid, fromBin, toBin, userID) => () => {
       fromBin,
       toBin,
       userID,
+      type,
     }),
   };
   return fetch('http://localhost:3001/binreport', fetchData);

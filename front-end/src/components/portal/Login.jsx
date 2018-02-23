@@ -64,7 +64,6 @@ class Login extends Component {
           logged_in: true,
         });
         this.sendFormData();
-        window.location = '/dashboard';
       });
   }
 
@@ -104,6 +103,7 @@ class Login extends Component {
               } else {
                 this.props.makeUserTrash(user.rows[0].user_id);
               }
+              console.log('yo whatup')
               this.props.checkUserRead(user.rows[0].user_id)
                 .then((readFound) => {
                   if (readFound) {

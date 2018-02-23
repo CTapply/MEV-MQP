@@ -24,6 +24,7 @@ import Snackbar from 'material-ui/Snackbar';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
+import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
 import _ from 'lodash';
 import { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases } from '../../../actions/reportActions';
@@ -276,8 +277,8 @@ class ReportTable extends React.PureComponent {
   /**
    * Sends a backend request to move a report from one bin to another
    */
-  handleMoveReport = (primaryid, toBin) => {
-    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID)
+  handleMoveReport = (primaryid, toBin, type) => {
+    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID, type ? "primary" : "support")
       .then(() =>
         this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
           .then(reports => this.setState({ data: reports }))
@@ -362,6 +363,10 @@ class ReportTable extends React.PureComponent {
     }
   }
 
+  handleToggleChange = (primaryid) => event => {
+    this.setState({ [primaryid]: event.target.checked });
+  }
+
   /**
    * Defines the html content inside each expandable dropdown area for each row
    * of the table
@@ -377,6 +382,7 @@ class ReportTable extends React.PureComponent {
         <Typography style={{ position: 'absolute', fontSize: '14px', transform: 'translateX(3px) translateY(3px)' }} type="button">
           Send Report to:
         </Typography>
+        { this.props.bin === 'all reports' ? <Switch checked={this.state[row.row.primaryid]} onChange={this.handleToggleChange(row.row.primaryid)} color="primary" /> : null}
         <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
           {this.props.bins.map((bin, index) => (
             (this.props.bin.toLowerCase() !== bin.name.toLowerCase())
@@ -389,6 +395,7 @@ class ReportTable extends React.PureComponent {
                     this.handleMoveReport(
                       row.row.primaryid,
                       this.props.bins[index].name.toLowerCase(),
+                      this.state[row.row.primaryid]
                     );
                   }}
                 >

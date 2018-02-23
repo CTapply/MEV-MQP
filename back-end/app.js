@@ -411,13 +411,17 @@ app.post('/getreportsincases', (req, res) => {
 app.post('/binreport', (req, res) => {
   console.log('got a bin request to move report with body:\n', req.body);
   caseIDQuery = `SELECT DISTINCT case_id FROM cases WHERE name = '${req.body.toBin}' AND user_id = ${req.body.userID}`;
+  console.log(caseIDQuery);
   db.query(caseIDQuery, (err, caseIDResult) => {
     let caseID;
     if(req.body.toBin !== 'all reports'){
       caseID = caseIDResult.rows[0].case_id;
     }
-    toQuery = 'INSERT INTO cases (case_id, primaryid, name, user_id) '
-    + `VALUES ('${caseID}', ${req.body.primaryid}, '${req.body.toBin}', ${req.body.userID})`;
+    toQuery = 'INSERT INTO cases (case_id, primaryid, name, user_id, type) '
+    + `VALUES ('${caseID}', ${req.body.primaryid}, '${req.body.toBin}', ${req.body.userID}, '${req.body.type}') `
+    + `ON CONFLICT (case_id, primaryid) DO UPDATE `
+    + `SET type = '${req.body.type}' `
+    + `WHERE cases.case_id = '${caseID}' AND cases.primaryid = ${req.body.primaryid} AND cases.name = '${req.body.toBin}' AND cases.user_id = ${req.body.userID}`;
     fromQuery = 'DELETE FROM cases '
     + `WHERE primaryid = ${req.body.primaryid} AND `
     + `user_id = ${req.body.userID} AND name = '${req.body.fromBin}'`;
@@ -498,7 +502,7 @@ app.post('/getuserread', (req, res) => {
   'SELECT user_id '
 + 'FROM cases '
 + 'WHERE user_id = ' + req.body.userID + ' '
-+ `AND name = 'trash'`;
++ `AND name = 'read'`;
   console.log(query)
   db.query(query, (err, data) => {
     res.status(200).send(data);
