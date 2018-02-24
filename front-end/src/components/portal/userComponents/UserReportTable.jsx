@@ -17,6 +17,21 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
+import Divider from 'material-ui/Divider';
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import QuillEditor from '../../editor/components/QuillEditor';
+import Switch from 'material-ui/Switch';
+import {
+  FormLabel,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  FormHelperText,
+} from 'material-ui/Form';
+import ExpansionPanel, {
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+} from 'material-ui/ExpansionPanel';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import CaseIcon from '../../../resources/CaseIcon';
@@ -143,40 +158,38 @@ class UserReportTable extends React.PureComponent {
    * of the table
    */
   detailRowContent = row => (
-    <div>
-      <Paper
-        elevation={6}
-        style={{
-          backgroundColor: '#fefefe', width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)', marginTop: '10px', marginBottom: '5px',
-        }}
-      >
+    <div className={(this.props.summaryOpen) ? this.props.classes.smallDetailRow : this.props.classes.largeDetailRow} >
+    <div className="col-sm-4" style={{ marginBottom: '15px',}}>
+    <Paper elevation={6} style={{ padding: '5px', }} >
+    <div class="col-sm-12">
+    { this.props.bin === 'all reports' ? 
+          <FormControlLabel style={{  }}
+            control={
+              <Switch 
+                checked={this.state[row.row.primaryid]} 
+                onChange={this.handleToggleChange(row.row.primaryid)} 
+                color="primary" />}
+            label="Primary Evidence" />
+        : null}
+        </div>
+        <div class="col-sm-12">
         <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
           <Button raised className="cal-button" color="primary">Go to report text</Button>
         </Link>
+        </div>
+        <div style={{ clear: 'both', float: 'none' }}>&nbsp;</div>
       </Paper>
-      <div className={this.props.classes.sendToCaseContainer}>
-        <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
-          <Typography type="button" style={{ padding: '15px' }}>
-          Send Report to:
-          </Typography>
-          {this.props.bins.map((binName, index) => (
-            <Button
-              flat="true"
-              key={binName}
-              className={this.props.classes.caseGridList}
-              onClick={() => {
-                this.handleMoveReport(row.row.primaryid, this.props.bins[index].toLowerCase());
-              }}
-            >
-              <div>
-                <CaseIcon width={45} height={45} />
-                <Typography style={{ display: 'block' }} type="subheading">
-                  {binName}
-                </Typography>
-              </div>
-            </Button>
-          ))}
-        </Paper>
+      </div>
+      <div style={{ marginTop: '10px' }}>
+        <ExpansionPanel elevation={6}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography type="subheading">Preview Narrative</Typography>
+          </ExpansionPanelSummary>
+          <Divider light />
+          <ExpansionPanelDetails>
+            <div style={{ fontSize: '14px' }} dangerouslySetInnerHTML={{ __html: row.row.report_text }} />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       </div>
     </div>
   )

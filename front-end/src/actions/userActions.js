@@ -30,6 +30,30 @@ export const checkUserTrash = userID => () => {
     });
 };
 
+export const checkUserRead = userID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID }),
+  };
+
+  return fetch('http://localhost:3001/getuserread', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      console.log('Checking for user', bins);
+      if (bins.rows.length > 0) {
+        return true;
+      }
+      return false;
+    })
+    .catch((err) => {
+      console.error.bind(err);
+    });
+};
+
 export const makeUserTrash = userID => () => {
   const fetchData = {
     method: 'PUT',
@@ -40,4 +64,54 @@ export const makeUserTrash = userID => () => {
     body: JSON.stringify({ userID }),
   };
   fetch('http://localhost:3001/makeusertrash', fetchData);
+};
+
+export const makeUserRead = userID => () => {
+  const fetchData = {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID }),
+  };
+  fetch('http://localhost:3001/makeuserread', fetchData);
+};
+
+export const getUserInactiveCasesCount = userID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID }),
+  };
+
+  return fetch('http://localhost:3001/getinactivecases', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows.length;
+      }
+      return 0;
+   });
+};
+export const getUserActiveCasesCount = userID => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID }),
+  };
+  return fetch('http://localhost:3001/getactivecases', fetchData)
+    .then(response => response.json())
+    .then((bins) => {
+      if (bins.rows[0]) {
+        return bins.rows.length;
+      }
+      return 0;
+    });
 };
