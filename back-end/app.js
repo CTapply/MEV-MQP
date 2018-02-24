@@ -33,20 +33,20 @@ if (os.platform() === 'win32') {
 }
 
 // Connect to the Database on Localhost
-// const db = new Client({
-//   host: 'localhost',
-//    database: 'faers',
-//    port: 5432,
-//  });
-
-// Connect to the Database on WPI Server
 const db = new Client({
-  user: 'mevuser',
-  host: 'mev.wpi.edu',
-  database: 'faers',
-  password: 'mevmqp',
-  port: '5432'
-});
+  host: 'localhost',
+   database: 'faers',
+   port: 5432,
+ });
+
+//Connect to the Database on WPI Server
+// const db = new Client({
+//   user: 'mevuser',
+//   host: 'mev.wpi.edu',
+//   database: 'faers',
+//   password: 'mevmqp',
+//   port: '5432'
+// });
 
 db.connect()
 .catch(err => console.log(err))
@@ -392,21 +392,71 @@ app.post('/getreports', (req, res) => {
   });
 });
 
+app.post('/getreportsincases', (req, res) => {
+  console.log('got a report in cases request with body:\n ', req.body);
+  if (req.body.userID) {
+    let query = 'SELECT DISTINCT primaryid, name '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}'`;
+    
+    console.log(query)
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  } else {
+    res.status(200).send({ rows: [] });
+  }
+});
+
+app.post('/getinactivecases', (req, res) => {
+  if (req.body.userID) {
+    let query = 'SELECT * '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}' AND active='f' AND primaryid='-1'`;
+    
+    console.log(query);
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  }
+});
+
+app.post('/getactivecases', (req, res) => {
+  if (req.body.userID) {
+    let query = 'SELECT * '
+    + 'FROM cases '
+    + `WHERE user_id='${req.body.userID}' AND active='t' AND primaryid='-1'`;
+    
+    console.log(query);
+    db.query(query, (err, data) => {
+      res.status(200).send(data);
+    });
+  } 
+});
+
 app.post('/binreport', (req, res) => {
   console.log('got a bin request to move report with body:\n', req.body);
-  toQuery = 'UPDATE bins '
-  + `SET primaryid = bins.primaryid || ${req.body.primaryid} `
-  + `WHERE bins.user_id = ${req.body.userID} AND bins.name = '${req.body.toBin}' `
-  + `AND (bins.primaryid ISNULL OR not (${req.body.primaryid} = any(bins.primaryid)))`;
-    fromQuery = 'UPDATE bins '
-  + `SET primaryid = array_remove(bins.primaryid, ${req.body.primaryid}) `
-  + `WHERE bins.user_id = ${req.body.userID} AND bins.name = '${req.body.fromBin}' `
+  caseIDQuery = `SELECT DISTINCT case_id FROM cases WHERE name = '${req.body.toBin}' AND user_id = ${req.body.userID}`;
+  console.log(caseIDQuery);
+  db.query(caseIDQuery, (err, caseIDResult) => {
+    let caseID;
+    if(req.body.toBin !== 'all reports'){
+      caseID = caseIDResult.rows[0].case_id;
+    }
+    toQuery = 'INSERT INTO cases (case_id, primaryid, name, user_id, type) '
+    + `VALUES ('${caseID}', ${req.body.primaryid}, '${req.body.toBin}', ${req.body.userID}, '${req.body.type}') `
+    + `ON CONFLICT (case_id, primaryid) DO UPDATE `
+    + `SET type = '${req.body.type}' `
+    + `WHERE cases.case_id = '${caseID}' AND cases.primaryid = ${req.body.primaryid} AND cases.name = '${req.body.toBin}' AND cases.user_id = ${req.body.userID}`;
+    fromQuery = 'DELETE FROM cases '
+    + `WHERE primaryid = ${req.body.primaryid} AND `
+    + `user_id = ${req.body.userID} AND name = '${req.body.fromBin}'`;
 
-  if (req.body.toBin === 'trash') {
-    fromQuery = 'UPDATE bins '
-    + `SET primaryid = array_remove(bins.primaryid, ${req.body.primaryid}) `
-    + `WHERE bins.user_id = ${req.body.userID} AND NOT bins.name = '${req.body.toBin}' `
-  }
+    if (req.body.toBin === 'trash') {
+      fromQuery = 'DELETE FROM cases '
+      + `WHERE primaryid = ${req.body.primaryid} AND `
+      + `user_id = ${req.body.userID} AND NOT name = '${req.body.toBin}'`;
+    }
 
   if ((req.body.toBin === 'trash' || req.body.fromBin !== 'all reports') && req.body.toBin !== 'all reports') {
     console.log(toQuery, fromQuery);
@@ -485,6 +535,19 @@ app.post('/getusertrash', (req, res) => {
   });
 });
 
+app.post('/getuserread', (req, res) => {
+  console.log('got a user request with body:\n ', req.body)
+  let query =
+  'SELECT user_id '
++ 'FROM cases '
++ 'WHERE user_id = ' + req.body.userID + ' '
++ `AND name = 'read'`;
+  console.log(query)
+  db.query(query, (err, data) => {
+    res.status(200).send(data);
+  });
+});
+
 app.post('/getreporttext', (req, res) => {
   console.log('got a report text request with body:\n ', req.body)
   let query =
@@ -520,7 +583,30 @@ app.put('/saveuser', (req, res) => {
 app.put('/makeusertrash', (req, res) => {
   console.log('got a make trash request');
   let query =
-  'INSERT INTO bins (user_id, name, primaryid) VALUES (' + req.body.userID + ', \'trash\',null)';
+  'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'trash\',' + req.body.userID + ', -1)';
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/makeuserread', (req, res) => {
+  console.log('got a make read case request');
+  let query =
+  'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'read\',' + req.body.userID + ', -1)';
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
+app.put('/archivecase', (req, res) => {
+  console.log('got an archive request');
+  let query =
+  'UPDATE cases '
++ `SET active = '${req.body.active}' `
++ `WHERE name = '${req.body.name}' AND user_id = '${req.body.userID}' AND primaryid = -1`
+  console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send();
   });

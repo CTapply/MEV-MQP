@@ -24,7 +24,15 @@ import Snackbar from 'material-ui/Snackbar';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
+import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
+import {
+  FormLabel,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  FormHelperText,
+} from 'material-ui/Form';
 import _ from 'lodash';
 import { moveReport, getCaseReports, getReportNarrativeFromID, getReportsInCases } from '../../../actions/reportActions';
 import QuillEditor from '../../editor/components/QuillEditor';
@@ -233,7 +241,8 @@ class ReportTable extends React.PureComponent {
 
   updateHighlightedRows = () => {
     this.props.getReportsInCases(this.props.userID)
-      .then(primaryids => this.setState({
+      .then(primaryids => {
+        this.setState({
         currentlyInCase: primaryids.reduce((acc, row) => {
           const caseNames = (acc[row.primaryid])
             ? acc[row.primaryid].concat(row.name)
@@ -243,7 +252,8 @@ class ReportTable extends React.PureComponent {
             [row.primaryid]: caseNames,
           });
         }, {}),
-      }));
+      });
+    });
   }
 
   /**
@@ -274,8 +284,8 @@ class ReportTable extends React.PureComponent {
   /**
    * Sends a backend request to move a report from one bin to another
    */
-  handleMoveReport = (primaryid, toBin) => {
-    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID)
+  handleMoveReport = (primaryid, toBin, type) => {
+    this.props.moveReport(primaryid, this.props.bin, toBin, this.props.userID, type ? "primary" : "support")
       .then(() =>
         this.props.getCaseReports(this.props.filters, this.props.bin, this.props.userID)
           .then(reports => this.setState({ data: reports }))
@@ -311,9 +321,10 @@ class ReportTable extends React.PureComponent {
    * if the report is in any case for the current user
    */
   TableRow = ({ row, ...props }) => {
+    let incase = this.state.currentlyInCase[props.tableRow.rowId];
     const backgroundColor =
-      (this.state.currentlyInCase[props.tableRow.rowId] && this.props.bin === 'all reports')
-        ? 'RGBA(131, 255, 168, 0.2)'
+      (incase && this.props.bin === 'all reports')
+        ? (incase.includes('read') && incase.length) === 1 ? 'RGBA(211,211,211, 0.2)' : 'RGBA(131, 255, 168, 0.2)'
         : '';
     return (
       <VirtualTable.Row
@@ -359,18 +370,38 @@ class ReportTable extends React.PureComponent {
     }
   }
 
+  handleToggleChange = (primaryid) => event => {
+    this.setState({ [primaryid]: event.target.checked });
+  }
+
   /**
    * Defines the html content inside each expandable dropdown area for each row
    * of the table
    */
   renderDetailRowContent = row => (
     <div className={(this.props.summaryOpen) ? this.props.classes.smallDetailRow : this.props.classes.largeDetailRow} >
-      <Paper elevation={6} style={{ width: 'fit-content', display: 'inline-block', transform: 'translateY(-20%)' }} >
+    <div className="col-sm-3" style={{ marginBottom: '15px',}}>
+    <Paper elevation={6} style={{ padding: '5px', }} >
+    <div class="col-sm-12">
+    { this.props.bin === 'all reports' ? 
+          <FormControlLabel style={{  }}
+            control={
+              <Switch 
+                checked={this.state[row.row.primaryid]} 
+                onChange={this.handleToggleChange(row.row.primaryid)} 
+                color="primary" />}
+            label="Primary Evidence" />
+        : null}
+        </div>
+        <div class="col-sm-12">
         <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
           <Button raised className="cal-button" color="primary">Go to report text</Button>
         </Link>
+        </div>
+        <div style={{ clear: 'both', float: 'none' }}>&nbsp;</div>
       </Paper>
-      <div className={this.props.classes.sendToCaseContainer}>
+      </div>
+      <div className={`${this.props.classes.sendToCaseContainer} col-sm-9`}>
         <Typography style={{ position: 'absolute', fontSize: '14px', transform: 'translateX(3px) translateY(3px)' }} type="button">
           Send Report to:
         </Typography>
@@ -386,6 +417,7 @@ class ReportTable extends React.PureComponent {
                     this.handleMoveReport(
                       row.row.primaryid,
                       this.props.bins[index].name.toLowerCase(),
+                      this.state[row.row.primaryid]
                     );
                   }}
                 >
@@ -399,7 +431,7 @@ class ReportTable extends React.PureComponent {
           ))}
         </Paper>
       </div>
-      <div style={{ marginTop: '10px' }}>
+      <div style={{ marginTop: '10px' }} className={`col-sm-12`}>
         <ExpansionPanel elevation={6}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography type="subheading">Preview Narrative</Typography>

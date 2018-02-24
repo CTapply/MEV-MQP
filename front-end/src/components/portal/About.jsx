@@ -44,6 +44,32 @@ class About extends Component {
 
               <p>The layout consists of three main sections. The center portion of the interface contains tree-mappings that display information about the selected reports. A majority of the interface is dedicated to this visualization because it holds the most significant data, which users can use to extrapolate trends. On the left side of the interface is the demographics bar which contains visualizations for the gender, age, and location breakdowns of selected reports. The lower section of the layout consists of two time-based tools- the timeline and calendar. The timeline displays how many reports were filed in a given week and changes color depending on the severity of those reports. When a time frame is selected, the visualizations in the timeline and demographics sections change accordingly to reflect the updated information. All of the sections are interactive and update dynamically to changes made in other parts of the interface.</p>
             </div>
+            <div className="col-sm-4">
+              <h3>Developers</h3>
+              <ul>
+                <li>Derek Murphy - Computer Science 2018</li>
+                <li>Oliver Spring - Computer Science 2018</li>
+                <li>Cory Tapply - Computer Science 2018</li>
+                <li>Daniel Yun - Computer Science 2018</li>
+              </ul>
+            </div>
+            <div className="col-sm-4">
+              <h3>Faculty Advisor</h3>
+              <ul>
+                <li>Professor Elke Rundensteiner</li>
+              </ul>
+            </div>
+            <div className="col-sm-4">
+              <h3>Graduate Student Mentors</h3>
+              <ul>
+                <li>Tabassum Kakar</li>
+                <li>Xiao Qin</li>
+              </ul>
+            </div>
+            <div className="col-sm-12">
+              <h3>FDA Contacts</h3>
+              <p>[To get names from tabassum!]</p>
+            </div>
           </div>
 
         </div>

@@ -11,6 +11,7 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import { setUserInfo } from '../actions/userActions';
 import CurrentlySelectedFilters from './components/CurrentlySelectedFilters';
+import wpiLogo from '../resources/wpi-logo.png';
 import styles from './TopNavigationStyles';
 import { toggleSexFilter, toggleAgeFilter, toggleLocationFilter, toggleOccupationFilter } from '../actions/demographicActions';
 import { toggleMETypeFilter, toggleProductFilter, toggleStageFilter, toggleCauseFilter } from '../actions/visualizationActions';
@@ -32,6 +33,7 @@ class TopNavigation extends Component {
   logout = (event) => {
     event.preventDefault();
     this.props.setUserInfo(false, '', -1);
+    window.location = '/';
   }
 
   toggleDrawer = (side, open) => () => {
@@ -112,18 +114,6 @@ class TopNavigation extends Component {
                         />
                       </ListItem>
                     </Link>
-                    <Link to="/about" className={this.props.classes.listLink}>
-                      <ListItem button >
-                        <ListItemText
-                          disableTypography
-                          primary={
-                            <Typography style={{ fontSize: '16px', color: '#fff' }}>
-                            About
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    </Link>
                     {!this.props.isLoggedIn ? (
                       <Link to="/" className={this.props.classes.listLink}>
                         <ListItem button >
@@ -154,6 +144,17 @@ class TopNavigation extends Component {
                     }
                   </List>
                   <Divider style={{ backgroundColor: 'rgb(255,255,255)' }} />
+                </div>
+                <div className={`${this.props.classes.wpiLogoContainer}`} >
+                  <img src={wpiLogo} className={`${this.props.classes.wpiLogoClass} img-responsive`} />
+                  <Link to="/about" className={this.props.classes.listLink}>
+                    <Typography style={{ fontSize: '12px', color: '#fff', marginTop: '15px', display: 'inline-block' }}>
+                      About&nbsp;
+                    </Typography>
+                  </Link>
+                  <Typography style={{ fontSize: '12px', color: '#fff', marginTop: '15px', display: 'inline-block' }}>
+                      | &copy; 2018
+                    </Typography>
                 </div>
               </Drawer>
             </div>
