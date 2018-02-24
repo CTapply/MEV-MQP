@@ -1,7 +1,7 @@
 const initialFilterState = {
   init_fda_dt: {
-    start: 20170101,
-    end: 20170101,
+    start: 20170316,
+    end: 20170331,
   },
   sex: [],
   occr_country: [],

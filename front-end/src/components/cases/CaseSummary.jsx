@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import Typography from 'material-ui/Typography';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar } from 'recharts';
 import { getTagsinCase, getReportsInCases, getCaseNameByID } from '../../actions/reportActions';
+import annotationColors from '../editor/components/AnnotationColors';
+import MEVColors from '../../theme';
 
 const styles = {};
 
@@ -35,8 +38,10 @@ class CaseSummary extends Component {
     this.state = {
       tags: {},
       caseName: '',
+      caseDescription: '',
       reportsInCase: [],
       pieChartData: [],
+      barChartData: [],
     };
   }
 
@@ -58,12 +63,14 @@ class CaseSummary extends Component {
     this.props.getCaseNameByID(this.props.caseID)
       .then(rows => this.setState({
         caseName: (rows[0] ? rows[0].name : ''),
+        caseDescription: (rows[0] ? rows[0].description : ''),
       }, () => {
         this.props.getReportsInCases(this.props.userID, this.state.caseName)
           .then(reports => this.setState({
             reportsInCase: reports,
           }, () => {
             this.getReportTypeData();
+            this.getTagData();
           }));
       }));
   }
@@ -83,21 +90,58 @@ class CaseSummary extends Component {
     });
   }
 
+  getTagData = () => {
+    const barChartData = Object.keys(this.state.tags).reduce((acc, key) => {
+      return acc.concat({ name: key.toUpperCase(), count: this.state.tags[key].length });
+    }, []);
+
+    this.setState({
+      barChartData,
+    });
+  }
+
+  /**
+   * Changes the first letter of any word in a string to be capital
+   * BEING REUSED IN ReportListing.jsx NEED TO DEAL WITH THIS LATER ! DUPLICATE METHODS
+   */
+  toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
   COLORS = {
     supportive: '#0088FE',
     primary: '#FFBB28',
   };
 
-  render() {
-    return (
-      <div>
-        <p> Case Details </p>
-        <p> Case ID: {Number(this.props.caseID, 10)} </p>
-        <p> Case Name: {this.state.caseName} </p>
-        <p> User ID: {Number(this.props.userID, 10)} </p>
-        <p> URL PARAM: {Number(this.props.match.params.id, 10)} </p>
-        <p> TAGS: {JSON.stringify(this.state.tags)} </p>
-        {/* <p> Reports: {JSON.stringify(this.state.reportsInCase)} </p> */}
+  renderBarChart = () => ((this.state.barChartData.length > 0)
+    ? (
+      <ResponsiveContainer width="100%" height={300} >
+        <BarChart
+          data={this.state.barChartData}
+          layout="vertical"
+        >
+          <XAxis dataKey="count" type="number" />
+          <YAxis dataKey="name" type="category" width={100}/>
+          <CartesianGrid strokeDasharray="3 3" />
+          <Tooltip
+            // content={<CustomTooltip />}
+            offset={15}
+            cursor={{ stroke: '#424242', strokeWidth: 1 }}
+            wrapperStyle={{ padding: '4px', zIndex: 1000 }}
+            isAnimationActive={false}
+          />
+          <Bar dataKey="count" stroke="#444" >
+            {
+              this.state.barChartData.map(entry =>
+                <Cell key={entry} fill={annotationColors[entry.name.toLowerCase()]} />)
+            }
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    )
+    : null);
+
+  renderPieChart = () => ((this.state.pieChartData.length > 0)
+    ? (
+      <ResponsiveContainer width="100%" height={200} >
         <PieChart width={200} height={200}>
           <Legend />
           <Pie
@@ -119,6 +163,29 @@ class CaseSummary extends Component {
             }
           </Pie>
         </PieChart>
+      </ResponsiveContainer>
+    )
+    : null);
+
+
+  render() {
+    return (
+      <div style={{ width: '100%' }} >
+        <Typography type="display1">
+          Case Details:
+        </Typography>
+        <br />
+        <Typography type="headline">
+          {this.toTitleCase(this.state.caseName)}
+        </Typography>
+        <Typography type="button">
+          {this.state.caseDescription}
+        </Typography>
+        <Typography type="body1">
+          Total Count of Reports: {this.state.reportsInCase.length}
+        </Typography>
+        {this.renderBarChart()}
+        {this.renderPieChart()}
       </div>
     );
   }

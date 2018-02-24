@@ -415,7 +415,7 @@ app.post('/getreportsincases', (req, res) => {
 
 app.post('/getcasename', (req, res) => {
   console.log('got a request with body for case tags:\n ', req.body);
-  let query = 'SELECT name '
+  let query = 'SELECT name, description '
     + 'FROM cases '
     + `WHERE case_id='${req.body.caseID}' `
     + `AND primaryid='-1' LIMIT 1`;

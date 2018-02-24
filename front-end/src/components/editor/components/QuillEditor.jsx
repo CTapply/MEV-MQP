@@ -10,6 +10,7 @@ import _ from 'lodash';
 import Button from 'material-ui/Button';
 import { getReportNarrativeFromID } from '../../../actions/reportActions';
 import styles from './QuillEditorStyles';
+import annotationColors from './AnnotationColors';
 import './NarrativeAnnotator.css';
 
 class QuillEditor extends Component {
@@ -142,14 +143,14 @@ class QuillEditor extends Component {
   }
 
   handleChange = (value) => {
-    const greenRe = 'background-color: chartreuse;';
-    const blueRe = 'background-color: cadetblue;';
-    const orangeRe = 'background-color: darkorange;';
-    const yellowRe = 'background-color: gold;';
-    const pinkRe = 'background-color: lightpink;';
-    const purpleRe = 'background-color: orchid;';
-    const silverRe = 'background-color: silver;';
-    const cyanRe = 'background-color: cyan;';
+    const greenRe = `background-color: ${annotationColors.drug};`;
+    const blueRe = `background-color: ${annotationColors.reaction};`;
+    const orangeRe = `background-color: ${annotationColors.dosage};`;
+    const yellowRe = `background-color: ${annotationColors.age};`;
+    const pinkRe = `background-color: ${annotationColors.sex};`;
+    const purpleRe = `background-color: ${annotationColors.weight};`;
+    const silverRe = `background-color: ${annotationColors.indication};`;
+    const cyanRe = `background-color: ${annotationColors.interesting};`;
     const newTags = {};
 
     const spans = document.getElementById('react-quill')
@@ -159,43 +160,43 @@ class QuillEditor extends Component {
     for (let i = 0; i < spans.length; i += 1) {
       switch (spans[i].getAttribute('style')) {
         case greenRe:
-          newTags.greenTag = (newTags.greenTag)
-            ? newTags.greenTag.concat(spans[i].innerText)
+          newTags.drug = (newTags.drug)
+            ? newTags.drug.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case blueRe:
-          newTags.blueTag = (newTags.blueTag)
-            ? newTags.blueTag.concat(spans[i].innerText)
+          newTags.reaction = (newTags.reaction)
+            ? newTags.reaction.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case orangeRe:
-          newTags.orangeTag = (newTags.orangeTag)
-            ? newTags.orangeTag.concat(spans[i].innerText)
+          newTags.dosage = (newTags.dosage)
+            ? newTags.dosage.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case yellowRe:
-          newTags.yellowTag = (newTags.yellowTag)
-            ? newTags.yellowTag.concat(spans[i].innerText)
+          newTags.age = (newTags.age)
+            ? newTags.age.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case pinkRe:
-          newTags.pinkTag = (newTags.pinkTag)
-            ? newTags.pinkTag.concat(spans[i].innerText)
+          newTags.sex = (newTags.sex)
+            ? newTags.sex.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case purpleRe:
-          newTags.purpleTag = (newTags.purpleTag)
-            ? newTags.purpleTag.concat(spans[i].innerText)
+          newTags.weight = (newTags.weight)
+            ? newTags.weight.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case silverRe:
-          newTags.silverTag = (newTags.silverTag)
-            ? newTags.silverTag.concat(spans[i].innerText)
+          newTags.indication = (newTags.indication)
+            ? newTags.indication.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         case cyanRe:
-          newTags.cyanTag = (newTags.cyanTag)
-            ? newTags.cyanTag.concat(spans[i].innerText)
+          newTags.interesting = (newTags.interesting)
+            ? newTags.interesting.concat(spans[i].innerText)
             : [spans[i].innerText];
           break;
         default:
@@ -211,31 +212,31 @@ class QuillEditor extends Component {
 
   customToolbar = () => (
     <div id="quill-toolbar" style={{ padding: '4px' }}>
-      <Button className="ql-colorBackground" value="chartreuse" style={{ padding: '0px', margin: '4px', background: 'chartreuse' }}>
+      <Button className="ql-colorBackground" value={annotationColors.drug} style={{ padding: '0px', margin: '4px', background: annotationColors.drug }}>
         Drug
       </Button>
-      <Button className="ql-colorBackground" value="cyan" style={{ padding: '0px', margin: '4px', background: 'cyan' }}>
+      <Button className="ql-colorBackground" value={annotationColors.reaction} style={{ padding: '0px', margin: '4px', background: annotationColors.reaction }}>
         Adverse Reaction
       </Button>
-      <Button className="ql-colorBackground" value="darkorange" style={{ padding: '0px', margin: '4px', background: 'darkorange' }}>
+      <Button className="ql-colorBackground" value={annotationColors.dosage} style={{ padding: '0px', margin: '4px', background: annotationColors.dosage }}>
         Dosage
       </Button>
-      <Button className="ql-colorBackground" value="gold" style={{ padding: '0px', margin: '4px', background: 'gold' }}>
+      <Button className="ql-colorBackground" value={annotationColors.age} style={{ padding: '0px', margin: '4px', background: annotationColors.age }}>
         Age
       </Button>
-      <Button className="ql-colorBackground" value="lightpink" style={{ padding: '0px', margin: '4px', background: 'lightpink' }}>
+      <Button className="ql-colorBackground" value={annotationColors.sex} style={{ padding: '0px', margin: '4px', background: annotationColors.sex }}>
         Gender
       </Button>
-      <Button className="ql-colorBackground" value="orchid" style={{ padding: '0px', margin: '4px', background: 'orchid' }}>
+      <Button className="ql-colorBackground" value={annotationColors.weight} style={{ padding: '0px', margin: '4px', background: annotationColors.weight }}>
         Weight
       </Button>
-      <Button className="ql-colorBackground" value="silver" style={{ padding: '0px', margin: '4px', background: 'silver' }}>
+      <Button className="ql-colorBackground" value={annotationColors.indication} style={{ padding: '0px', margin: '4px', background: annotationColors.indication }}>
         Indication
       </Button>
       <Button className="ql-colorBackground" value="" style={{ padding: '0px', margin: '4px' }}>
         Clear
       </Button>
-      <Button className="ql-colorBackground pull-right" value="cadetblue" style={{ padding: '0px', margin: '4px', background: 'cadetblue' }}>
+      <Button className="ql-colorBackground pull-right" value={annotationColors.interesting} style={{ padding: '0px', margin: '4px', background: annotationColors.interesting }}>
         Interesting
       </Button>
     </div>
