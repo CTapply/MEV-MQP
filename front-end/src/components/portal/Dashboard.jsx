@@ -8,16 +8,19 @@ import Paper from 'material-ui/Paper';
 import MaterialTooltip from 'material-ui/Tooltip';
 import Button from 'material-ui/Button';
 import AppBar from 'material-ui/AppBar';
+import TextField from 'material-ui/TextField';
 import Switch from 'material-ui/Switch';
+import Modal from 'material-ui/Modal';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
+import Snackbar from 'material-ui/Snackbar';
 import GoToVisualizationIcon from '../../resources/goToVisualizationIcon.svg';
 import GoToReportsIcon from '../../resources/goToReportsIcon.svg';
 import MEVColors from '../../theme';
 import placeholderUserImage from './images/user_img.png';
 import UserReportTable from './userComponents/UserReportTable';
 import { getUserCases, archiveCase } from '../../actions/reportActions';
-import { getUserInactiveCasesCount, getUserActiveCasesCount } from '../../actions/userActions';
+import { getUserInactiveCasesCount, getUserActiveCasesCount, editUserBin } from '../../actions/userActions';
 import styles from './DashboardStyles';
 
 function TabContainer(props) {
@@ -85,6 +88,9 @@ class Dashboard extends Component {
       binActives: {},
       activeBinNumbers: 0,
       inactiveBinNumbers: 0,
+      editCaseModalOpen: false,
+      snackbarOpen: false,
+      snackbarMessage: '',
     };
   }
 
@@ -126,6 +132,10 @@ class Dashboard extends Component {
       reportCount
     })
   }
+
+  handleCloseSnackbar = () => {
+    this.setState({ snackbarOpen: false });
+  };
 
   getInactiveCases() {
     this.props.getUserInactiveCasesCount(this.props.userID)
@@ -191,6 +201,33 @@ class Dashboard extends Component {
     this.setState({ binActives: newActives });
   };
 
+  handleEditCaseOpen = () => {
+    this.setState({ editCaseModalOpen: true });
+  };
+
+  handleEditCaseClose = () => {
+    this.setState({ editCaseModalOpen: false });
+  };
+
+  handleEditCaseClick = () => {
+    const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
+    const binDesc = document.getElementById('newCaseDesc').value.trim();
+    if (binName !== '' && !(this.state.userBins.filter(bin => bin.toLowerCase() === binName).length)) {
+      this.props.editUserBin(this.props.userID, this.state.case, binName, binDesc)
+        .then((newCaseID) => {
+          document.getElementById('newCaseName').value = '';
+          document.getElementById('newCaseDesc').value = '';
+          
+          this.handleEditCaseClose();
+          this.getBins()
+        });
+        this.setState({ snackbarOpen: true, snackbarMessage: 'Edited Case!' });
+
+    } else {
+      this.setState({ snackbarOpen: true, snackbarMessage: 'Error! Invalid Case Name' });
+    }
+  }
+
   TabContainer = props => (
     <Typography component="div" style={{ padding: 8 * 3 }}>
       {props.children}
@@ -201,7 +238,50 @@ class Dashboard extends Component {
     const { value } = this.state;
     return (
       <MuiThemeProvider theme={defaultTheme} >
+        <Button onClick={this.handleEditCaseOpen}> Edit Case </Button>
+        <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            open={this.state.snackbarOpen}
+            onClose={this.handleCloseSnackbar}
+            transitionDuration={1000}
+            SnackbarContentProps={{
+              'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">{this.state.snackbarMessage}</span>}
+          />
         <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>
+        <Modal
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            open={this.state.editCaseModalOpen}
+            onClose={this.handleEditCaseClose}
+          >
+            <Paper elevation={8} className={this.props.classes.newCaseModal} >
+              <Typography type="title" id="modal-title">
+                Edit Case
+              </Typography>
+              <hr />
+              <TextField
+                label="Case Name"
+                placeholder={this.state.case}
+                id="newCaseName"
+                style={{ margin: 12, width: '100%' }}
+              />
+              <TextField
+                multiline
+                rowsMax="4"
+                label="Case Description"
+                placeholder={this.state.binDescs[this.state.case]}
+                id="newCaseDesc"
+                style={{ margin: 12, width: '100%' }}
+              />
+              <hr />
+              <Button raised onClick={this.handleEditCaseClick} style={{ margin: 12 }} color="primary">Edit Case</Button>
+            </Paper>
+          </Modal>
           <div className="row">
             <div className="col-sm-12">
               <h2>Dashboard</h2>
@@ -353,6 +433,6 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    getUserCases, archiveCase, getUserInactiveCasesCount, getUserActiveCasesCount,
+    editUserBin, getUserCases, archiveCase, getUserInactiveCasesCount, getUserActiveCasesCount,
   },
 )(withStyles(styles)(Dashboard));

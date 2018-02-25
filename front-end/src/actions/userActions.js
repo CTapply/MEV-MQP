@@ -114,4 +114,25 @@ export const getUserActiveCasesCount = userID => () => {
       }
       return 0;
     });
-};
+  };
+
+ /**
+ * Queries the Database with the current userID and a bin name to create
+ * that bin in the database
+ */
+export const editUserBin = (userID, oldBinName, binName, binDesc) => () => {
+  const fetchData = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userID,
+      oldBinName,
+      binName,
+      binDesc,
+    }),
+  };
+  return fetch(`${process.env.REACT_APP_NODE_SERVER}/edituserbin`, fetchData)
+  };

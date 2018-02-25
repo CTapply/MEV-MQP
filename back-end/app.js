@@ -550,6 +550,18 @@ app.post('/createuserbin', (req, res) => {
   });
 })
 
+app.post('/edituserbin', (req, res) => {
+  console.log('got a request to edit new bin with body:\n', req.body);
+  let query =
+  'UPDATE cases '
++ `SET name = '${req.body.binName}', description = '${req.body.binDesc}' `
++ `WHERE user_id = ${req.body.userID} AND name = '${req.body.oldBinName}'`;
+  console.log(query);
+  db.query(query, (err, data) => {
+    res.status(200).send();
+  });
+});
+
 app.post('/getusercases', (req, res) => {
   console.log('got a request to get cases with body:\n', req.body);
   let query =
