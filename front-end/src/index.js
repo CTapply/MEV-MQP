@@ -53,14 +53,70 @@ ReactDOM.render(
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-          <TopNavigation />
-          <Route exact path="/" component={Login} />
-          <Route path="/visualization" component={App} />
-          <Route path="/report" component={ReportList} />
-          <Route path="/about" component={About} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/pdf/:id?" component={NarrativeAnnotator} />
-          <Route path="/case/:id?" component={CaseSummary} />
+          {/* <TopNavigation showFilters={test}/> */}
+          <Route exact path="/" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={false}/>
+                  <Login { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/visualization" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={true}/>
+                  <App { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/report" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={true}/>
+                  <ReportList { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/about" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={false}/>
+                  <About { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/dashboard" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={false}/>
+                  <Dashboard { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/pdf/:id?" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={false}/>
+                  <NarrativeAnnotator { ...props } />
+                </div>
+              );
+            }}
+          />
+          <Route path="/case/:id?" component={(props) => {
+              return (
+                <div>
+                  <TopNavigation showFilters={false}/>
+                  <CaseSummary { ...props } />
+                </div>
+              );
+            }}
+          />
         </div>
       </ConnectedRouter>
     </Provider>

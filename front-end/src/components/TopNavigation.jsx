@@ -173,6 +173,7 @@ class TopNavigation extends Component {
               MEV
             </a>
           </div>
+          {this.props.showFilters ? 
           <div className={this.props.classes.SelectedFilters} >
             <Paper className={this.props.classes.TotalCountBox} elevation={4} >
               <Typography type="body1" align="center" style={{ lineHeight: '1.4rem' }} >
@@ -196,6 +197,7 @@ class TopNavigation extends Component {
               </Typography>
             </Paper>
           </div>
+          : null}
         </div>
       </nav>
     </div>
