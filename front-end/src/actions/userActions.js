@@ -63,7 +63,7 @@ export const makeUserTrash = userID => () => {
     },
     body: JSON.stringify({ userID }),
   };
-  fetch(`${process.env.REACT_APP_NODE_SERVER}/makeusertrash`, fetchData);
+  return fetch(`${process.env.REACT_APP_NODE_SERVER}/makeusertrash`, fetchData);
 };
 
 export const makeUserRead = userID => () => {
@@ -75,7 +75,7 @@ export const makeUserRead = userID => () => {
     },
     body: JSON.stringify({ userID }),
   };
-  fetch(`${process.env.REACT_APP_NODE_SERVER}/makeuserread`, fetchData);
+  return fetch(`${process.env.REACT_APP_NODE_SERVER}/makeuserread`, fetchData);
 };
 
 export const getUserInactiveCasesCount = userID => () => {
