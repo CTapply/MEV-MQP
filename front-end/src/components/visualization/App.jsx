@@ -6,6 +6,7 @@ import { blue, green, red } from 'material-ui/colors';
 import TreeMap from './components/treeMap/TreeMap';
 import Demographics from './components/demographics/Demographics';
 import { setCurrentlySelecting } from '../../actions/filterActions';
+import { CircularProgress } from 'material-ui/Progress';
 import Timeline from './components/timeline/Timeline';
 import MEVColors from '../../theme';
 
@@ -24,7 +25,12 @@ const defaultTheme = createMuiTheme({
   },
 });
 
-const styles = theme => ({});
+const styles = theme => ({
+  spinnerColor: {
+    color: red,
+    backgroundColor: red,
+  }
+});
 
 /**
  * This is the component for the App
@@ -34,9 +40,19 @@ class App extends Component {
     setCurrentlySelecting: PropTypes.func.isRequired,
     timelineMinimized: PropTypes.bool.isRequired,
     demographicsMinimized: PropTypes.bool.isRequired,
+    loadingVisData: PropTypes.bool.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
     }).isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      loadingDemo: true,
+      loadingTreemap: true,
+      loadingTimeline: true,
+    }
   }
 
   componentWillMount() {
@@ -99,7 +115,8 @@ class App extends Component {
   render() {
     return (
       <MuiThemeProvider theme={defaultTheme} >
-        <div className="App">
+        <div className="App" style={{ position: 'relative' }}>
+        {this.props.loadingVisData ? <div style={{ position: 'absolute', top: '0px', left: '0px', width: '100%', height: '100%', backgroundColor: 'rgba(25, 25, 25, 0.5)', zIndex: '10000' }}> <div style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>  <CircularProgress size={500} /> </div> </div> : null }
           <Demographics
             minimized={this.props.demographicsMinimized}
           />
@@ -119,6 +136,7 @@ const mapStateToProps = state => ({
   timelineMinimized: state.timeline.timelineMinimized,
   demographicsMinimized: state.demographic.demographicsMinimized,
   isLoggedIn: state.user.isLoggedIn,
+  loadingVisData: state.multiSelectFilters.loadingVisData,
 });
 
 /**

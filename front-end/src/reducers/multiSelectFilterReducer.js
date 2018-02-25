@@ -1,6 +1,7 @@
 const initialFilterState = {
   currentlySelecting: false,
   startingFilters: {},
+  loadingVisData: false,
 };
 
 /**
@@ -13,6 +14,8 @@ export default (state = initialFilterState, action = {}) => {
       return Object.assign({}, state, { currentlySelecting: action.currentlySelecting });
     case 'SET_CURRENTLY_SELECTING_FILTERS':
       return Object.assign({}, state, { startingFilters: action.startingFilters });
+    case 'SET_VIS_LOADING':
+      return Object.assign({}, state, { loadingVisData: action.loadingVisData });
     default: return state;
   }
 };

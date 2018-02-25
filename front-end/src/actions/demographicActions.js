@@ -154,7 +154,7 @@ export const getDemographicData = queryParams => (dispatch) => {
   };
 
 
-  fetch(`${process.env.REACT_APP_NODE_SERVER}/getdemographicdata`, fetchData)
+  return fetch(`${process.env.REACT_APP_NODE_SERVER}/getdemographicdata`, fetchData)
     .then(response => response.json())
     .then((allReports) => {
       const reducedData = reduceData(allReports.rows);

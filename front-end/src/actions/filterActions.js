@@ -11,9 +11,13 @@ export const filterData = () => (dispatch, getState) => {
   };
 
   if (!getState().multiSelectFilters.currentlySelecting) {
+    dispatch({ type: 'SET_VIS_LOADING', loadingVisData: true });
+    const filterPromises = [];
     // Dispatch the new Filters to the appropriate Actions to get newly filtered data.
-    dispatch(getDemographicData(postBody));
-    dispatch(getVisData(postBody));
+    filterPromises.push(dispatch(getDemographicData(postBody)));
+    filterPromises.push(dispatch(getVisData(postBody)));
+    Promise.all(filterPromises)
+      .then(() => dispatch({ type: 'SET_VIS_LOADING', loadingVisData: false }));
   }
 };
 
