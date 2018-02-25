@@ -25,6 +25,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Switch from 'material-ui/Switch';
+import { CircularProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
 import { FormControlLabel } from 'material-ui/Form';
 import _ from 'lodash';
@@ -82,6 +83,7 @@ class ReportTable extends React.PureComponent {
       currentlyInCase: [],
       snackbarOpen: false,
       snackbarMessage: '',
+      loadingData: true,
 
       /**
        * Default widths for the columns of the table
@@ -126,6 +128,7 @@ class ReportTable extends React.PureComponent {
     this.props.getCaseReports(this.props.bin, this.props.userID)
       .then(bins => this.setState({
         data: bins,
+        loadingData: false,
       }));
 
     this.updateHighlightedRows();
@@ -144,9 +147,15 @@ class ReportTable extends React.PureComponent {
    */
   componentDidUpdate(prevProps) {
     if (prevProps.bin !== this.props.bin || !_.isEqual(this.props.filters, prevProps.filters)) {
+      this.setState({
+        loadingData: true,
+      });
       this.props.getCaseReports(this.props.bin, this.props.userID)
         .then((bins) => {
-          this.setState({ data: bins });
+          this.setState({ 
+            data: bins,
+            loadingData: false,
+          });
           this.changeExpandedDetails([]);
         });
     }
@@ -456,7 +465,8 @@ class ReportTable extends React.PureComponent {
   render() {
     return (
       <Paper id="table-container" className={this.props.classes.tableContainer} elevation={4}>
-        {(this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
+        {this.state.loadingData ? <div style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}> <CircularProgress size={Math.min(this.state.tableHeight, 500)} /> </div> : 
+        (this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
           ? (
             <Grid
               rows={this.state.data}
@@ -488,8 +498,7 @@ class ReportTable extends React.PureComponent {
               />
             </Grid>
             )
-          : null
-        }
+          : null }
 
         {/* ====== Snackbar for Notificaitons to the User ====== */}
         <Snackbar
@@ -507,7 +516,7 @@ class ReportTable extends React.PureComponent {
           message={
             <span id="message-id" style={{ color: 'LightGreen' }} >{this.state.snackbarMessage}</span>
           }
-        />
+        /> 
       </Paper>
     );
   }
