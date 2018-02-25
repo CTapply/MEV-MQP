@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import { blue, green, red } from 'material-ui/colors';
 import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
 import { setUserInfo, makeUserTrash, makeUserRead, checkUserTrash, checkUserRead } from '../../actions/userActions';
 import MEVColors from '../../theme';
 
@@ -67,7 +68,7 @@ class Login extends Component {
       .then(() => {
         this.setState({
           type: 'success',
-          message: 'You have successfully been addded as a new user! Logging you in...',
+          message: 'Logging you in...',
           logged_in: true,
         });
         this.sendFormData();
@@ -79,7 +80,7 @@ class Login extends Component {
     if (this.state.email !== '') {
       this.setState({ type: 'info', message: 'Sending...' }, this.sendFormData);
     } else {
-      this.setState({ type: 'danger', message: 'Please enter a value!' });
+      this.setState({ type: 'danger', message: 'Please enter an email!' });
     }
   }
 
@@ -141,14 +142,13 @@ class Login extends Component {
           <div className="About container">
             <div className="row">
               <div className="col-sm-12">
-                <h2>Login Page</h2>
+                <h2>Login</h2>
                 <p>You are already logged in!</p>
                 <div id="status" className={`alert alert-${this.state.type}`}>
                   {this.state.message}
                 </div>
               </div>
             </div>
-
           </div>
         </MuiThemeProvider>);
     } else {
@@ -157,12 +157,14 @@ class Login extends Component {
           <div className="About container">
             <div className="row">
               <div className="col-sm-12">
-                <Paper elevation={2} >
-                  <h2>Login Page</h2>
-                  <p><strong>Welcome to MEV</strong></p>
-                  <p>We are going to ask that you login to get started. If you have an email that you have already used to login you may continue to login as before.</p>
-                  <p><strong>New Users</strong></p>
-                  <p>If you are new, you may enter in an email to begin analyzing with a new account in our system. You will then be directed to the user dashboard where you can see/edit your user details.</p>
+                <Paper elevation={2} style={{ padding: '20px 20px 20px 20px', marginTop: '15px' }} >
+                  <Typography type="title" style={{ fontSize: '30px', color: '#333' }}>
+                    Sign in to Get Started
+                  </Typography>
+                  <Typography type="subheading" style={{ fontSize: '16px', color: '#333' }}>
+                    <i>Please enter an email address to be directed to the system</i>
+                  </Typography>
+                  <br />
                   <div className="col-sm-8 col-sm-offset-2">
                     <form className="form-horizontal" action="" onSubmit={this.handleSubmit}>
                       <div className="form-group">
@@ -177,7 +179,7 @@ class Login extends Component {
                       </div>
                     </form>
                   </div>
-                  <div id="status" className={`alert alert-${this.state.type}`}>
+                  <div id="status" className={`alert alert-${this.state.type}`} style={{ marginTop: '45px', marginBottom: '0px' }}>
                     {this.state.message}
                   </div>
                 </Paper>
