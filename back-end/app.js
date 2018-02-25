@@ -623,7 +623,7 @@ app.put('/saveuser', (req, res) => {
 app.put('/makeusertrash', (req, res) => {
   console.log('got a make trash request');
   let query =
-  'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'trash\',' + req.body.userID + ', -1)';
+  'INSERT INTO cases (name, user_id, primaryid, description) VALUES ( \'trash\',' + req.body.userID + ', -1, \'This is a pre-generated case to store the reports that you do not want to show up the report listing page\')';
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send();
@@ -633,7 +633,7 @@ app.put('/makeusertrash', (req, res) => {
 app.put('/makeuserread', (req, res) => {
   console.log('got a make read case request');
   let query =
-  'INSERT INTO cases (name, user_id, primaryid) VALUES ( \'read\',' + req.body.userID + ', -1)';
+  'INSERT INTO cases (name, user_id, primaryid, description) VALUES ( \'read\',' + req.body.userID + ', -1, \'This is a pre-generated case to store the reports that you want to mark as being already read. Reports in this case will display as grey on the report listing page\')';
   console.log(query);
   db.query(query, (err, data) => {
     res.status(200).send();

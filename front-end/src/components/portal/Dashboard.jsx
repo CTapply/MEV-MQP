@@ -219,17 +219,12 @@ class Dashboard extends Component {
                     if (value === index) {
                       return (
                         <TabContainer key={index}>
-                          {
-                          (this.state.value === this.getTrashValue() || this.state.value === this.getReadValue()) ?
-                            null
-                          :
-                            <div className="col-sm-12">
-                              <h3>Case Description:</h3>
-                              <div className={`${this.props.classes.paper}`}>
-                                <p>{this.state.binDescs[this.state.case]}</p>
-                              </div>
+                          <div className="col-sm-12">
+                            <h3>Case Description:</h3>
+                            <div className={`${this.props.classes.paper}`}>
+                              <p>{this.state.binDescs[this.state.case]}</p>
                             </div>
-                          }
+                          </div>
                           <div className="col-sm-4">
                             <h3>Case Name:</h3>
                             <div className={`${this.props.classes.paper}`}>
