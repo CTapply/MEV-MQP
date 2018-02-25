@@ -92,9 +92,10 @@ class Dashboard extends Component {
     if (!this.props.isLoggedIn) {
       window.location = '/';
     }
-    this.getBins();
     this.getActiveCases();
     this.getInactiveCases();
+    this.getBins();
+    console.log(this.state.case);
   }
 
   /**
@@ -109,14 +110,21 @@ class Dashboard extends Component {
         const active = {};
         bins.forEach((bin, i) => active[bin.name] = bin.active);
         const userBins = bins.map(bin => this.toTitleCase(bin.name)).sort();
-        const defaultCase = (bins[0]) ? bins[0].name : '';
+        const defaultCase = (userBins[0]) ? userBins[0].toLowerCase() : '';
         this.setState({
           userBins,
           binDescs: descs,
           binActives: active,
           case: defaultCase,
+          reportCount: 0,
         });
       });
+  }
+
+  setReportCount = reportCount => {
+    this.setState({
+      reportCount
+    })
   }
 
   getInactiveCases() {
@@ -236,7 +244,7 @@ class Dashboard extends Component {
                               <div className="col-sm-8">
                                 <h3>Report Count:</h3>
                                 <div className={`${this.props.classes.paper}`}>
-                                  <p># of reports in bin</p>
+                                  <p>{this.state.reportCount}</p>
                                 </div>
                               </div>
                             :
@@ -261,7 +269,7 @@ class Dashboard extends Component {
                           <div className={`${this.props.classes.reportsWrapper} col-sm-12`}>
                             <h3 style={{ marginTop: '10px' }}>Reports:</h3>
                             <div className={`${this.props.classes.paperNoPadding}`}>
-                              <UserReportTable bin={this.state.case} bins={this.state.userBins} />
+                              <UserReportTable bin={this.state.case} bins={this.state.userBins} setReportCount={this.setReportCount} />
                             </div>
                           </div>
                           <div className={`${this.props.classes.clearfix}`} />
