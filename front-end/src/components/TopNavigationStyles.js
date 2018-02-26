@@ -28,6 +28,7 @@ export default {
     'font-weight': '700',
   },
   drawerToggleContainer: {
+    zIndex: '10002',
   },
   buttonClass: {
     'padding-top': '5px',

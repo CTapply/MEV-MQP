@@ -69,7 +69,7 @@ class TopNavigation extends Component {
           <div className="pull-left">
             <div>
               <Button onClick={this.toggleDrawer('left', true)} className={this.props.classes.buttonClass}><i className="material-icons">menu</i></Button>
-              <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)} SlideProps={{ className: this.props.classes.drawerClass }}>
+              <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)} classes={{ modal: this.props.classes.drawerToggleContainer }}SlideProps={{ className: this.props.classes.drawerClass }}>
                 <div
                   tabIndex={0}
                   role="button"
