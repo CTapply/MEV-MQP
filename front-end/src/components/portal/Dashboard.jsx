@@ -116,7 +116,7 @@ class Dashboard extends Component {
         bins.forEach((bin, i) => descs[bin.name] = bin.description);
         const active = {};
         bins.forEach((bin, i) => active[bin.name] = bin.active);
-        const userBins = bins.map(bin => this.toTitleCase(bin.name)).sort();
+        const userBins = this.sortUserBins(bins);
         const defaultCase = (userBins[this.state.value]) ? userBins[this.state.value].toLowerCase() : '';
         this.setState({
           userBins,
@@ -133,10 +133,6 @@ class Dashboard extends Component {
       reportCount,
     });
   }
-
-  handleCloseSnackbar = () => {
-    this.setState({ snackbarOpen: false });
-  };
 
   getInactiveCases() {
     this.props.getUserInactiveCasesCount(this.props.userID)
@@ -170,6 +166,18 @@ class Dashboard extends Component {
       }
     });
     return readValue;
+  }
+
+  handleCloseSnackbar = () => {
+    this.setState({ snackbarOpen: false });
+  };
+
+  sortUserBins = (bins) => {
+    const filteredBins = bins.filter(bin => (bin.name !== 'trash' && bin.name !== 'read'));
+    const sortedBinNames = filteredBins.map(bin => this.toTitleCase(bin.name)).sort();
+    sortedBinNames.push('Read');
+    sortedBinNames.push('Trash');
+    return sortedBinNames;
   }
 
   /**

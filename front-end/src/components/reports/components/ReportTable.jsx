@@ -464,11 +464,8 @@ class ReportTable extends React.PureComponent {
   render() {
     return (
       <Paper id="table-container" className={this.props.classes.tableContainer} elevation={4}>
-        {this.state.loadingData ? <div style={{
- width: 'fit-content', position: 'absolute', top: '50%', left: '50%', transform: 'translateY(-50%) translateX(-50%)',
-}}
-        > <CircularProgress size={Math.min(this.state.tableHeight, 300)} />
-                                  </div> :
+        {/*eslint-disable */}
+        {this.state.loadingData ? <div style={{ width: 'fit-content', position: 'absolute', top: '50%', left: '50%', transform: 'translateY(-50%) translateX(-50%)' }}> <CircularProgress size={Math.min(this.state.tableHeight, 300)} /> </div> : 
           (this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
             ? (
               <Grid

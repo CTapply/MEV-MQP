@@ -201,12 +201,14 @@ class ReportList extends Component {
               centered
             >
               <Tab icon={<AllReportsIcon />} label="All Reports" key="All Reports" name="All Reports" />
+              <Tab icon={<CaseIcon />} label="Read" key="Read" name="Read" />
               <Tab icon={<TrashIcon />} label="Trash" key="Trash" name="Trash" />
               <Tab icon={<NewCaseIcon />} label="New Case" name="New Case" />
               {this.state.userBins.map((bin) => {
                 switch (bin.name) {
                   case 'Trash':
                   case 'All Reports':
+                  case 'Read':
                   return null;
                   default:
                     return (
