@@ -392,20 +392,15 @@ class ReportTable extends React.PureComponent {
       <div className="col-sm-3" style={{ marginBottom: '15px' }}>
         <Paper elevation={6} style={{ padding: '5px' }} >
           <div className="col-sm-12">
-            {
-              (this.props.bin === 'all reports')
-              ? (
-                <FormControlLabel
-                  control={
-                    <Switch
-                      onChange={this.handleToggleChange(row.row.primaryid)}
-                      color="primary"
-                    />
-                  }
-                  label="Primary Evidence"
-                />)
-              : null
-            }
+            <FormControlLabel
+              control={
+                <Switch
+                  onChange={this.handleToggleChange(row.row.primaryid)}
+                  color="primary"
+                />
+              }
+              label="Primary Evidence"
+            />
           </div>
           <div className="col-sm-12">
             <Link href="/" to={`/pdf/${row.row.primaryid}`} target="_blank">
@@ -465,40 +460,41 @@ class ReportTable extends React.PureComponent {
   render() {
     return (
       <Paper id="table-container" className={this.props.classes.tableContainer} elevation={4}>
-        {this.state.loadingData ? <div style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}> <CircularProgress size={Math.min(this.state.tableHeight, 500)} /> </div> : 
-        (this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
-          ? (
-            <Grid
-              rows={this.state.data}
-              columns={this.columns}
-              getRowId={row => row.primaryid}
-            >
-              <RowDetailState
-                expandedRows={this.state.expandedRows}
-                onExpandedRowsChange={this.changeExpandedDetails}
-              />
-              <DragDropProvider />
-              <SortingState
-                defaultSorting={[
-                  { columnName: 'Event Date', direction: 'asc' },
-                ]}
-              />
-              <IntegratedSorting
-                columnExtensions={this.state.customSorting}
-              />
-              <VirtualTable rowComponent={this.TableRow} height={this.state.tableHeight} />
-              <TableColumnResizing
-                columnWidths={this.state.widths}
-                onColumnWidthsChange={this.onColumnWidthsChange}
-              />
-              <TableHeaderRow showSortingControls />
-              <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
-              <TableRowDetail
-                contentComponent={this.renderDetailRowContent}
-              />
-            </Grid>
-            )
-          : null }
+        {this.state.loadingData ? <div style={{ width: 'fit-content', position: 'absolute', top: '50%', left: '50%', transform: 'translateY(-50%) translateX(-50%)' }}> <CircularProgress size={Math.min(this.state.tableHeight, 300)} /> </div> : 
+          (this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
+            ? (
+              <Grid
+                rows={this.state.data}
+                columns={this.columns}
+                getRowId={row => row.primaryid}
+              >
+                <RowDetailState
+                  expandedRows={this.state.expandedRows}
+                  onExpandedRowsChange={this.changeExpandedDetails}
+                />
+                <DragDropProvider />
+                <SortingState
+                  defaultSorting={[
+                    { columnName: 'Event Date', direction: 'asc' },
+                  ]}
+                />
+                <IntegratedSorting
+                  columnExtensions={this.state.customSorting}
+                />
+                <VirtualTable rowComponent={this.TableRow} height={this.state.tableHeight} />
+                <TableColumnResizing
+                  columnWidths={this.state.widths}
+                  onColumnWidthsChange={this.onColumnWidthsChange}
+                />
+                <TableHeaderRow showSortingControls />
+                <TableColumnReordering defaultOrder={this.columns.map(column => column.name)} />
+                <TableRowDetail
+                  contentComponent={this.renderDetailRowContent}
+                />
+              </Grid>
+              )
+            : null
+        }
 
         {/* ====== Snackbar for Notificaitons to the User ====== */}
         <Snackbar

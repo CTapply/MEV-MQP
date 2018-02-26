@@ -65,6 +65,7 @@ class Dashboard extends Component {
     archiveCase: PropTypes.func.isRequired,
     getUserInactiveCasesCount: PropTypes.func.isRequired,
     getUserActiveCasesCount: PropTypes.func.isRequired,
+    editUserBin: PropTypes.func.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
     userID: PropTypes.number.isRequired,
     classes: PropTypes.shape({
@@ -75,6 +76,7 @@ class Dashboard extends Component {
       userimage: PropTypes.string,
       reportsWrapper: PropTypes.string,
       tooltipStyle: PropTypes.string,
+      newCaseModal: PropTypes.string,
     }).isRequired,
   }
 
@@ -116,7 +118,7 @@ class Dashboard extends Component {
         const active = {};
         bins.forEach((bin, i) => active[bin.name] = bin.active);
         const userBins = bins.map(bin => this.toTitleCase(bin.name)).sort();
-        const defaultCase = (userBins[0]) ? userBins[0].toLowerCase() : '';
+        const defaultCase = (userBins[this.state.value]) ? userBins[this.state.value].toLowerCase() : '';
         this.setState({
           userBins,
           binDescs: descs,
@@ -175,7 +177,7 @@ class Dashboard extends Component {
    * Changes the first letter of any word in a string to be capital
    * BEING REUSED IN ReportListing.jsx NEED TO DEAL WITH THIS LATER ! DUPLICATE METHODS
    */
-  toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+  toTitleCase = str => ((str) ? str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()) : '');
 
   /**
    * Handler for drop down menu item click
@@ -212,9 +214,9 @@ class Dashboard extends Component {
   handleEditCaseClick = () => {
     const binName = document.getElementById('newCaseName').value.toLowerCase().trim();
     const binDesc = document.getElementById('newCaseDesc').value.trim();
-    if (binName !== '' && !(this.state.userBins.filter(bin => bin.toLowerCase() === binName).length)) {
+    if ((binName !== '' && !(this.state.userBins.filter(bin => bin.toLowerCase() === binName).length)) || binName === this.state.case) {
       this.props.editUserBin(this.props.userID, this.state.case, binName, binDesc)
-        .then((newCaseID) => {
+        .then(() => {
           document.getElementById('newCaseName').value = '';
           document.getElementById('newCaseDesc').value = '';
 
@@ -237,7 +239,6 @@ class Dashboard extends Component {
     const { value } = this.state;
     return (
       <MuiThemeProvider theme={defaultTheme} >
-        <Button onClick={this.handleEditCaseOpen}> Edit Case </Button>
         <Snackbar
           anchorOrigin={{
             vertical: 'bottom',
@@ -265,7 +266,8 @@ class Dashboard extends Component {
               <hr />
               <TextField
                 label="Case Name"
-                placeholder={this.state.case}
+                placeholder=""
+                defaultValue={this.toTitleCase(this.state.case)}
                 id="newCaseName"
                 style={{ margin: 12, width: '100%' }}
               />
@@ -273,12 +275,13 @@ class Dashboard extends Component {
                 multiline
                 rowsMax="4"
                 label="Case Description"
-                placeholder={this.state.binDescs[this.state.case]}
+                placeholder=""
+                defaultValue={this.state.binDescs[this.state.case]}
                 id="newCaseDesc"
                 style={{ margin: 12, width: '100%' }}
               />
               <hr />
-              <Button raised onClick={this.handleEditCaseClick} style={{ margin: 12 }} color="primary">Edit Case</Button>
+              <Button raised onClick={this.handleEditCaseClick} style={{ margin: 12 }} color="primary">Save</Button>
             </Paper>
           </Modal>
           <div className="row">
@@ -322,7 +325,19 @@ class Dashboard extends Component {
                         <div className="col-sm-12">
                           <Typography type="title" style={{ fontSize: '30px', color: '#333' }}>
                             {option}
-                            <FormControlLabel
+                            {(!(this.state.value === this.getTrashValue()) && !(this.state.value === this.getReadValue()))
+                              ? <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={this.state.binActives[this.state.case]}
+                                    onChange={this.handleActiveChange(this.state.case)}
+                                    aria-label="checked"
+                                  />
+                                }
+                                label={(this.state.binActives[this.state.case]) ? 'Active' : 'Inactive'}
+                                style={{ marginLeft: '10px' }}
+                              />
+                            : <FormControlLabel
                               control={
                                 <Switch
                                   checked={this.state.binActives[this.state.case]}
@@ -330,12 +345,16 @@ class Dashboard extends Component {
                                   aria-label="checked"
                                 />
                               }
-                              label="Active"
-                              style={{ marginLeft: '10px' }}
+                              label={(this.state.binActives[this.state.case]) ? 'Active' : 'Inactive'}
+                              style={{ marginLeft: '10px', visibility: 'hidden' }}
                             />
+                          }
+                            {(!(this.state.value === this.getTrashValue()) && !(this.state.value === this.getReadValue()))
+                              ? <Button raised className="pull-right" onClick={this.handleEditCaseOpen}> Edit Case </Button>
+                              : null}
                           </Typography>
                           <Typography type="subheading" style={{ fontSize: '16px', color: '#333' }}>
-                            <i>{this.state.binDescs[this.state.case] || <p>No Desctription</p> }</i>
+                            <i>{this.state.binDescs[this.state.case] || <p>No Description</p> }</i>
                           </Typography>
                           <br />
                           {
