@@ -103,7 +103,6 @@ class Dashboard extends Component {
     this.getActiveCases();
     this.getInactiveCases();
     this.getBins();
-    console.log(this.state.case);
   }
 
   /**
