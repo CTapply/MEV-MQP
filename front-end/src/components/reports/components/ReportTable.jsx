@@ -152,7 +152,7 @@ class ReportTable extends React.PureComponent {
       });
       this.props.getCaseReports(this.props.bin, this.props.userID)
         .then((bins) => {
-          this.setState({ 
+          this.setState({
             data: bins,
             loadingData: false,
           });
@@ -411,11 +411,14 @@ class ReportTable extends React.PureComponent {
         </Paper>
       </div>
       <div className={`${this.props.classes.sendToCaseContainer} col-sm-9`}>
-        <Typography style={{ position: 'absolute', fontSize: '14px', transform: 'translateX(3px) translateY(3px)' }} type="button">
-          Send Report to:
-        </Typography>
-        <Paper elevation={6} className={this.props.classes.moveToCaseDetailsContainer} >
-          {this.props.bins.map((bin, index) => (
+        <Paper elevation={6}>
+          <div className="col-sm-12" style={{ padding: '5px 10px' }}>
+            <Typography style={{ fontSize: '14px' }} type="button">
+              Send Report to:
+            </Typography>
+          </div>
+          <div className={this.props.classes.moveToCaseDetailsContainer}>
+            {this.props.bins.map((bin, index) => (
             (this.props.bin.toLowerCase() !== bin.name.toLowerCase())
               ? (
                 <Button
@@ -438,6 +441,7 @@ class ReportTable extends React.PureComponent {
               )
             : null
           ))}
+          </div>
         </Paper>
       </div>
       <div style={{ marginTop: '10px' }} className="col-sm-12">
@@ -460,7 +464,11 @@ class ReportTable extends React.PureComponent {
   render() {
     return (
       <Paper id="table-container" className={this.props.classes.tableContainer} elevation={4}>
-        {this.state.loadingData ? <div style={{ width: 'fit-content', position: 'absolute', top: '50%', left: '50%', transform: 'translateY(-50%) translateX(-50%)' }}> <CircularProgress size={Math.min(this.state.tableHeight, 300)} /> </div> : 
+        {this.state.loadingData ? <div style={{
+ width: 'fit-content', position: 'absolute', top: '50%', left: '50%', transform: 'translateY(-50%) translateX(-50%)',
+}}
+        > <CircularProgress size={Math.min(this.state.tableHeight, 300)} />
+                                  </div> :
           (this.state.tableHeight !== 0 && this.state.stillResizingTimer === '')
             ? (
               <Grid
@@ -512,7 +520,7 @@ class ReportTable extends React.PureComponent {
           message={
             <span id="message-id" style={{ color: 'LightGreen' }} >{this.state.snackbarMessage}</span>
           }
-        /> 
+        />
       </Paper>
     );
   }

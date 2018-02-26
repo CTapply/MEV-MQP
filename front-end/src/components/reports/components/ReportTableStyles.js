@@ -9,7 +9,7 @@ export default {
     justifyContent: 'space-around',
     overflow: 'hidden',
     backgroundColor: '#fefefe',
-    padding: '15px',
+    padding: '0px 15px',
   },
   caseGridList: {
     padding: '5px',

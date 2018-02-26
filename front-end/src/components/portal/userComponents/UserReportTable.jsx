@@ -124,6 +124,10 @@ class UserReportTable extends React.PureComponent {
       title: 'Outcome',
       name: 'outc_cod',
     },
+    {
+      title: 'Narrative',
+      name: 'report_text',
+    },
   ];
 
   /**
@@ -137,6 +141,7 @@ class UserReportTable extends React.PureComponent {
     drugname: 100,
     me_type: 100,
     outc_cod: 75,
+    report_text: 200,
   };
 
   /**
